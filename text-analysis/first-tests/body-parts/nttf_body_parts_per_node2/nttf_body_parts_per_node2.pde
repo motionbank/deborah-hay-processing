@@ -15,6 +15,8 @@
 import cue.lang.*;
 import java.util.Map.Entry;
 
+import java.util.*;
+
 BodyPartCount[] partList;
 XML srcXML;
 String nttf;
