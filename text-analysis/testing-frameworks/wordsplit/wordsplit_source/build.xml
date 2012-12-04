@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="build">
+
+<property file="version.properties" />
+<property
+  name="build.number"
+  value="${build.major.number}.${build.minor.number}.${build.revision.number}" />
+<property name="dir.build"  value="build" />
+<property name="dir.source" value="src" />
+
+<property name="file.jar"   value="wordsplit.jar" />
+
+<property name="compile.debug"       value="true"/>
+<property name="compile.deprecation" value="false"/>
+<property name="compile.optimize"    value="false"/>
+
+<target name="version">
+  <echo>Build: ${build.number}</echo>
+</target>
+
+<target name="build">
+  <antcall target="clean" />
+  <antcall target="compile" />
+  <antcall target="jar" />
+</target>
+
+<target name="clean">
+  <delete dir="${dir.build}" />
+</target>
+
+<target name="compile">
+  <antcall target="revision"></antcall>
+  <mkdir dir="${dir.build}" />
+  <javac
+    includeantruntime="false"
+    srcdir="${dir.source}"
+    destdir="${dir.build}"
+    debug="${compile.debug}"
+    deprecation="${compile.deprecation}"
+    optimize="${compile.optimize}"
+    />
+</target>
+
+<target name="jar">
+  <jar destfile="${dir.build}/${file.jar}" basedir="${dir.build}">
+    <manifest>
+      <attribute
+        name="Main-Class"
+        value="com.whitemagicsoftware.wordsplit.Main" />
+    </manifest>
+  </jar>
+</target>
+
+<target name="dist">
+  <antcall target="minor"></antcall>
+</target>
+
+<target name="revision">
+  <propertyfile file="version.properties">
+    <entry key="build.revision.number" type="int" operation="+" value="1" pattern="00" />
+  </propertyfile>
+</target>
+
+<target name="minor">
+  <propertyfile file="version.properties">
+    <entry key="build.minor.number" type="int" operation="+" value="1" pattern="00" />
+    <entry key="build.revision.number" type="int" value="0" pattern="00" />
+  </propertyfile>
+</target>
+
+<target name="major">
+  <propertyfile file="version.properties">
+    <entry key="build.major.number" type="int" operation="+" value="1" pattern="00" />
+    <entry key="build.minor.number" type="int" value="0" pattern="00" />
+    <entry key="build.revision.number" type="int" value="0" pattern="00" />
+  </propertyfile>
+</target>
+
+<target name="all">
+  <propertyfile file="version.properties">
+    <entry key="build.major.number" type="int" operation="+" value="1" pattern="00" />
+    <entry key="build.minor.number" type="int" operation="+" value="1" pattern="00" />
+    <entry key="build.revision.number" type="int" operation="+" value="1" pattern="00" />
+  </propertyfile>
+</target>
+
+</project>
+
