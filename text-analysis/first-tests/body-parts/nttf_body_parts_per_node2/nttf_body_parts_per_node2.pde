@@ -7,21 +7,20 @@
  *
  *    P-2.0b6
  *    created: fjenett - 2011-01
- *    updated: fjenett 20121116
+ *    updated: mbaer   - 20121204
  */
  
- // using Wordle spinoff by Jonathan Feinberg:
+// using Wordle spinoff by Jonathan Feinberg:
 // https://github.com/jdf/cue.language
 import cue.lang.*;
 import java.util.Map.Entry;
-
-import java.util.*;
 
 BodyPartCount[] partList;
 XML srcXML;
 String nttf;
 
 NodeElement[] nodeList;
+String[] bodyParts;
 
 float graphHeight = 400;
  
@@ -31,7 +30,7 @@ float graphHeight = 400;
      smooth();
      noLoop();
      
-     String[] bodyParts = loadStrings("body-parts.txt");
+     bodyParts = loadStrings("body-parts.txt");
      
      srcXML = null;
      try {
@@ -61,8 +60,9 @@ float graphHeight = 400;
          
          
      }
+     nttf = nttf.toLowerCase();
      
-     //println(nttf);
+     //println("\n" + nttf);
      
      //nttf = join( loadStrings( "NTTF_sequenced.txt" ), "\n" ).toLowerCase();
      
@@ -79,24 +79,22 @@ float graphHeight = 400;
         words.note(w);
     }
     
-    partList = new BodyPartCount[0];
+    partList = countBodyParts( words );
     
-    for ( String part : bodyParts )
-    {
-        int c = words.getCount( part );
-        if ( c > 0 )
-        {
-            int idx = -1;
-            int[] positions = new int[0];
-            while ( (idx = nttf.indexOf( part, idx+1 )) != -1 )
-            {
-                positions = append( positions, idx );
-            }
-            partList = (BodyPartCount[])append( partList, new BodyPartCount(part, c, positions) );
-        }
+    //Arrays.sort( partList );
+    
+    println("\nnode > body part > count\n");
+    
+    for (NodeElement n : nodeList) {
+      println(n.marker);
+      println("parts\t" + n.numBodyParts);
+      println("rel\t" + n.numBodyPartsRel);
+      
+      for (BodyPartCount b : n.partList) {
+        println("- " + b.part + "\t" + b.count);
+      }
+      println("\n");
     }
-    
-    Arrays.sort( partList );
     
     
     textFont( createFont( "", 10 ) );
@@ -116,7 +114,7 @@ float graphHeight = 400;
      if (i>0) pos0 = nodeList[i-1].text.length();
      NodeElement node = nodeList[i];
      
-     float x = floor(map( offset + pos0, 0, nttf.length(), 50, width-6 ));
+     float x = floor(map( offset + pos0, 0, nttf.length(), 50, width-80 ));
      //float w = map(
      float y = height-graphHeight;
      
@@ -126,8 +124,11 @@ float graphHeight = 400;
      
      pushMatrix();
      translate(x,y);
-     rotate(-HALF_PI);
-     text( node.marker, 10, 5 );
+     rotate(-HALF_PI/2);
+     fill(0,0,255);
+     text( node.numBodyParts, 3, -2 );
+     fill(255,0,0);
+     text( node.marker, 13, -2 );
      popMatrix();
      
      offset += pos0;
@@ -147,12 +148,12 @@ float graphHeight = 400;
         text( part.part, 40, height-y+3 );
         
         stroke( 200 );
-        line( 50, height-y, width-6, height-y );
+        line( 50, height-y, width-80, height-y );
         
         noStroke();
         for ( int pos : part.positions )
         {
-            float x = map( pos, 0, nttf.length(), 50, width-6 );
+            float x = map( pos, 0, nttf.length(), 50, width-80 );
             ellipse( x, height-y, 4, 4 );
         }
         
