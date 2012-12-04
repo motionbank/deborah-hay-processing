@@ -27,8 +27,12 @@
  import org.jbox2d.dynamics.joints.*;
  import org.jbox2d.dynamics.contacts.*;
  
+ import java.util.*;
+ import java.util.regex.*;
+ 
  Physics physics;
  PhraseNet net;
+ 
  
 static String textFile = "NTTF_sequenced.txt";
  
