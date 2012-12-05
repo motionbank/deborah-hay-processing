@@ -1,8 +1,9 @@
-BodyPartCount[] countBodyParts( Counter<String> _words ) {
-  
-  BodyPartCount[] partList = new BodyPartCount[0];
-  
-  for ( String part : bodyParts )
+
+BodyPartCount[] countBodyParts( Counter<String> _words ) 
+{
+    BodyPartCount[] partList = new BodyPartCount[0];
+
+    for ( String part : bodyParts )
     {
         int c = _words.getCount( part );
         if ( c > 0 )
@@ -18,3 +19,4 @@ BodyPartCount[] countBodyParts( Counter<String> _words ) {
     }
     return partList;
 }
+
