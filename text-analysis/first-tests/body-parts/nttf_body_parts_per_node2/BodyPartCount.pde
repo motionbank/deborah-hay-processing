@@ -62,5 +62,10 @@ implements Comparable
 
         return d;
     }
+    
+    public String toString ()
+    {
+        return "BodyPartCount { part: "+part+", count: "+count+" }";
+    }
 }
 

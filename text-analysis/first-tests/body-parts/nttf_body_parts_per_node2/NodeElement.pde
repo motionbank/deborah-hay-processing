@@ -36,6 +36,7 @@ class NodeElement {
         this.partList = countBodyParts( this.words );
 
         for ( BodyPartCount b : partList ) {
+            println( b );
             numBodyParts += b.count;
         }
 
