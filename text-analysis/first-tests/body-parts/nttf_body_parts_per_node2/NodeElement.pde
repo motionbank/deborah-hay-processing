@@ -32,16 +32,17 @@ class NodeElement {
         for ( String w : new WordIterator(this.text) ) {
             this.words.note(w);
         }
+        
+        
+        this.partList = countBodyParts( this.text );
 
-        this.partList = countBodyParts( this.words );
-
-        for ( BodyPartCount b : partList ) {
+        for ( BodyPartCount b : this.partList ) {
             println( b );
             numBodyParts += b.count;
         }
 
         numBodyPartsRel = numBodyParts / float(text.length());
-
+        
         //Arrays.sort( partList );
     }
 }

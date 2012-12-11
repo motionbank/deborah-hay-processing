@@ -67,6 +67,7 @@ void setup ()
     nttf = nttf.toLowerCase();
     
     nttfLength = nttf.length();
+    nttfLength = split(nttf, " ").length;
 
     //println("\n" + nttf);
 
@@ -85,7 +86,7 @@ void setup ()
         words.note(w);
     }
 
-    partList = countBodyParts( words );
+    partList = countBodyParts( nttf );
 
     //Arrays.sort( partList );
 
@@ -117,10 +118,10 @@ void draw ()
     for (int i=0; i<nodeList.length; i++) {
 
         int pos0 = 0;
-        if (i>0) pos0 = nodeList[i-1].text.length();
+        if (i>0) pos0 = split(nodeList[i-1].text, " ").length;
         NodeElement node = nodeList[i];
 
-        float x = floor(map( offset + pos0, 0, nttfLength, 50, width-80 ));
+        float x = map( offset + pos0, 0, nttfLength, 50, width-80 );
         //float w = map(
         float y = height-graphHeight;
 
@@ -147,7 +148,7 @@ void draw ()
     textAlign( RIGHT );
 
     float ys = graphHeight/partList.length;
-    float y = 18;
+    float y = graphHeight/partList.length/2;
     for ( BodyPartCount part : partList )
     {
         noStroke();
