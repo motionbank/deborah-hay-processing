@@ -35,6 +35,7 @@ BodyPartCount[] countBodyParts( String _text )
                 positions = append( positions, idx );
             }
             */
+            
             _partList = (BodyPartCount[])append( _partList, new BodyPartCount(part, c, positions) );
         }
     }
