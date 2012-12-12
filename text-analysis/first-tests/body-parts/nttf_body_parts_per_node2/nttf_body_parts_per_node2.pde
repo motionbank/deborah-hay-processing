@@ -16,6 +16,7 @@ import cue.lang.*;
 import java.util.Map.Entry;
 
 import java.util.*;
+import java.io.*;
 
 XML srcXML;
 String nttf;
@@ -33,8 +34,13 @@ void setup ()
     smooth();
     noLoop();
     
-    bodyParts = loadStrings("body-parts.txt");
-
+    bodyParts = porterStemWordList(loadStrings("body-parts.txt"));
+    
+    println("body parts stem: ");
+    for (String part : bodyParts) {
+      println("\t"+part);
+    }
+  
     srcXML = null;
     try {
         srcXML = new XML( this, "NTTF_nodes_2.xml" );
@@ -56,6 +62,9 @@ void setup ()
         println( child.getChild("marker").getContent() );
         String m = child.getChild("marker").getContent();
         String t = child.getChild("text").getContent();
+        
+        t = join(porterStemWordList( split(t, " ") ), " ");
+        
         int startIndex = 0;
         if (i>0) startIndex = nodeList[i-1].endIndex + 1;
 
