@@ -7,13 +7,13 @@
  *    fjenett 20121221
  */
 
-import static org.jvnet.inflector.Noun.pluralOf; // static functions can be imported in newer Java versions
+import org.jvnet.inflector.*;
 
 void setup() 
 {
-    println( pluralOf("hand") );
-    println( pluralOf("leg") );
-    println( pluralOf("chair") );
+    println( Noun.pluralOf("hand") );
+    println( Noun.pluralOf("leg") );
+    println( Noun.pluralOf("chair") );
 
     noLoop();
 }
