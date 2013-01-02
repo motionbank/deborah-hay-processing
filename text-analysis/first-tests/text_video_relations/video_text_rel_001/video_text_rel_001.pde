@@ -185,7 +185,7 @@ void initData() {
 
       float eventDur = (eventLoc1 - eventLoc0);
       
-      /*
+      
       println(evt.title);
       
       println("eha: " + evt.getHappenedAt().getTime());
@@ -195,7 +195,7 @@ void initData() {
       println("edu: " + eventDur);
       println("loc0: " + eventLoc0);
       println("loc1: " + eventLoc1 + "\n");
-      */
+      
        
       videoSegments.add( new VideoSegment( evt, eventDur ) );
     }
@@ -218,9 +218,9 @@ void initData() {
       TextSegment tSeg = textSegments.get(i);
       VideoSegment vSeg = videoSegments.get(i);
       //println(tSeg.text);
-      println(tSeg.marker);
-      println("t\tv");
-      println( tSeg.relLength() + "\t" + vSeg.relLength() + "\n");
+      //println(tSeg.marker);
+      //println("t\tv");
+      //println( tSeg.relLength() + "\t" + vSeg.relLength() + "\n");
       
       total += vSeg.relLength();
       
