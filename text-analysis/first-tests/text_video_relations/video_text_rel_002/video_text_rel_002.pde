@@ -73,9 +73,9 @@ void draw ()
       TextSegment tSeg  = textSegments.get(i);
       VideoSegment vSeg = videoSegments.get(i);
       
-      float segHeight = (height-40)/float(textSegments.length()-1);
+      float segHeight = (height-100)/float(textSegments.length()-1);
       
-      float y = i * segHeight + 20;
+      float y = i * segHeight + 80;
       float x = 300;
       
       pushStyle();
@@ -106,14 +106,20 @@ void draw ()
       
       popStyle();
     }
-    textAlign( LEFT );
+    textAlign( RIGHT );
     
     fill(255,0,0);
-    text( "text", width-50, 20);
+    text( "text", width-50, 30);
     
     fill(0,0,255);
-    text( "video", width-50, 31);
+    text( "video", width-50, 41);
     
+    pushStyle();
+    textAlign( LEFT );
+    fill(0);
+    textSize(30);
+    text(video.title, 50, 40 );
+    popStyle();
     
     setupFinished = false;
     

@@ -2,16 +2,26 @@
 class VideoSegmentList {
   
   VideoSegment[] segments;
+  org.piecemaker.models.Event[] sceneEvents;
 
   VideoSegmentList( org.piecemaker.models.Event[] _events ) {
     
-    segments = new VideoSegment[0];
+    this.sceneEvents = new org.piecemaker.models.Event[0];
     
     // EVENTS
     for (int i=0; i<_events.length; i++) {
       org.piecemaker.models.Event evt = _events[i];
-  
+      
       if (evt.getEventType().equals("scene")) {
+        sceneEvents = (org.piecemaker.models.Event[]) append( sceneEvents, evt );
+      }
+    }
+    
+    segments = new VideoSegment[sceneEvents.length];
+    
+    for (int i=0; i<sceneEvents.length; i++) {
+      org.piecemaker.models.Event evt = sceneEvents[i];
+      
         long vidHappened = video.getHappenedAt().getTime();
         float vidDuration = video.getDuration()*1000;
         //float vidDuration = events[events.length-1].getHappenedAt().getTime() - vidHappened;
@@ -24,7 +34,7 @@ class VideoSegmentList {
         // next event
         float eventLoc1 = 0;
         //if (i<events.length-1) eventLoc1 = map( events[i+1].getHappenedAt().getTime() - video.getHappenedAt().getTime(), 0, video.getDuration()*1000, 0, 1 );
-        if (i<_events.length-1) eventLoc1 = (_events[i+1].getHappenedAt().getTime() - vidHappened) / vidDuration;
+        if (i<sceneEvents.length-1) eventLoc1 = (sceneEvents[i+1].getHappenedAt().getTime() - vidHappened) / vidDuration;
         else eventLoc1 = 1;
   
         float eventDur = eventLoc1 - eventLoc0;
@@ -41,8 +51,7 @@ class VideoSegmentList {
         println("loc1: " + eventLoc1 + "\n");
         */
          
-        this.add( new VideoSegment( evt, eventDur ) );
-      }
+        segments[i] = new VideoSegment( evt, eventDur );
     }
   }
   
