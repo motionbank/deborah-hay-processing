@@ -116,6 +116,8 @@ void draw ()
     
     
     setupFinished = false;
+    
+    // cycles through all videos in videoIDs
     /*
     saveFrame("#######_" + video.title + ".png");
     loading = true;
@@ -178,45 +180,7 @@ void loadXML() {
 
 void initData() {
   
-  videoSegments = new VideoSegmentList();
-
-  // EVENTS
-  for (int i=0; i<events.length; i++) {
-    org.piecemaker.models.Event evt = events[i];
-
-    if (evt.getEventType().equals("scene")) {
-      long vidHappened = video.getHappenedAt().getTime();
-      float vidDuration = video.getDuration()*1000;
-      //float vidDuration = events[events.length-1].getHappenedAt().getTime() - vidHappened;
-      
-      
-      // current event
-      //float eventLoc0 = map( evt.getHappenedAt().getTime() - video.getHappenedAt().getTime(), 0, video.getDuration()*1000, 0, 1 );
-      float eventLoc0 = (evt.getHappenedAt().getTime() - vidHappened) / vidDuration;
-
-      // next event
-      float eventLoc1 = 0;
-      //if (i<events.length-1) eventLoc1 = map( events[i+1].getHappenedAt().getTime() - video.getHappenedAt().getTime(), 0, video.getDuration()*1000, 0, 1 );
-      if (i<events.length-1) eventLoc1 = (events[i+1].getHappenedAt().getTime() - vidHappened) / vidDuration;
-      else eventLoc1 = 1;
-
-      float eventDur = eventLoc1 - eventLoc0;
-      
-      
-      println(evt.title);
-      /*
-      println("eha: " + evt.getHappenedAt().getTime());
-      println("vha: " + vidHappened);
-      println("dif: " + (evt.getHappenedAt().getTime() - vidHappened));
-      println("vdu: " + vidDuration);
-      println("edu: " + eventDur);
-      println("loc0: " + eventLoc0);
-      println("loc1: " + eventLoc1 + "\n");
-      */
-       
-      videoSegments.add( new VideoSegment( evt, eventDur ) );
-    }
-  }
+  videoSegments = new VideoSegmentList( events );
   
   /*
     for (TextSegment el : textSegments) {
@@ -226,7 +190,7 @@ void initData() {
    
   float total = 0;
   
-  println( textSegments.length() + " " + videoSegments.length() );
+  println( "----> " + textSegments.length() + " " + videoSegments.length() );
       
   if ( textSegments.length() == videoSegments.length() ) {
     println("events loaded");
