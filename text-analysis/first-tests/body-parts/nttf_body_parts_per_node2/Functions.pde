@@ -11,9 +11,13 @@ BodyPartCount[] countBodyParts( String _text )
     }
     
 
-    for ( String part : bodyParts )
+    for (int i=0; i<bodyPartList.length(); i++)
     {
-        int c = _words.getCount( part );
+        BodyPart part = bodyPartList.get(i);
+        
+        int c = _words.getCount( part.singular );
+        if (c == 0) _words.getCount( part.plural );
+        
         if ( c > 0 )
         {
             int idx = 0;
@@ -21,7 +25,7 @@ BodyPartCount[] countBodyParts( String _text )
             
             
             for (String word : new WordIterator(_text)) {
-              if (part.equals(word)) {
+              if (part.isPart(word)) {
                 positions = append( positions, idx );
                 println(idx);
               }
@@ -36,7 +40,7 @@ BodyPartCount[] countBodyParts( String _text )
             }
             */
             
-            _partList = (BodyPartCount[])append( _partList, new BodyPartCount(part, c, positions) );
+            _partList = (BodyPartCount[])append( _partList, new BodyPartCount(part.plural, c, positions) );
         }
     }
     return _partList;

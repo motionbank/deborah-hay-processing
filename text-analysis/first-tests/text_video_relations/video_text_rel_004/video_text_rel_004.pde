@@ -41,12 +41,12 @@ boolean loading = true;
 String loadingMessage = "Loading pieces ...";
 
 // missing markers at the start, currently only for juliette
-int skipStartMarker = 0;
+int skipStartMarker = 2;
 
 int[] videoIDs = {
-  232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
-  //249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | two markers missing at start
-  256, 257, 258, 259, 260, 261, 262  // janine       14 - 20
+  //232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
+  249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start
+  //256, 257, 258, 259, 260, 261, 262  // janine       14 - 20
 }; 
 
 int currentID = videoIDs[idx];
@@ -74,62 +74,110 @@ void draw ()
   {
     background( 255 );
     
+    float segHeight = 20;
+    float x = 0;
+    float y = 0;
+    
     for (int i=0; i<textSegments.length(); i++) {
         
         TextSegment tSeg  = textSegments.get(i);
         
-        float segHeight = (height-100)/float(textSegments.length()-1);
+        //float segHeight = (height-100)/float(textSegments.length()-1);
         
-        float y = i * segHeight + 80;
-        float x = 300;
+        y = i * segHeight + 120;
+        x = width/3;
         
         pushStyle();
         
         noStroke();
         
+        if (i%2 == 1) {
+          fill(240);
+          rect(50,y, width, segHeight);
+        }
+        
         // marker
         fill(0);
         textAlign(LEFT);
-        text(tSeg.marker, x - 250, y);
+        text(tSeg.marker, 50, y+13);
         
         // text seg
         fill(255,0,0);
         float w = 700*tSeg.relLength();
-        float h = floor(segHeight/3) - 1;
-        rect(x, y-h, w, h);
+        //float h = floor(segHeight/3) - 1;
+        float h = segHeight - 2;
+        rect(x - w - 5, y+1, w, h);
         textAlign(RIGHT);
-        text(tSeg.relLength(), x - 10, y);
+        //text(tSeg.relLength(), 100, y);
         
       if ( i >= skipStartMarker ) {
         VideoSegment vSeg = videoSegments.get(i - skipStartMarker);
         
         // video seg
-        y += h + 1;
+        //y += h + 1;
         fill(0,0,255);
         w = 700*vSeg.relLength();
-        rect(x, y-h, w, h);
+        rect(x, y+1, w, h);
         textAlign(RIGHT);
-        text(vSeg.relLength(), x - 10, y);
+        //text(vSeg.relLength(), x - 10, y);
+        
+        // difference
+        w = 700*(vSeg.relLength()-tSeg.relLength());
+        x = width*2/3;
+        if (w>0) fill(0,0,255);
+        else fill(255,0,0);
+        rect(x,y+1, w,h);
+      } 
+      else {
+        // difference pseudo
+        w = -700*tSeg.relLength();
+        x = width*2/3;
+        fill(255,0,0);
+        rect(x,y+1, w,h);
       }
       
-      stroke(200);
-      line(x-250,y+segHeight/6, width, y+segHeight/6);
+      //stroke(200);
+      //line(50,y, width, y);
       
       popStyle();
     }
+    
+    stroke(0);
+    strokeWeight(3);
+    line(50,117,width,117);
+    
+    
+    
     textAlign( RIGHT );
     
     fill(255,0,0);
-    text( "text", width-50, 30);
+    text( "text", width/3-5, 110);
     
+    textAlign( LEFT );
     fill(0,0,255);
-    text( "video", width-50, 41);
+    text( "video", width/3, 110);
+    
+    textAlign( LEFT );
+    fill(0);
+    text( "MARKER", 50, 90);
+    textAlign(CENTER);
+    text( "RELATIVE LENGTH", width/3-3, 90);
+    text( "DIFFERENCE", width*2/3, 90);
+    
+    y = segHeight * textSegments.length() + 150;
+    x = width/3;
+    fill(100);
+    textAlign( LEFT );
+    text("Relation of the individual \ntext and video segments \nto the total length of the \nvideo and text respectively", x,y);
+    x = width*2/3;
+    text("Defference between the \nlength of the matching \ntext and video segments", x,y);
+
     
     pushStyle();
     textAlign( LEFT );
     fill(0);
     textSize(30);
-    text(video.title, 50, 40 );
+    text(video.title, 48, 40 );
     popStyle();
     
     setupFinished = false;
@@ -144,8 +192,7 @@ void draw ()
         currentID = videoIDs[idx];
         loadVideo(currentID);
       }
-    }
-    
+    }    
     
     //else api.loadPieces( api.createCallback( "piecesLoaded" ) );
     
