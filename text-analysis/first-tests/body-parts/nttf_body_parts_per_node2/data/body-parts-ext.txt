@@ -1,0 +1,198 @@
+abdomen,abdomens
+adam's apple,adam's apples
+adenoids,adenoidss
+adrenal gland,adrenal glands
+adrenals,adrenalss
+anatomy,anatomies
+ankle,ankles
+anus,anuses
+appendix,appendixes
+arch,arches
+arm,arms
+artery,arteries
+#back,#backs
+ball of the foot,balls of the foot
+beard,beards
+belly,bellies
+belly button,belly buttons
+big toe,big toes
+bladder,bladders
+blood,bloods
+blood vessels,blood vesselss
+blue-eyed,blue-eyeds
+body,bodies
+bone,bones
+bottom,bottoms
+brain,brains
+breast,breasts
+bum,bums
+buttocks,buttockss
+calf,calves
+calves,calveses
+capillary,capillaries
+carpal,carpals
+cartilage,cartilages
+cell,cells
+cervical vertebrae,cervical vertebraes
+cheek,cheeks
+chest,chests
+chin,chins
+circulatory system,circulatory systems
+clavicle,clavicles
+clitoris,clitorises
+coccyx,coccyxes
+collar bone,collar bones
+diaphragm,diaphragms
+digestive system,digestive systems
+ear,ears
+ear lobe,ear lobes
+elbow,elbows
+endocrine system,endocrine systems
+esophagus,esophaguses
+eye,eyes
+eyeball,eyeballs
+eyebrow,eyebrows
+eyelash,eyelashes
+eyelid,eyelids
+face,faces
+fallopian tubes,fallopian tubeses
+fat,fats
+feet,feets
+femur,femurs
+fibula,fibulas
+filling,fillings
+finger,fingers
+fingernail,fingernails
+fist,fists
+follicle,follicles
+foot,feet
+forearm,forearms
+forefinger,forefingers
+forehead,foreheads
+gall bladder,gall bladders
+gallbladder,gallbladders
+glands,glandss
+groin,groins
+gum,gums
+hair,hairs
+hand,hands
+head,heads
+heart,hearts
+heel,heels
+hip,hips
+humerus,humeruses
+immune system,immune systems
+index finger,index fingers
+instep,insteps
+intestines,intestineses
+iris,irises
+jaw,jaws
+kidney,kidneys
+knee,knees
+knuckle,knuckles
+larynx,larynxes
+lash,lashes
+leg,legs
+ligament,ligaments
+lip,lips
+little finger,little fingers
+little toe,little toes
+liver,livers
+lobe,lobes
+lower leg,lower legs
+lumbar vertebrae,lumbar vertebraes
+lung,lungs
+lymph node,lymph nodes
+mandible,mandibles
+metacarpal,metacarpals
+metatarsal,metatarsals
+middle finger,middle fingers
+molar,molars
+moustache,moustaches
+mouth,mouths
+muscle,muscles
+nail,nails
+navel,navels
+neck,necks
+nerves,nerveses
+nipple,nipples
+nose,noses
+nostril,nostrils
+organs,organss
+ovaries,ovarieses
+ovary,ovaries
+palm,palms
+pancreas,pancreass
+parathyroids,parathyroidss
+patella,patellas
+pelvis,pelvises
+penis,penises
+phalanges,phalangeses
+pharynx,pharynxes
+pinky,pinkies
+pituitary,pituitaries
+pore,pores
+prostate,prostates
+pubic hair,pubic hairs
+pupil,pupils
+radius,radiuses
+rectum,rectums
+red blood cells,red blood cellss
+respiratory system,respiratory systems
+rib,ribs
+ribcage,ribcages
+ring finger,ring fingers
+sacrum,sacrums
+scalp,scalps
+scapula,scapulas
+scrotum,scrotums
+senses,senseses
+shin,shins
+shoulder,shoulders
+shoulder blade,shoulder blades
+skeleton,skeletons
+skin,skins
+skull,skulls
+sole,soles
+spinal column,spinal columns
+spinal cord,spinal cords
+spine,spines
+spleen,spleens
+sternum,sternums
+stomach,stomaches
+tarsal,tarsals
+teeth,teeths
+tendon,tendons
+testes,testes
+testicle,testicles
+thigh,thighs
+thorax,thoraxes
+throat,throats
+thumb,thumbs
+thymus,thymuses
+thyroid,thyroids
+tibia,tibias
+tissue,tissues
+toe,toes
+toenail,toenails
+tongue,tongues
+tonsils,tonsilss
+tooth,teeth
+torso,torsoes
+trachea,tracheas
+ulna,ulnas
+umbilicus,umbilicuses
+underarm,underarms
+upper arm,upper arms
+ureter,ureters
+urethra,urethras
+urinary system,urinary systems
+uterus,uteruses
+uvula,uvulas
+vagina,vaginas
+vein,veins
+vertebra,vertebrae
+vulva,vulvas
+waist,waists
+white blood cells,white blood cellss
+wrist,wrists

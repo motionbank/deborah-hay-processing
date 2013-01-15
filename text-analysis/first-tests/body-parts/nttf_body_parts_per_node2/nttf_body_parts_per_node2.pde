@@ -21,6 +21,7 @@ import java.io.*;
 XML srcXML;
 String nttf;
 String[] bodyParts;
+BodyPartList bodyPartList;
 
 NodeElement[] nodeList;
 BodyPartCount[] partList;
@@ -34,12 +35,10 @@ void setup ()
     smooth();
     noLoop();
     
-    bodyParts = porterStemWordList(loadStrings("body-parts.txt"));
-    
-    println("body parts stem: ");
-    for (String part : bodyParts) {
-      println("\t"+part);
-    }
+    //bodyParts = porterStemWordList(loadStrings("body-parts-ext.txt"));
+    bodyParts = loadStrings("body-parts-ext.txt");
+    //println("body parts stem: ");
+    bodyPartList = new BodyPartList(bodyParts);
   
     srcXML = null;
     try {
@@ -63,7 +62,7 @@ void setup ()
         String m = child.getChild("marker").getContent();
         String t = child.getChild("text").getContent();
         
-        t = join(porterStemWordList( split(t, " ") ), " ");
+        //t = join(porterStemWordList( split(t, " ") ), " ");
         
         int startIndex = 0;
         if (i>0) startIndex = nodeList[i-1].endIndex + 1;
