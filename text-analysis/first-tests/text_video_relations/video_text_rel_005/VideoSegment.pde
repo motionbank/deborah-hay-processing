@@ -80,8 +80,34 @@ class VideoSegmentList {
         float[] f = parseFloat(split(pathData[j], " "));
         positions3D[j] = new PVector(f[0],f[1],f[2]);
       }
+      
+      println("3- positions " + positions3D.length);
     }
+    
+    
+    //-------------------------------------------------------------
+    // POSITION3D PER SEGMENT
+    
+    int num = 0;
+    int i0 = 0;
+    
+    for (int i=0; i<segments.length; i++) {
+      VideoSegment s = segments[i];
+      int i1 = i0 + ceil(s.duration * positions3D.length);
+      if (i == segments.length-1) i1 = positions3D.length-1;
+      
+      for (int j=i0; j<=i1; j++) {
+        s.addPosition3D( positions3D[j] );
+      }
+      num += s.positions3D.length;
+      
+      println(i0 + "\t" + i1);
+      
+      i0 = i1 + 1;
+    }
+    println("-- positions " + num);
   }
+  
   
   void add (VideoSegment _v) {
     segments = (VideoSegment[]) append( segments, _v );
