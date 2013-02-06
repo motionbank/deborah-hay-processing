@@ -39,13 +39,13 @@ VideoSegmentList videoSegments;
 int idx = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = true;
+boolean saveAllFrames = false;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
 
 // missing markers at the start, currently only for juliette
-int skipStartMarker = 2;
+int skipStartMarker = 0;
 
 int[] videoIDs = {
   //232, 233, 234, 236, 235, 247, 248, // ros           0 -  6

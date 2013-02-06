@@ -15,7 +15,7 @@ class VideoSegmentList {
     for (int i=0; i<_events.length; i++) {
       org.piecemaker.models.Event evt = _events[i];
       
-      if (evt.getEventType().equals("scene") || evt.getEventType().equals("scene_fake")) {
+      if (evt.getEventType().equals("scene") || evt.getEventType().equals("scenefaux")) {
         // 
         sceneEvents = (org.piecemaker.models.Event[]) append( sceneEvents, evt );
       }
