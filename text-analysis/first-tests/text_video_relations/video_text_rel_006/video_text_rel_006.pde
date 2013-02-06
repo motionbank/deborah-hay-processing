@@ -81,7 +81,7 @@ void draw ()
     float segHeight = 20;
     float x = 0;
     float y = 0;
-    float sw = width/8;
+    float sw = width/5;
     float sh = textSegments.length() * segHeight;
     
     for (int i=0; i<textSegments.length(); i++) {
@@ -107,13 +107,14 @@ void draw ()
         textAlign(LEFT);
         text(tSeg.marker, 50, y+13);
         
+        float h = segHeight - 2;
+        
         // text seg
-        x = sw*2;
+        x = sw;
         fill(255,0,0);
         float w = 700*tSeg.relLength();
         //float h = floor(segHeight/3) - 1;
-        float h = segHeight - 2;
-        rect(x, y+1, w, h);
+        rect(x, y+1, w, (h/3)-1);
         textAlign(RIGHT);
         //text(tSeg.relLength(), 100, y);
         
@@ -122,45 +123,45 @@ void draw ()
         
         // video seg
         //y += h + 1;
-        x = sw*3;
+        x = sw;
         fill(0,0,255);
         w = 700*vSeg.relLength();
-        rect(x, y+1, w, h);
+        rect(x, y+1 + (h/3), w, (h/3)-1);
         textAlign(RIGHT);
         //text(vSeg.relLength(), x - 10, y);
         
-        // difference
-        w = 700*(vSeg.relLength()-tSeg.relLength());
-        x = sw*5;
-        if (w>0) fill(0,0,255);
-        else fill(255,0,0);
-        rect(x,y+1, w,h);
+        // traveled total
+        x = sw;
+        w = 700*vSeg.traveled - vSeg.relLength();
+        fill(0,255,0);
+        rect(x, y+1 + (h/3*2), w, (h/3)-1);
         
         // traveled vid diff
-        x = sw*6;
+        x = sw*3;
         w = 700*( vSeg.traveled - vSeg.relLength() );
         if (w>0) fill(0,255,0);
         else fill(0,0,255);
         rect(x,y+1, w,h);
         
         // traveled text diff
-        x = sw*7;
+        x = sw*4;
         w = 700*( vSeg.traveled - tSeg.relLength() );
         if (w>0) fill(0,255,0);
         else fill(255,0,0);
         rect(x,y+1, w,h);
         
-        // traveled total
-        x = sw*4;
-        w = 700*vSeg.traveled - vSeg.relLength();
-        fill(0,255,0);
+        // difference
+        w = 700*(vSeg.relLength()-tSeg.relLength());
+        x = sw*2;
+        if (w>0) fill(0,0,255);
+        else fill(255,0,0);
         rect(x,y+1, w,h);
         
       } 
       else {
         // difference pseudo
         w = -700*tSeg.relLength();
-        x = sw*5;
+        x = sw*2;
         fill(255,0,0);
         rect(x,y+1, w,h);
       }
@@ -185,7 +186,7 @@ void draw ()
     
     
     pushMatrix();
-    translate(500,40);
+    translate(sw,90);
     textAlign( LEFT );
     fill(255,0,0);
     text( "text", 0, 0);
@@ -199,12 +200,9 @@ void draw ()
     fill(0);
     text( "MARKER", 50, 90);
     textAlign(CENTER);
-    text( "TEXT", sw*2, 90);
-    text( "VIDEO", sw*3, 90);
-    text( "DISTANCE", sw*4, 90);
-    text( "TEXT - VIDEO", sw*5, 90);
-    text( "VIDEO - DISTANCE", sw*6, 90);
-    text( "TEXT - DISTANCE", sw*7, 90);
+    text( "TEXT - VIDEO", sw*2, 90);
+    text( "VIDEO - DISTANCE", sw*3, 90);
+    text( "TEXT - DISTANCE", sw*4, 90);
     
     /*
     y = segHeight * textSegments.length() + 150;
@@ -227,7 +225,7 @@ void draw ()
     
     // cycles through all videos in videoIDs
     if (saveAllFrames) {
-      saveFrame(video.title + "_#####.png");
+      saveFrame(video.title + "_#####_2.png");
       loading = true;
       idx++;
       if (idx == videoIDs.length) exit();
