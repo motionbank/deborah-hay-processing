@@ -35,8 +35,8 @@ void setup ()
     smooth();
     noLoop();
     
-    //bodyParts = porterStemWordList(loadStrings("body-parts-ext.txt"));
-    bodyParts = loadStrings("body-parts-ext.txt");
+    bodyParts = porterStemWordList(loadStrings("body-parts-ext.txt"));
+    //bodyParts = loadStrings("body-parts-ext.txt");
     //println("body parts stem: ");
     bodyPartList = new BodyPartList(bodyParts);
   
@@ -62,7 +62,7 @@ void setup ()
         String m = child.getChild("marker").getContent();
         String t = child.getChild("text").getContent();
         
-        //t = join(porterStemWordList( split(t, " ") ), " ");
+        t = join(porterStemWordList( split(t, " ") ), " ");
         
         int startIndex = 0;
         if (i>0) startIndex = nodeList[i-1].endIndex + 1;

@@ -22,8 +22,8 @@ class BodyPartList {
         s = part;
         p = part;
       }
-      //parts[i] = new BodyPart(porterStemWord(s),porterStemWord(p));
-      parts[i] = new BodyPart(s,p);
+      parts[i] = new BodyPart(porterStemWord(s),porterStemWord(p));
+      //parts[i] = new BodyPart(s,p);
     }
   }
   
