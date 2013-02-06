@@ -10,7 +10,6 @@ appendix,appendixes
 arch,arches
 arm,arms
 artery,arteries
-#back,#backs
 ball of the foot,balls of the foot
 beard,beards
 belly,bellies
