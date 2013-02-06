@@ -29,6 +29,7 @@ int nttfLength;
 PieceMakerApi api;
 Piece piece;
 Video video;
+float traveledTotal = 0;
 Video[] videos;
 org.piecemaker.models.Event[] events;
 VideoSegmentList videoSegments;
@@ -48,7 +49,7 @@ int skipStartMarker = 0;
 int[] videoIDs = {
   232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
   //249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start
-  256, 257, 258, 259, 260, 261, 262  // janine       14 - 20
+  256, /*257,*/ 258, 259, 260, 261//, 262  // janine       14 - 20
 }; 
 
 int currentID = videoIDs[idx];
@@ -79,7 +80,7 @@ void draw ()
     float segHeight = 20;
     float x = 0;
     float y = 0;
-    float sw = width/4;
+    float sw = width/7;
     float sh = textSegments.length() * segHeight;
     
     for (int i=0; i<textSegments.length(); i++) {
@@ -89,7 +90,7 @@ void draw ()
         //float segHeight = (height-100)/float(textSegments.length()-1);
         
         y = i * segHeight + 120;
-        x = sw;
+        x = sw*2;
         
         pushStyle();
         
@@ -127,10 +128,31 @@ void draw ()
         
         // difference
         w = 700*(vSeg.relLength()-tSeg.relLength());
-        x = sw*2;
+        x = sw*3;
         if (w>0) fill(0,0,255);
         else fill(255,0,0);
         rect(x,y+1, w,h);
+        
+        // traveled vid diff
+        x = sw*5;
+        w = 700*( vSeg.traveled - vSeg.relLength() );
+        if (w>0) fill(0,255,0);
+        else fill(0,0,255);
+        rect(x,y+1, w,h);
+        
+        // traveled text diff
+        x = sw*6;
+        w = 700*( vSeg.traveled - tSeg.relLength() );
+        if (w>0) fill(0,255,0);
+        else fill(255,0,0);
+        rect(x,y+1, w,h);
+        
+        // traveled total
+        x = sw*4;
+        w = 700*vSeg.traveled - vSeg.relLength();
+        fill(0,255,0);
+        rect(x,y+1, w,h);
+        
       } 
       else {
         // difference pseudo
@@ -159,28 +181,33 @@ void draw ()
     
     
     
-    textAlign( RIGHT );
-    
-    fill(255,0,0);
-    text( "text", sw-5, 110);
-    
+    pushMatrix();
+    translate(500,40);
     textAlign( LEFT );
+    fill(255,0,0);
+    text( "text", 0, 0);
     fill(0,0,255);
-    text( "video", sw, 110);
+    text( "video", 0, 12);
+    fill(0,255,0);
+    text( "distance", 0, 24);
+    popMatrix();
     
     textAlign( LEFT );
     fill(0);
     text( "MARKER", 50, 90);
     textAlign(CENTER);
-    text( "RELATIVE LENGTH", sw-3, 90);
-    text( "DIFFERENCE", sw*2, 90);
+    text( "RELATIVE LENGTH\nTEXT & VIDEO", sw*2-3, 90);
+    text( "TEXT - VIDEO", sw*3, 90);
+    text( "RELATIVE LENGTH\nDISTANCE", sw*4, 90);
+    text( "DISTANCE - VIDEO", sw*5, 90);
+    text( "DISTANCE - TEXT", sw*6, 90);
     
     y = segHeight * textSegments.length() + 150;
-    x = sw;
+    x = sw*2;
     fill(100);
     textAlign( LEFT );
     text("Relation of the individual \ntext and video segments \nto the total length of the \nvideo and text respectively", x,y);
-    x = sw*2;
+    x = sw*3;
     text("Defference between the \nlength of the matching \ntext and video segments", x,y);
 
     
@@ -263,7 +290,7 @@ void initData() {
    println(el.marker);
    }
    */
-   
+  traveledTotal = 0;
   float total = 0;
   
   println( "----> " + textSegments.length() + " " + videoSegments.length() );

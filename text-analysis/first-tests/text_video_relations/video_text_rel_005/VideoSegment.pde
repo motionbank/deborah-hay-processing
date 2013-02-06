@@ -2,7 +2,7 @@
 class VideoSegmentList {
   
   VideoSegment[] segments;
-  PVector[] positions3D;
+  PVector[] positions;
   org.piecemaker.models.Event[] sceneEvents;
   org.piecemaker.models.Event[] pathEvents;
 
@@ -73,33 +73,36 @@ class VideoSegmentList {
       pathFile = pathFile.substring(0,pathFile.indexOf('"'));
       String[] pathData = loadStrings( "http://lab.motionbank.org/dhay/data/" + pathFile);
       
-      positions3D = new PVector[pathData.length];
-      println("3d positions " + pathData.length);
+      positions = new PVector[pathData.length];
+      println(" positions " + pathData.length);
       
-      for (int j=0; j<positions3D.length; j++) {
+      for (int j=0; j<positions.length; j++) {
         float[] f = parseFloat(split(pathData[j], " "));
-        positions3D[j] = new PVector(f[0],f[1],f[2]);
+        PVector v = new PVector(f[0],f[1],f[2]);
+        positions[j] = v;
+        traveledTotal += v.mag();
       }
       
-      println("3- positions " + positions3D.length);
+      println("3- positions " + positions.length);
     }
     
+    println("total movement " + traveledTotal);
     
     //-------------------------------------------------------------
-    // POSITION3D PER SEGMENT
+    // POSITION PER SEGMENT
     
     int num = 0;
     int i0 = 0;
     
     for (int i=0; i<segments.length; i++) {
       VideoSegment s = segments[i];
-      int i1 = i0 + ceil(s.duration * positions3D.length);
-      if (i == segments.length-1) i1 = positions3D.length-1;
+      int i1 = i0 + ceil(s.duration * positions.length);
+      if (i == segments.length-1) i1 = positions.length-1;
       
       for (int j=i0; j<=i1; j++) {
-        s.addPosition3D( positions3D[j] );
+        s.addPosition( positions[j] );
       }
-      num += s.positions3D.length;
+      num += s.positions.length;
       
       println(i0 + "\t" + i1);
       
@@ -126,10 +129,11 @@ class VideoSegmentList {
 class VideoSegment {
   
   org.piecemaker.models.Event event;
-  PVector[] positions3D = new PVector[0];
+  PVector[] positions = new PVector[0];
   float duration;
   float start;
   float end;
+  float traveled = 0;
   
   VideoSegment( org.piecemaker.models.Event _event, float _dur, float _s, float _e ) {
     this.event = _event;
@@ -139,8 +143,9 @@ class VideoSegment {
     
   }
   
-  void addPosition3D (PVector _p) {
-    this.positions3D = (PVector[]) append( this.positions3D, _p );
+  void addPosition (PVector _p) {
+    this.positions = (PVector[]) append( this.positions, _p );
+    this.traveled += _p.mag() / traveledTotal;
   }
   
   float relLength() {
