@@ -4,8 +4,6 @@
  *    Builds a graph view of the sequence of "scene" markers to
  *    give a sequential view on the performances.
  *
- *    STOPPED WORKING AFTER UPDATING MARKER NAMES, NEEDS FIXING
- *
  *    Discussion:
  *    http://ws.motionbank.org/project/marker-chains
  *
@@ -30,10 +28,13 @@ MySQL db;
 ArrayList<Piece> pieces;
 ArrayList<org.piecemaker.models.Event> events;
 
+final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker";
+
 void setup () {
 
     size( 1000, 1000 );
-    //Interactive.make(this);
+    
+    Interactive.make(this);
     
     textFont( createFont( "Late-Regular", 8 ) );
     

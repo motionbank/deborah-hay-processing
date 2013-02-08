@@ -1,4 +1,3 @@
-final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker";
 
 void initDatabase ()
 {
@@ -39,7 +38,7 @@ void loadData ()
         pieceIds += (pieceIds.equals("")?"":",")+p.getId();
     }
     
-    println( "Piece IDs to load " + pieceIds );
+//    println( "Piece IDs to load " + pieceIds );
     
     ArrayList<String> videoDates = new ArrayList();
     java.text.SimpleDateFormat mysqlDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -76,7 +75,7 @@ void loadData ()
         }
     }
     
-    println( "Videos loaded " + videos.size() );
+//    println( "Videos loaded " + videos.size() );
 //    println( videoDates );
     
     events = new ArrayList();
@@ -92,7 +91,7 @@ void loadData ()
         events.add( e );
     }
     
-    println( "Events " + events.size() );
+//    println( "Events " + events.size() );
 }
 
 void buildChains ()
