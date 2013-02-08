@@ -4,39 +4,141 @@
  *    fjenett 2012-03
  */
  
+ import de.bezier.guido.*;
  import de.bezier.utils.*;
- import de.bezier.data.sql.*;
- //import org.yaml.snakeyaml.*; // http://code.google.com/p/snakeyaml/wiki/Documentation
+ 
+ import org.piecemaker.api.*;
  import org.piecemaker.models.*;
+ import org.piecemaker.collections.*;
+ 
  import processing.pdf.*;
  
  import java.util.*;
 
- MySQL db;
- ArrayList<Piece> pieces;
- ArrayList<org.piecemaker.models.Event> events;
+ //MySQL db;
+// ArrayList<Piece> pieces;
+// ArrayList<Event> events;
+
+ PieceMakerApi api;
+ 
  ArrayList<EventGroup> groups;
+ ArrayList<GraphBar> graph;
+ 
+ ArrayList<VideoTimeCluster> clusters;
+ long recordingsFrom, recordingsTo;
  
  String sketchId;
  
  int eventsPerGroup = -1;
+ boolean loading = true;
+ String loadingMessage = "Loading";
 
  void setup ()
  {
      size( displayWidth-40, 2*displayHeight/3 );
+     
+     Interactive.make(this);
      sketchId = Utils.makeDateTimeName(this);
      
-     initDatabase();
-     loadData();
+    // limit recordings by date
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+    //cal.setTimeZone( java.util.TimeZone.getTimeZone("UTC") );
+    cal.set(2011,3,18,0,0,0); // 3 == April
+    recordingsFrom = cal.getTimeInMillis();
+    cal.set(2011,3,19,0,0,0);
+    recordingsTo = cal.getTimeInMillis();
      
-     beginRecord(PDF, sketchId+".pdf");
-     textFont( createFont( "Lato-Bold", 20 ) );
+     api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" );
+     api.loadVideosForPiece( 3, api.createCallback( "videosLoaded", 3 ) );
  }
  
  void draw ()
  {
      background( 255 );
      
+     if ( loading )
+     {
+         text( loadingMessage, width/2, height/2 );
+     }
+     else
+     {
+         beginRecord(PDF, sketchId+".pdf");
+         textFont( createFont( "Lato-Bold", 20 ) );
+        
+         drawAbsolute();
+         //drawRelative();
+         
+         noLoop();
+         endRecord();
+     }
+ }
+ 
+ void drawRelative ()
+ {
+//     fill( 240 ); stroke( 0 ); strokeWeight( 1 );
+//     rect( 20,20,width-40,height-40 );
+         
+     long maxGroupDuration = Long.MIN_VALUE;
+     long maxEventDuration = Long.MIN_VALUE;
+     
+     graph = new ArrayList();
+     float graphWidth = ((width-40.0)/(eventsPerGroup-1)) / 2;
+     
+     for ( int i = 0; i < eventsPerGroup-1; i++ )
+     {   
+         GraphBar bar = null;
+         if ( graph.size() == i ) {
+             bar = new GraphBar( 
+                 20 + graphWidth/2 + i*2*graphWidth, 
+                 20, graphWidth, 
+                 height-40, 
+                 i+" "+groups.get(0).events.get(i).title 
+                 );
+             graph.add( bar );
+         } else {
+             bar = graph.get( i );
+         }
+             
+         long[] vs = new long[groups.size()];
+         for ( int k = 0, n = groups.size(); k < n; k++ )
+         {
+             EventGroup g = groups.get(k);
+             
+             if ( i >= 0 && i < g.events.size()-1 )
+             {
+                 org.piecemaker.models.Event e = g.events.get(i);
+                 org.piecemaker.models.Event en = g.events.get(i+1);
+                 
+                 long v = en.getHappenedAt().getTime()-e.getHappenedAt().getTime();
+                 
+                 bar.add( v );
+             }
+         }
+     }
+ 
+     for ( EventGroup g : groups ) 
+     {
+         maxGroupDuration = Math.max( maxGroupDuration, g.duration );
+         
+         org.piecemaker.models.Event p = null;
+         for ( org.piecemaker.models.Event e : g.events )
+         {
+             if ( p != null )
+             {
+                 maxEventDuration = Math.max( maxEventDuration, e.getHappenedAt().getTime() - p.getHappenedAt().getTime() );
+             }
+             p = e;
+         }
+     }
+     
+     for ( GraphBar bar : graph )
+     {
+         bar.draw();
+     }
+ }
+ 
+ void drawAbsolute ()
+ {
      fill( 240 ); stroke( 0 ); strokeWeight( 1 );
      rect( 20,20,width-40,height-40 );
      
@@ -139,7 +241,4 @@
          strokeWeight( 2 );
          line( 20.0 + (i+0.5)*we, height-20-v1, 20.0 + (i+0.5)*we, height-20-v2 );
      }
-     
-     noLoop();
-     //endRecord();
  }

@@ -1,15 +1,15 @@
 class EventGroup
 {
-    ArrayList<Event> events;
+    ArrayList<org.piecemaker.models.Event> events;
     
     long startTime = -1, endTime = -1, duration = -1;
     
-    void addEvent ( Event e )
+    void addEvent ( org.piecemaker.models.Event e )
     {
         if ( events == null ) events = new ArrayList();
         events.add( e );
-        Collections.sort( events, new Comparator<Event>(){
-            public int compare( Event e1, Event e2 ) {
+        Collections.sort( events, new Comparator<org.piecemaker.models.Event>(){
+            public int compare( org.piecemaker.models.Event e1, org.piecemaker.models.Event e2 ) {
                 return e1.getHappenedAt().compareTo(e2.getHappenedAt());
             }
         });
