@@ -1,7 +1,9 @@
-/**   
- *    Looking at the "ground truth" data (scenes) for No Time To Fly by Deborah Hay
+/**
+ *    Motion Bank research, http://motionbank.org/
  *
- *    fjenett 2012-03
+ *    P2.0
+ *    created: fjenett 2012-03
+ *    updated: fjenett 20130209
  */
  
  import de.bezier.guido.*;

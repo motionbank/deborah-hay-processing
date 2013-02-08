@@ -39,6 +39,8 @@ void loadData ()
         pieceIds += (pieceIds.equals("")?"":",")+p.getId();
     }
     
+    println( "Piece IDs to load " + pieceIds );
+    
     ArrayList<String> videoDates = new ArrayList();
     java.text.SimpleDateFormat mysqlDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
@@ -60,8 +62,8 @@ void loadData ()
         {
             videoDates.add(String.format(
                 " ( e.happened_at >= \"%s\" AND e.happened_at <= \"%s\" ) ",
-                mysqlDateFormat.format(v.getHappenedAt()),
-                mysqlDateFormat.format(v.getFinishedAt())
+                v.getHappenedAt().getTime() / 1000L,
+                v.getFinishedAt().getTime() / 1000L
             ));
         }
         
@@ -73,6 +75,9 @@ void loadData ()
             }
         }
     }
+    
+    println( "Videos loaded " + videos.size() );
+//    println( videoDates );
     
     events = new ArrayList();
     db.query( 
@@ -86,6 +91,8 @@ void loadData ()
         db.setFromRow(e);
         events.add( e );
     }
+    
+    println( "Events " + events.size() );
 }
 
 void buildChains ()
@@ -120,13 +127,6 @@ void buildChains ()
         }
         
         String t = e.title;
-        boolean isJoySorrow = t.toLowerCase().equals("joy + sorrow");
-        if ( joySorrowPassed && (isJoySorrow || t.toLowerCase().equals("ancient voice")))
-        {
-            t = t + " #2";
-        }
-        if ( !joySorrowPassed )
-            joySorrowPassed = isJoySorrow;
         
         ChainNode cl = nodes.get( t );
         if ( cl == null ) cl = new ChainNode( t );

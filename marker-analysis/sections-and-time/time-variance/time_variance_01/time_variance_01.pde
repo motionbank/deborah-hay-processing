@@ -1,4 +1,13 @@
-
+/**
+ *    Motion Bank research, http://motionbank.org/
+ *
+ *    Discuss here:
+ *    http://ws.motionbank.org/project/time-variance-markers
+ *
+ *    P2.0
+ *    updated: fjenett 20130209
+ */
+ 
 import de.bezier.utils.*;
 
 import org.piecemaker.models.*;
