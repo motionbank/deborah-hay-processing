@@ -26,15 +26,23 @@ int[] movements;
 float blockSumMax = 0;
 
 String[] sessions = {
-    "Juliette_D04T03",
-    "Janine_D06T04",
-    "Ros_D01T01",
-    "Ros_D01T02",
-    "Ros_D01T03",
-    "Ros_D01T04",
-    "Ros_D02T01",
-    "Ros_D02T02",
-    "Ros_D02T03"
+//    "Ros_D01T01",
+//    "Ros_D01T02",
+//    "Ros_D01T03",
+//    "Ros_D01T04",
+//    "Ros_D02T01",
+//    "Ros_D02T02",
+//    "Ros_D02T03",
+      "Juliette_D03T01",
+//    "Juliette_D03T02",
+      "Juliette_D03T03",
+      "Juliette_D03T04",
+      "Juliette_D04T01",
+//    "Juliette_D04T02",
+//    "Juliette_D04T03",
+//    "Janine_D05T01",
+      "Janine_D06T01",
+//    "Janine_D06T04",
 };
 int currentSession = 0;
 

@@ -1,14 +1,25 @@
 
 void keyPressed ()
 {
-    if ( key == ' ' ) showField = !showField;
-    if ( key == 'b' ) showBackground = !showBackground;
+    if ( key == ' ' ) drawMode = MOVERS;
+    if ( key == '1' ) drawMode = FIELD_LINES;
+    if ( key == '2' ) drawMode = FIELD_COLORED;
+    if ( key == '3' ) drawMode = PATHS;
+    
+    if ( key == '4' ) drawMode = INFORMATION;
+    
     if ( key == 'm' ) movers = new ArrayList();
     if ( key == 'v' ) addMoverGrid();
  }
 
 void mousePressed ()
 {
-    Mover m = new Mover(mouseX, mouseY);
-    movers.add( m );
+    for ( int i = 0; i < 100; i++ )
+    {
+        float r = random( TWO_PI );
+        float d = random( 1, fieldGrid );
+        Mover m = new Mover( mouseX + sin(r)*d, mouseY + cos(r)*d );
+        m.update();
+        movers.add( m );
+    }
 }

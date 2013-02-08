@@ -14,6 +14,9 @@ import org.piecemaker.api.*;
 
 import java.util.Date;
 
+// SETTINGS
+// ===========================
+
 PieceMakerApi api;
 Piece piece;
 Video[] videos;
@@ -21,6 +24,7 @@ org.piecemaker.models.Event[] events;
 
 ArrayList<VideoTimeCluster> clusters;
 long clustersTimeMin = Long.MAX_VALUE, clustersTimeMax = Long.MIN_VALUE;
+long recordingsFrom, recordingsTo;
 
 ArrayList<String> trackFiles;
 
@@ -29,18 +33,31 @@ static {
     tracksBaseUrl = "/Users/fjenett/Desktop/MOBA/IGD_Positions/";
 }
 
-int fieldGrid = 40;
+int fieldGrid = 10;
 int[][] fieldCount;
 PVector[] field;
 int[] fieldCounts;
 int fieldWidth, fieldHeight;
+float fieldMax = 0, fieldMean = 0, fieldMin = Float.MAX_VALUE;
+float fieldCountsMax = 0, fieldCountsMin = Float.MAX_VALUE;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
 
 boolean showBackground = false, showField = true;
+boolean clustersBusy = false;
 
 ArrayList<Mover> movers;
+
+final static int MOVERS = 0;
+final static int FIELD_COLORED = 1;
+final static int FIELD_LINES = 2;
+final static int PATHS = 3;
+final static int INFORMATION = 4;
+int drawMode = MOVERS;
+
+// SETUP & DRAW
+// ===========================
 
 void setup ()
 {
@@ -57,11 +74,17 @@ void setup ()
     }
     fieldCounts = new int[field.length];
     
+    // limit recordings by date
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+    //cal.setTimeZone( java.util.TimeZone.getTimeZone("UTC") );
+    cal.set(2011,3,18,0,0,0); // 3 == April
+    recordingsFrom = cal.getTimeInMillis();
+    cal.set(2011,3,19,0,0,0);
+    recordingsTo = cal.getTimeInMillis();
+    
     api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" );
     api.loadPieces( api.createCallback( "piecesLoaded" ) );
 }
-
-boolean clustersBusy = false;
 
 void draw ()
 {
@@ -74,6 +97,9 @@ void draw ()
         background( 255 );
         textAlign( LEFT );
         
+        switch ( drawMode )
+        {
+            case INFORMATION:
 //        fill( 200 );
 //        text( "Loaded piece \""+piece.title+"\": "+clusters.size()+" clusters", 10, 20 );
 //        
@@ -96,11 +122,12 @@ void draw ()
 ////            }
 //        }
 //        clustersBusy = false;
-        
-        if ( showBackground )
-        {
-            if ( showField ) 
-            {
+                break;
+            case FIELD_COLORED:
+            case FIELD_LINES:
+                
+                boolean isColored = drawMode == FIELD_COLORED;
+                
                 float cellWidth = (width-0.0) / fieldWidth;
                 float cellHeight = (height-0.0) / fieldHeight;
                 
@@ -109,32 +136,55 @@ void draw ()
                     int fx = i % fieldWidth;
                     int fy = i / fieldWidth;
                     
-                    PVector p = field[i];
+                    PVector p = field[i].get();
                     
-                    stroke( 0 );
-                    colorMode( HSB );
-                    if ( fieldCounts[i] > 0 ) {
-                        fill( map( p.heading(), -PI, PI, 0, 255 ), 200, 200 );
-                    } else {
-                        fill( 0 );
+                    if ( isColored )
+                    {
+                        stroke( 0 );
+                        colorMode( HSB );
+                        if ( fieldCounts[i] > 0 ) {
+                            fill( map( p.heading(), -PI, PI, 0, 255 ), 200, 200 );
+                        } else {
+                            fill( 0 );
+                        }
+                        colorMode( RGB );
                     }
-                    colorMode( RGB );
                     
                     float px = fx*cellWidth;
                     float py = fy*cellHeight;
                     
-                    rect( px, py, cellWidth, cellHeight );
+                    if ( isColored )
+                    {
+                        rect( px, py, cellWidth, cellHeight );
+                    }
                     
-                    stroke( 255 );
-                    noFill();
+                    if ( !isColored )
+                    {
+                        stroke( 0 );
+                    }
+                    else
+                    {
+                        stroke( 255 );
+                    }
+                
+                    p.normalize();
+                    p.mult( cellWidth/2 );
                     
-                    line( px + cellWidth/2,                       py + cellHeight/2, 
-                          px + cellWidth/2 + p.x * (cellWidth/2), py + cellHeight/2 + p.y * (cellWidth/2) );
+                    float pLen = p.mag();
+                    
+                    if ( pLen > 0 )
+                    {
+                        pushMatrix();
+                        translate( px + cellWidth/2, py + cellHeight/2 );
+                        rotate( p.heading() );
+                        line( 0, 0, pLen, 0 );
+                        line( pLen, 0, pLen-(pLen/3), -(pLen/4) );
+                        line( pLen, 0, pLen-(pLen/3),  (pLen/4) );
+                        popMatrix();
+                    }
                 }
-            
-            } 
-            else 
-            {
+                break;
+            case PATHS:
                 clustersBusy = true;
                 for ( VideoTimeCluster c : clusters )
                 {
@@ -149,14 +199,16 @@ void draw ()
                     endShape();
                 }
                 clustersBusy = false;
-            }
-        }
-        
-        for ( Mover m : movers )
-        {
-            m.update();
-            m.applyField( field, fieldWidth, fieldHeight );
-            m.draw();
+                break;
+            case MOVERS:
+                for ( int i = 0, k = movers.size(); i < k; i++ )
+                {
+                    Mover m = movers.get(i);
+                    m.update();
+                    m.applyField( field, fieldWidth, fieldHeight );
+                    m.draw();
+                }
+                break;
         }
     }
 }
