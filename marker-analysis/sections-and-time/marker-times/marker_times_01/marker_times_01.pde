@@ -58,6 +58,7 @@
      
      if ( loading )
      {
+         fill( 0 );
          text( loadingMessage, width/2, height/2 );
      }
      else

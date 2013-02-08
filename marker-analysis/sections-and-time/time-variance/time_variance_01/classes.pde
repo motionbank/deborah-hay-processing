@@ -3,9 +3,11 @@ class EventTitleCluster
     String title;
     
     ArrayList<Integer> columns;
+    
     ArrayList<Integer> times;
     ArrayList<Integer> timesNormalized;
-    ArrayList<Event> events;
+    
+    ArrayList<org.piecemaker.models.Event> events;
     
     int minTime, maxTime, avgTime;
     
@@ -19,7 +21,7 @@ class EventTitleCluster
         events = new ArrayList();
     }
     
-    void addEvent ( int time, int timeNormalized, Event e, int column )
+    void addEvent ( int time, int timeNormalized, org.piecemaker.models.Event e, int column )
     {
         times.add( time );
         timesNormalized.add( timeNormalized );
@@ -76,27 +78,35 @@ class EventTitleCluster
         fill( 200 );
         float y1 = ((minTime-tf) / total) * h;
         float y2 = ((maxTime-tf) / total) * h;
-        stroke( 0 );
+    
+        noStroke();
+        rect( x, y + y1, w, y2-y1 );
+        
+        stroke( 170 );
+        for ( int i : times )
+        {
+            float t = y + ((i-tf) / total) * h;
+            line( x, t, x+w-1, t );
+        }
+        
+        noFill();
         rect( x, y + y1, w, y2-y1 );
         
         float yyy = y + ((avgTime-tf) / total) * h;
-//        stroke( 0 );
-//        line( 10, yyy, width-80, yyy );
         
         fill( 0 );
-        //text( title , width-65, yyy );
         text( title , x+w+5, y + y1 );
         
         ellipse( x + w/2, yyy, 3,3 );
         
         stroke( 0 );
-        line( x, yyy, x+w, yyy );
+        line( x, yyy, x+w-1, yyy );
         
         stroke( 255, 0, 0 );
         ArrayList<Integer> timesSorted = (ArrayList<Integer>)times.clone();
         Collections.sort( timesSorted );
         float yMedian = y + ((timesSorted.get(timesSorted.size()/2)-tf) / total) * h;
-        line( x, yMedian, x+w, yMedian );
+        line( x, yMedian, x+w-1, yMedian );
     }
     
     void drawNormalized ( int y, int h )
@@ -125,10 +135,6 @@ class EventTitleCluster
         }
         endShape();
         
-//        float yyy = y + ((avgTime-tf) / total) * h;
-//        stroke( 255, 0, 0  );
-//        line( 10, yyy, width-60, yyy );
-        
         fill( 0 );
         text( title , width-65, yy );
     }
@@ -153,27 +159,35 @@ class EventTitleCluster
         fill( 200 );
         float y1 = minTimeN * h;
         float y2 = maxTimeN * h;
-        stroke( 0 );
         
+        noStroke();
         rect( x, y+y1, w, y2-y1 );
-        //ellipse( x+w/2, y+y1+(y2-y1)/2, w, y2-y1 );
+        
+        stroke( 170 );
+        for ( int i : timesNormalized )
+        {
+            float t =  y + h * ((i-minTimeNormalized) / (1000.0-minTimeNormalized));
+            line( x, t, x+w-1, t );
+        }
+        
+        noFill();
+        rect( x, y+y1, w, y2-y1 );
         
         float yyy = y + (avgTime) * h;
-//        stroke( 0 );
-//        line( 10, yyy, width-80, yyy );
         
+        noStroke();
         fill( 0 );
-        //text( title , width-65, yyy );
         text( title , x+w+5, y + y1 );
         
         ellipse( x + w/2, yyy, 3, 3 );
-        line( x, yyy, x+w, yyy );
+        stroke( 0 );
+        line( x, yyy, x+w-1, yyy );
         
         stroke( 255, 0, 0 );
         ArrayList<Integer> timesSorted = (ArrayList<Integer>)timesNormalized.clone();
         Collections.sort( timesSorted );
         float yMedian = y + ((timesSorted.get(timesSorted.size()/2)-minTimeNormalized) / (1000.0-minTimeNormalized)) * h;
-        line( x, yMedian, x+w, yMedian );
+        line( x, yMedian, x+w-1, yMedian );
     }
 }
 
@@ -181,7 +195,9 @@ class VideoTimeCluster
 extends TimeCluster
 {
     ArrayList<Video> videos;
-    ArrayList<Event> events;
+    ArrayList<org.piecemaker.models.Event> events;
+    ArrayList<Integer> times;
+    ArrayList<Integer> timesNormalized;
     
     String performer = null;
     
@@ -193,6 +209,8 @@ extends TimeCluster
         videos.add( v );
         
         events = new ArrayList();
+        times = new ArrayList();
+        timesNormalized = new ArrayList();
     }
     
     void addVideo ( Video v ) 
@@ -205,17 +223,15 @@ extends TimeCluster
         videos.add( v );
     }
     
-    void addEvent ( Event e )
+    void addEvent ( org.piecemaker.models.Event e )
     {
         events.add( e );
         
         if ( performer == null )
         {
-            Yaml perf = new Yaml();
-            List<String> performers = (List<String>)perf.load( e.performers );
-            if ( performers.size() > 0 )
+            if ( e.performers.length > 0 )
             {
-                performer = performers.get(0).toLowerCase().trim();
+                performer = e.performers[0].toLowerCase().trim();
             }
         }
     }
