@@ -19,8 +19,6 @@ import processing.video.*;
 import java.util.*;
 import java.text.*;
 
-//MySQL db;
-
 org.piecemaker.models.Event[] events;
 Piece[] pieces;
 User[] users;
@@ -44,6 +42,7 @@ boolean selectionMode = true;
 boolean waitingForPosterFrame = false, havePosterFrameDoPause = false;
 
 boolean loading = true;
+boolean playing = false;
 String loadingMessage = "Loading";
 int clustersExpected = 0;
 
@@ -124,7 +123,6 @@ void drawMarkers ()
             text( u + " " + es.length, 10, iy+13 );
             fill( 0 );
             
-            //Arrays.sort( es );
             long l;
             for ( org.piecemaker.models.Event ee : es )
             {
@@ -173,7 +171,8 @@ void drawMarkers ()
 //                  slider.position().x+x+5, height-40 );
 //        //}
 
-        // KDE
+        // KDE, kernel density estimate
+        // http://en.wikipedia.org/wiki/Kernel_density_estimation
         
         float h = 5000, mx = 0;
         int u = userEvents.size();
@@ -246,7 +245,6 @@ long millisecDifference ( Date from, Date to )
     return to.getTime() - from.getTime();
 }
 
-boolean playing = false;
 //void togglePlayPause ( GuiEvent evt )
 //{
 //    playing = !playing;
