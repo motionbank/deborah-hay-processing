@@ -119,27 +119,33 @@ void drawMarkers ()
         {
             String u = (String)e.getKey();
             org.piecemaker.models.Event[] es = (org.piecemaker.models.Event[])e.getValue();
+            
             fill( 0 );
             text( u + " " + es.length, 10, iy+13 );
             fill( 0 );
+            
             //Arrays.sort( es );
             long l;
             for ( org.piecemaker.models.Event ee : es )
             {
                 l = millisecDifference( currentCluster.from, ee.getHappenedAt() );
                 eventDiffs = (long[])append(eventDiffs, l);
-                float x = map( l, 0, total, 0, width ); // slider.size().x-10
+                float x = map( l, 0, total, 10, width-10 ); // slider.size().x-10
                 
                 if ( ee.title.equals("start") )
                     stroke( 255, 0, 0 );
                 else if ( ee.title.equals("end") )
                     stroke( 0, 0, 255 );
                 else
-                    stroke( 0, 255, 0 );
+                    stroke( 0 );
                 
                 //line( (int)(slider.position().x+5+x), iy, (int)(slider.position().x+5+x), iy+20 );
                 line( x, iy, x, iy+2 );
             }
+            
+            stroke( 200 );
+            line( 10, iy, width-10, iy );
+            
             iy -= 30;
         }
 
@@ -166,30 +172,32 @@ void drawMarkers ()
 //            line( slider.position().x+x+5, height-40-userEvents.size()*30-60, 
 //                  slider.position().x+x+5, height-40 );
 //        //}
-//        
-//        // KDE
-//        
-//        float h = 5000, mx = 0;
-//        int u = userEvents.size();
-//        float[] vals = new float[(int)(slider.size().x-10)];
-//        for ( int i = 0, k = vals.length; i < k; i++ )
-//        {
-//            float vv = map( i, 0,vals.length, 0,total );
-//            float v = 0;
-//            for ( long d : eventDiffs )
-//            {
-//                v += (1/h) * guassianKernel( (vv - d) / h );
-//            }
-//            vals[i] = v*500000;
-//            mx = max( mx, vals[i] );
-//        }
-//        stroke(255,255,0); fill(255,120);
-//        beginShape();
-//        for ( int i = 0, xx = (int)(slider.position().x+5); i < vals.length; i++ )
-//        {
-//            vertex( xx+i, height-30-userEvents.size()*30 - 10 - (vals[i]/mx) * 60 );
-//        }
-//        endShape();
+
+        // KDE
+        
+        float h = 5000, mx = 0;
+        int u = userEvents.size();
+        float[] vals = new float[width-20]; // (int)(slider.size().x-10)
+        for ( int i = 0, k = vals.length; i < k; i++ )
+        {
+            float vv = map( i, 0,vals.length, 0,total );
+            float v = 0;
+            for ( long d : eventDiffs )
+            {
+                v += (1/h) * guassianKernel( (vv - d) / h );
+            }
+            vals[i] = v*500000;
+            mx = max( mx, vals[i] );
+        }
+        stroke(100,100,0);
+        fill(255,120);
+        
+        beginShape();
+        for ( int i = 0, xx = 10; i < vals.length; i++ ) // (int)(slider.position().x+5)
+        {
+            vertex( xx+i, height-30-userEvents.size()*30 - 10 - (vals[i]/mx) * 60 );
+        }
+        endShape();
     }
 }
 
