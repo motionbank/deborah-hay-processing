@@ -33,21 +33,22 @@ String[] sessions = {
 //    "Ros_D02T01",
 //    "Ros_D02T02",
 //    "Ros_D02T03",
-//    "Juliette_D03T01",
-//    "Juliette_D03T02",
-//    "Juliette_D03T03",
-//    "Juliette_D03T04",
-//    "Juliette_D04T01",
-//    "Juliette_D04T02",
-//    "Juliette_D04T03",
-//    "Janine_D05T01",
+    "Juliette_D03T01",
+    "Juliette_D03T02",
+    "Juliette_D03T03",
+    "Juliette_D03T04",
+    "Juliette_D04T01",
+    "Juliette_D04T02",
+    "Juliette_D04T03",
+    "Janine_D05T01",
     "Janine_D05T02",
     "Janine_D05T03",
-//    "Janine_D06T01",
+    "Janine_D06T01",
     "Janine_D06T02",
     "Janine_D06T03",
-//    "Janine_D06T04",
+    "Janine_D06T04",
 };
+String cameraAngle = "CamLeft";
 int currentSession = 0;
 
 // Processing S'n'D
@@ -105,8 +106,8 @@ void draw ()
             lines[i] = movements[i] + "";
         }
         
-        saveStrings( sessions[currentSession-1]+"_CamCenter/imageDifferences.txt", lines );
-        saveFrame( sessions[currentSession-1]+"_CamCenter/imageDifference.png" );
+        saveStrings( sessions[currentSession-1]+"_"+cameraAngle+"/imageDifferences.txt", lines );
+        saveFrame( sessions[currentSession-1]+"_"+cameraAngle+"/imageDifference.png" );
         
         nextSession();
     }

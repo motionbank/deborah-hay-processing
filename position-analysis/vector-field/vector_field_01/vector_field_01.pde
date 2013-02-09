@@ -2,7 +2,10 @@
  *    Motion Bank research, http://motionbank.org/
  *
  *    Generating a vector field that will allow to generate new paths based 
- *    on paths taken by Ros / Jeanine / Juliette
+ *    on paths travelled by Ros / Jeanine / Juliette
+ *
+ *    Discuss here:
+ *    http://ws.motionbank.org/project/performances-vector-field
  *
  *    P-2.0
  *    created: fjenett 20130205
