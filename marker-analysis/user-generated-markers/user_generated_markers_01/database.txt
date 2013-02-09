@@ -1,4 +1,0 @@
-localhost
-piecemaker_april
-pm
-pm
