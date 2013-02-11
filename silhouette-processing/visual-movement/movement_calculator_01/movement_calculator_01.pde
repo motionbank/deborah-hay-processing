@@ -26,13 +26,13 @@ int[] movements;
 float blockSumMax = 0;
 
 String[] sessions = {
-//    "Ros_D01T01",
-//    "Ros_D01T02",
-//    "Ros_D01T03",
-//    "Ros_D01T04",
-//    "Ros_D02T01",
-//    "Ros_D02T02",
-//    "Ros_D02T03",
+    "Ros_D01T01",
+    "Ros_D01T02",
+    "Ros_D01T03",
+    "Ros_D01T04",
+    "Ros_D02T01",
+    "Ros_D02T02",
+    "Ros_D02T03",
     "Juliette_D03T01",
     "Juliette_D03T02",
     "Juliette_D03T03",
@@ -48,7 +48,7 @@ String[] sessions = {
     "Janine_D06T03",
     "Janine_D06T04",
 };
-String cameraAngle = "CamLeft";
+String cameraAngle = "CamRight";
 int currentSession = 0;
 
 // Processing S'n'D
