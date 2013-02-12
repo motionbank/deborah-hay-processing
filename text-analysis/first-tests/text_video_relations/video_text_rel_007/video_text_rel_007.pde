@@ -19,8 +19,8 @@ import java.util.Map.Entry;
 import java.util.*;
 import java.io.*;
 
-String API_KEY = "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe";
-String API_URL = "http://notimetofly.herokuapp.com/";
+String API_KEY  = "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe";
+String API_URL  = "http://notimetofly.herokuapp.com/";
 String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 
 XML srcXML;
@@ -31,6 +31,7 @@ int nttfLength;
 PieceMakerApi api;
 Piece piece;
 Video video;
+VideoData videoData;
 float videoDuration = 0;
 float traveledTotal = 0;
 Video[] videos;
@@ -265,7 +266,8 @@ void loadXML() {
 
 void initData() {
   
-  videoSegments = new VideoSegmentList( events );
+  videoData = new VideoData( video, events );
+  videoSegments = new VideoSegmentList( videoData );
   
   traveledTotal = 0;
   float total = 0;
