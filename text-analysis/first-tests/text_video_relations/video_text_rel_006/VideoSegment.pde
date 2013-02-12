@@ -11,7 +11,9 @@ class VideoSegmentList {
     this.sceneEvents = new org.piecemaker.models.Event[0];
     this.pathEvents = new org.piecemaker.models.Event[0];
     
-    // EVENTS
+    //-------------------------------------------------------------
+    // FILTER ALL EVENTS
+    
     for (int i=0; i<_events.length; i++) {
       org.piecemaker.models.Event evt = _events[i];
       
@@ -26,6 +28,7 @@ class VideoSegmentList {
     
     segments = new VideoSegment[sceneEvents.length];
     
+    
     //-------------------------------------------------------------
     // SCENE EVENTS
     
@@ -33,69 +36,72 @@ class VideoSegmentList {
     org.piecemaker.models.Event lastEvent = sceneEvents[sceneEvents.length-1];
     
     long vidHappened = firstEvent.getHappenedAt().getTime();
-    videoDuration = lastEvent.getHappenedAt().getTime() - firstEvent.getHappenedAt().getTime();
-    //long vidHappened = video.getHappenedAt().getTime();
-    
+    videoDuration = lastEvent.getHappenedAt().getTime() - firstEvent.getHappenedAt().getTime();    
     
     for (int i=0; i<sceneEvents.length; i++) {
       org.piecemaker.models.Event evt = sceneEvents[i];
-      
-        //float vidDuration = video.getDuration()*1000;
-        //float vidDuration = events[events.length-1].getHappenedAt().getTime() - vidHappened;
-        
         
         // current event
-        //float eventLoc0 = map( evt.getHappenedAt().getTime() - video.getHappenedAt().getTime(), 0, video.getDuration()*1000, 0, 1 );
         float eventLoc0 = (evt.getHappenedAt().getTime() - vidHappened) / videoDuration;
   
         // next event
         float eventLoc1 = 0;
-        //if (i<events.length-1) eventLoc1 = map( events[i+1].getHappenedAt().getTime() - video.getHappenedAt().getTime(), 0, video.getDuration()*1000, 0, 1 );
         if (i<sceneEvents.length-1) eventLoc1 = (sceneEvents[i+1].getHappenedAt().getTime() - vidHappened) / videoDuration;
         else eventLoc1 = 1;
   
         float eventDur = eventLoc1 - eventLoc0;
-        
-        
-        /*
-                println(evt.title);
-
-        println("eha: " + evt.getHappenedAt().getTime());
-        println("vha: " + vidHappened);
-        println("dif: " + (evt.getHappenedAt().getTime() - vidHappened));
-        println("vdu: " + vidDuration);
-        println("edu: " + eventDur);
-        println("loc0: " + eventLoc0);
-        println("loc1: " + eventLoc1 + "\n");
-        */
          
         segments[i] = new VideoSegment( evt, eventDur, eventLoc0, eventLoc1);
     }
     
     
     //-------------------------------------------------------------
-    // PATH EVENTS
+    // POSITION (DATA) EVENTS
     
     for (int i=0; i<pathEvents.length; i++) {
       org.piecemaker.models.Event evt = pathEvents[i];
-      String pathFile = evt.description.substring(7,evt.description.length());
-      pathFile = pathFile.substring(0,pathFile.indexOf('"'));
-      String[] pathData = loadStrings( "http://lab.motionbank.org/dhay/data/" + pathFile);
+      String positionsFile = evt.description.substring(7,evt.description.length());
+      positionsFile = positionsFile.substring(0,positionsFile.indexOf('"'));
+      String[] pathData = loadStrings( DATA_URL + positionsFile);
       
-      positions = new PVector[pathData.length];
+      positions = new PVector[0];
       println("3D positions " + pathData.length);
       
-      for (int j=0; j<positions.length; j++) {
+      // match first position with first scene marker in the video
+      float firstMarkerRel = (firstEvent.getHappenedAt().getTime() - video.getHappenedAt().getTime()) / (video.getDuration()*1000);
+      int startIndex = floor( firstMarkerRel * pathData.length );
+      
+      // TESTING OUTPUTS ------
+      /*
+      for (int j=0; j<pathData.length; j++) {
         float[] f = parseFloat(split(pathData[j], " "));
         PVector v = new PVector(f[0],f[1],f[2]);
-        positions[j] = v;
-        traveledTotal += v.mag();
+        
+        if (j<250 && j>100) {
+          if (j==startIndex) println("\t" + v);
+          else println(v);
+        }
+      }
+      */
+      // ----------------------
+      
+      
+      for (int j=startIndex; j<pathData.length; j++) {
+        float[] f = parseFloat(split(pathData[j], " "));
+        PVector v = new PVector(f[0],f[1],f[2]);
+        
+        if (positions.length > 1) {
+          float l = positions[positions.length-2].dist(v);
+          traveledTotal += l;
+        }
+        this.positions = (PVector[]) append( this.positions, v );
       }
       
       println("3- positions " + positions.length);
     }
     
     println("total movement " + traveledTotal);
+    
     
     //-------------------------------------------------------------
     // POSITION PER SEGMENT
@@ -111,7 +117,9 @@ class VideoSegmentList {
       if (i == segments.length-1 || i1 > positions.length-1) i1 = positions.length-1;
       if (i0 > positions.length-1) i0 = positions.length-1;
       
-      println(i + "\t" + i0 + "\t" + i1 + "\t" + (positions.length-1) );
+      //println(i + "\t" + i0 + "\t" + i1 + "\t" + (positions.length-1) );
+      
+      // add positions from i0 to i1 to the current video segment
       
       for (int j=i0; j<=i1; j++) {
         s.addPosition( positions[j] );
@@ -152,12 +160,17 @@ class VideoSegment {
     this.duration = _dur;
     this.start = _s;
     this.end = _e;
-    
   }
   
   void addPosition (PVector _p) {
+    
+    if (positions.length > 1) {
+      float l = positions[positions.length-2].dist(_p);
+      this.traveled += l / traveledTotal;
+    }
+    
     this.positions = (PVector[]) append( this.positions, _p );
-    this.traveled += _p.mag() / traveledTotal;
+    
   }
   
   float relLength() {
