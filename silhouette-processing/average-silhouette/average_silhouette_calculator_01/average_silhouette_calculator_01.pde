@@ -76,7 +76,7 @@ void draw ()
     
     if ( current >= pngs.length )
     {
-        saveFrame( sessions[currentSession-1]+"_"+cameraAngle+"/averageSilhouette.png" );
+        saveFrame( "output/" + sessions[currentSession-1]+"_"+cameraAngle+"/averageSilhouette.png" );
         
         nextSession();
     }

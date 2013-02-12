@@ -94,8 +94,8 @@ void nextEvent ()
 {
     if ( currentEventIndex >= currentCluster.getEvents().length || currentEvent.title.equals("end") )
     {
-        saveFrame( currentSession + "_" + cameraAngle + "/" +
-                       currentEventIndex + "-" + lastEvent.title.replace(" ","-") + "_averageSilhouette.png" );
+        saveFrame( "output/" + currentSession + "_" + cameraAngle + "/" +
+                   currentEventIndex + "-" + lastEvent.title.replace(" ","-") + "_averageSilhouette.png" );
         nextCluster();
         return;
     }

@@ -106,8 +106,8 @@ void draw ()
             lines[i] = movements[i] + "";
         }
         
-        saveStrings( sessions[currentSession-1]+"_"+cameraAngle+"/imageDifferences.txt", lines );
-        saveFrame( sessions[currentSession-1]+"_"+cameraAngle+"/imageDifference.png" );
+        saveStrings( "output/" + sessions[currentSession-1]+"_"+cameraAngle+"/imageDifferences.txt", lines );
+        saveFrame( "output/" + sessions[currentSession-1]+"_"+cameraAngle+"/imageDifference.png" );
         
         nextSession();
     }
