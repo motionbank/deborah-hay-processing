@@ -3,7 +3,7 @@
 void initPngs ()
 {
     //silhouetteFolder = "/Users/fjenett/Desktop/silhouettes";
-    silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/"+sessions[currentSession]+
+    silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/"+ currentSession +
                        "_withBackgroundAdjustment_Corrected/Images_BackgroundSubstracted/" + cameraAngle;
     
 //    java.io.FilenameFilter f1 = new java.io.FilenameFilter() {

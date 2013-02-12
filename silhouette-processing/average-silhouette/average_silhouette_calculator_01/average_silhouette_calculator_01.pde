@@ -8,6 +8,7 @@
  *    (or less/more).
  *
  *    Discuss here:
+ *    http://ws.motionbank.org/project/average-silhouette-image
  *
  *    P2.0
  *    created: fjenett 20130211
