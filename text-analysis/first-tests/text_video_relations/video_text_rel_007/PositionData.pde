@@ -3,6 +3,7 @@ class PositionData {
   org.piecemaker.models.Event dataEvent;
   PVector[] positions = new PVector[0];
   String[] data;
+  float traveledTotal = 0;
   
   PositionData(String[] _data, int _startIndex) {
     
@@ -14,7 +15,7 @@ class PositionData {
       
       if (positions.length > 1) {
         float l = positions[positions.length-2].dist(v);
-        traveledTotal += l;
+        this.traveledTotal += l;
       }
       this.positions = (PVector[]) append( this.positions, v );
     }

@@ -93,7 +93,7 @@ class VideoSegment {
     
     if (positions.length > 1) {
       float l = positions[positions.length-2].dist(_p);
-      this.traveled += l / traveledTotal;
+      this.traveled += l / videoData.positions.traveledTotal;
     }
     
     this.positions = (PVector[]) append( this.positions, _p );

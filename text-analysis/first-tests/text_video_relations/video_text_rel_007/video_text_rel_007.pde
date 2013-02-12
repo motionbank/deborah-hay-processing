@@ -32,8 +32,6 @@ PieceMakerApi api;
 Piece piece;
 Video video;
 VideoData videoData;
-float videoDuration = 0;
-float traveledTotal = 0;
 Video[] videos;
 org.piecemaker.models.Event[] events;
 VideoSegmentList videoSegments;
@@ -269,7 +267,6 @@ void initData() {
   videoData = new VideoData( video, events );
   videoSegments = new VideoSegmentList( videoData );
   
-  traveledTotal = 0;
   float total = 0;
   
   println( "----> " + textSegments.length() + " " + videoSegments.length() );
