@@ -19,7 +19,9 @@ import java.util.Map.Entry;
 import java.util.*;
 import java.io.*;
 
-String BASE_URL = "http://notimetofly.herokuapp.com/";
+String API_KEY = "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe";
+String API_URL = "http://notimetofly.herokuapp.com/";
+String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 
 XML srcXML;
 String nttf;
@@ -35,11 +37,11 @@ Video[] videos;
 org.piecemaker.models.Event[] events;
 VideoSegmentList videoSegments;
 
-// index of video to load
+// index of the video to load
 int idx = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = false;
+boolean saveAllFrames = true;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
@@ -48,9 +50,9 @@ String loadingMessage = "Loading pieces ...";
 int skipStartMarker = 0;
 
 int[] videoIDs = {
-  //232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
-  249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start
-  //256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
+  232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
+  249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
+  256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
 }; 
 
 int currentID = videoIDs[idx];
@@ -62,7 +64,7 @@ void setup ()
 {
   size( 1400, 800 );
 
-  api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe",  BASE_URL);
+  api = new PieceMakerApi( this, API_KEY,  API_URL);
   api.loadPieces( api.createCallback( "piecesLoaded" ) );
   loadXML();
   textFont( createFont( "", 10 ) );
@@ -88,8 +90,6 @@ void draw ()
         
         TextSegment tSeg  = textSegments.get(i);
         
-        //float segHeight = (height-100)/float(textSegments.length()-1);
-        
         y = i * segHeight + 120;
         x = sw*2;
         
@@ -113,12 +113,10 @@ void draw ()
         x = sw;
         fill(255,0,0);
         float w = 700*tSeg.relLength();
-        //float h = floor(segHeight/3) - 1;
         rect(x, y+1, w, (h/3)-1);
         textAlign(RIGHT);
-        //text(tSeg.relLength(), 100, y);
         
-      if ( i >= skipStartMarker ) {
+      //if ( i >= skipStartMarker ) {
         VideoSegment vSeg = videoSegments.get(i - skipStartMarker);
         
         // video seg
@@ -157,7 +155,7 @@ void draw ()
         else fill(255,0,0);
         rect(x,y+1, w,h);
         
-      } 
+      /*} 
       else {
         // difference pseudo
         w = -700*tSeg.relLength();
@@ -165,17 +163,7 @@ void draw ()
         fill(255,0,0);
         rect(x,y+1, w,h);
       }
-      
-      // movement
-      /*
-      for (int i=0; i<textSegments.length(); i++) {
-        
-      }
       */
-      
-      //stroke(200);
-      //line(50,y, width, y);
-      
       popStyle();
     }
     
@@ -233,16 +221,7 @@ void draw ()
         currentID = videoIDs[idx];
         loadVideo(currentID);
       }
-    }    
-    
-    //else api.loadPieces( api.createCallback( "piecesLoaded" ) );
-    
-    
-    /*
-    textAlign( LEFT );
-
-    text( "Loaded piece \""+piece.title+"\" \nwith "+videos.length+" videos \nand "+events.length+" events.", 10, 20 );
-    */
+    }
   }
 }
 
@@ -288,11 +267,6 @@ void initData() {
   
   videoSegments = new VideoSegmentList( events );
   
-  /*
-    for (TextSegment el : textSegments) {
-   println(el.marker);
-   }
-   */
   traveledTotal = 0;
   float total = 0;
   
