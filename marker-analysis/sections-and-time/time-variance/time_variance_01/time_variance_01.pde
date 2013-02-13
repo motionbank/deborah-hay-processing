@@ -41,6 +41,8 @@ ArrayList<VideoTimeCluster> clusters;
 
 int viewMode = 3;
 boolean savePDF;
+int clustersExpected = 0;
+int displayColumn = 0;
 
 void setup () 
 {
@@ -103,7 +105,7 @@ void draw ()
                 translate( 10, height-14 );
                 rotate( -HALF_PI );
                 fill( 220 );
-                text( /*c.performer + "\n" +*/ c.videos.get(1).title, 0, 0 );
+                text( /*c.performer + "\n" +*/ c.videos.get(0).title, 0, 0 );
                 
                 popMatrix();
                 
@@ -125,7 +127,7 @@ void draw ()
                 }
             }
         }
-        else
+        else // viewmode > 2
         {
             float w = (width-85.0) / titleClusters.size();
             int i = 0;

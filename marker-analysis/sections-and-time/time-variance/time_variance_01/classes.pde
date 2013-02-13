@@ -53,7 +53,7 @@ class EventTitleCluster
         for ( int i = 0; i < times.size(); i++ )
         {
             int cc = columns.get(i);
-            xx = 10 + ( cc/ float(clusters.size())) * (width-60.0);
+            xx = 10 + ( cc / float(clusters.size())) * (width-60.0);
             yy = y + ((times.get(i)-tf) / total) * h;
             
             if ( c != cc-1 )
@@ -188,6 +188,11 @@ class EventTitleCluster
         Collections.sort( timesSorted );
         float yMedian = y + ((timesSorted.get(timesSorted.size()/2)-minTimeNormalized) / (1000.0-minTimeNormalized)) * h;
         line( x, yMedian, x+w-1, yMedian );
+    }
+    
+    public String toString ()
+    {
+        return "EventTimeCluster for \"" + title + "\"";
     }
 }
 
