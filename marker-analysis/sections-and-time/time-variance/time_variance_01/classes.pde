@@ -53,7 +53,7 @@ class EventTitleCluster
         for ( int i = 0; i < times.size(); i++ )
         {
             int cc = columns.get(i);
-            xx = 10 + ( cc / float(clusters.size())) * (width-60.0);
+            xx = 10 + ( cc / float(clusters.size()-1)) * (width-100.0);
             yy = y + ((times.get(i)-tf) / total) * h;
             
             if ( c != cc-1 )
@@ -68,7 +68,7 @@ class EventTitleCluster
         endShape();
         
         fill( 0 );
-        text( title , width-65, yy );
+        text( title , width-80, yy );
     }
     
     void drawBlob ( int tf, int tt, float x, float y, float w, float h )
@@ -89,8 +89,8 @@ class EventTitleCluster
             line( x, t, x+w-1, t );
         }
         
-        noFill();
-        rect( x, y + y1, w, y2-y1 );
+//        noFill();
+//        rect( x, y + y1, w, y2-y1 );
         
         float yyy = y + ((avgTime-tf) / total) * h;
         
@@ -102,6 +102,7 @@ class EventTitleCluster
         stroke( 0 );
         line( x, yyy, x+w-1, yyy );
         
+        // draw mean
         stroke( 255, 0, 0 );
         ArrayList<Integer> timesSorted = (ArrayList<Integer>)times.clone();
         Collections.sort( timesSorted );
@@ -120,7 +121,7 @@ class EventTitleCluster
         for ( int i = 0; i < timesNormalized.size(); i++ )
         {
             int cc = columns.get(i);
-            xx = 10 + ( cc/ float(clusters.size())) * (width-60.0);
+            xx = 10 + ( cc/ float(clusters.size()-1)) * (width-100.0);
             
             yy = y + ((timesNormalized.get(i)-minTimeNormalized) / (1000.0 - minTimeNormalized)) * h;
             
@@ -136,7 +137,7 @@ class EventTitleCluster
         endShape();
         
         fill( 0 );
-        text( title , width-65, yy );
+        text( title , width-80, yy );
     }
     
     void drawBlobNormalized ( float x, float y, float w, float h )

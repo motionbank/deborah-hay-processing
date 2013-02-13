@@ -14,7 +14,7 @@ void videosLoaded ( Videos vids, int piece_id )
         
         for ( Video v : videos ) 
         {
-            if ( v.getTitle().indexOf("_Center") == -1 ) continue;
+            if ( !(v.getTitle().indexOf("_Center") != -1 || v.getTitle().indexOf("_AJA") != -1) ) continue;
             
             // http://notimetofly.herokuapp.com/api/events/between/1298934000/1304200800.js
             if ( v.getFinishedAt().getTime() < recordingsFrom || 
@@ -104,6 +104,8 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
             if ( originEvent == null || endEvent == null )
             {
                 System.err.println( "ORIGIN or END event missing!" );
+                println( "Origin " + originEvent );
+                println( "End " + endEvent );
                 exit();
                 return;
             }

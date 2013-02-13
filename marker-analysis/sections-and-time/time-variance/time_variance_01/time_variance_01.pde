@@ -53,7 +53,7 @@ void setup ()
     //cal.setTimeZone( java.util.TimeZone.getTimeZone("UTC") );
     cal.set(2011,3,18,0,0,0); // 3 == April
     recordingsFrom = cal.getTimeInMillis();
-    cal.set(2011,3,19,0,0,0);
+    cal.set(2011,3,26,0,0,0);
     recordingsTo = cal.getTimeInMillis();
     
     api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" );
@@ -75,12 +75,12 @@ void draw ()
     {
         if ( savePDF )
         {
-            beginRecord( PDF, Utils.makeDateTimeName( this ) + ".pdf" );
+            beginRecord( PDF, "output" + File.separator + Utils.makeDateTimeName( this ) + ".pdf" );
         }
         
         if ( viewMode < 2 )
         {
-            float w = (width - 60.0) / clusters.size();
+            float w = (width - 100.0) / (clusters.size()-1);
             
             int i = 0;
             String performer = null;
@@ -88,26 +88,27 @@ void draw ()
             for ( VideoTimeCluster c : clusters )
             {
                 pushMatrix();
-                translate( 10+i*w, 0 );
                 
-                pushMatrix();
-                
-                stroke( 240 );
-                if ( performer == null )
-                    performer = c.performer;
-                else if ( !c.performer.equals(performer) )
-                {
-                    performer = c.performer;
-                    stroke( 220 );
-                }
-                line( 0, 10, 0, height-10 );
-                
-                translate( 10, height-14 );
-                rotate( -HALF_PI );
-                fill( 220 );
-                text( /*c.performer + "\n" +*/ c.videos.get(0).title, 0, 0 );
-                
-                popMatrix();
+                    translate( 10+i*w, 0 );
+                    
+                    pushMatrix();
+                        
+                        stroke( 240 );
+                        if ( performer == null )
+                            performer = c.performer;
+                        else if ( !c.performer.equals(performer) )
+                        {
+                            performer = c.performer;
+                            stroke( 220 );
+                        }
+                        line( 0, 10, 0, height-10 );
+                        
+                        translate( 10, height-14 );
+                        rotate( -HALF_PI );
+                        fill( 220 );
+                        text( /*c.performer + "\n" +*/ c.videos.get(0).title, 0, 0 );
+                        
+                    popMatrix();
                 
                 popMatrix();
                 
@@ -129,7 +130,7 @@ void draw ()
         }
         else // viewmode > 2
         {
-            float w = (width-85.0) / titleClusters.size();
+            float w = (width-100.0) / titleClusters.size();
             int i = 0;
             for ( EventTitleCluster tc : titleClusters )
             {
