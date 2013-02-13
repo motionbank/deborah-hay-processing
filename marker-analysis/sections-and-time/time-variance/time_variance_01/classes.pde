@@ -95,14 +95,19 @@ class EventTitleCluster
         float yyy = y + ((avgTime-tf) / total) * h;
         
         fill( 0 );
-        text( title , x+w+5, y + y1 );
+        pushMatrix();
+            translate( x+w+5, y + y1 );
+            //rotate( -HALF_PI );
+            text( title, 0, 0 );
+        popMatrix();
         
+        // draw average, mean
         ellipse( x + w/2, yyy, 3,3 );
         
         stroke( 0 );
         line( x, yyy, x+w-1, yyy );
         
-        // draw mean
+        // draw median
         stroke( 255, 0, 0 );
         ArrayList<Integer> timesSorted = (ArrayList<Integer>)times.clone();
         Collections.sort( timesSorted );
