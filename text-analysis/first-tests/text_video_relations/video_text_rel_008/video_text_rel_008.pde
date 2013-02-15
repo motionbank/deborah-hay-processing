@@ -36,11 +36,13 @@ Video[] videos;
 org.piecemaker.models.Event[] events;
 VideoSegmentList videoSegments;
 
+PeakConfig peakConfig = new PeakConfig();
+
 // index of the video to load
 int idx = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = false;
+boolean saveAllFrames = true;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
@@ -61,6 +63,7 @@ int currentID = videoIDs[idx];
 
 boolean setupFinished = false;
 boolean drawFrame = true;
+boolean drawFill = true;
 
 void setup ()
 {
@@ -91,9 +94,10 @@ void draw ()
     }
     
     pushStyle();
-    textAlign( RIGHT );
+    textAlign( LEFT );
     fill(0);
-    text("cycle draw modes => RIGHT ARROW", width-100, 40 );
+    text("RIGHT ARROW:", width-300, 40 );
+    text("switch charts", width-180, 40 );
     textAlign( LEFT );
     textSize(30);
     text(video.title, 48, 40 );
@@ -154,6 +158,7 @@ void loadXML() {
 
 void initData() {
   
+  drawFrame = true;
   videoData = new VideoData( video, events );
   videoSegments = new VideoSegmentList( videoData );
   

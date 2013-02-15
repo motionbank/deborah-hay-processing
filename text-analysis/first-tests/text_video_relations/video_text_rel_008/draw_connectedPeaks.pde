@@ -1,3 +1,16 @@
+class PeakConfig {
+  
+  ConfigObject drawText       = new ConfigObject(true);
+  ConfigObject drawVidSegDur  = new ConfigObject(true);
+  ConfigObject drawTraveled   = new ConfigObject(true);
+  ConfigObject drawMovement   = new ConfigObject(true);
+  
+  PeakConfig() {
+    
+  }
+}
+
+
 void drawConnectedPeaks() {
   
   float graphY = floor(height/3*2);
@@ -19,36 +32,18 @@ void drawConnectedPeaks() {
   strokeWeight(1);
   line(0,0,graphWidth,0);
   
+  y = 0;
+  
   for (int i=0; i<num-1; i++) {
     fill(0);
     noStroke();
-    y = 0;
     x = (i+1) * graphWidth/(num-1);
     ellipse(x,y,3,3);
   }
   
-  
-  //-----------------------------
-  // TEXT SEGMENTS
-  
-  beginShape();
-  
-  stroke(255,0,0);
-  strokeWeight(1);
-  fill(255,0,0,100);
-  
-  vertex(0,0);
-  
   for (int i=0; i<textSegments.length(); i++) {
      TextSegment tSeg = textSegments.get(i);
-     
-     y = -(tSeg.relLength() * maxH);
      x = (i+1) * graphWidth/(num-1);
-     
-     pushStyle();
-     fill(255,0,0);
-     noStroke();
-     ellipse(x,y,3,3);
      
      pushMatrix();
      fill(0);
@@ -57,76 +52,138 @@ void drawConnectedPeaks() {
      textAlign(LEFT);
      text("" + (i+1) + ". " + tSeg.marker, 0, 0);
      popMatrix();
-     
-     popStyle();
-     
-     vertex(x,y);
   }
-  vertex(graphWidth,0);
   
-  endShape();
   
+  //-----------------------------
+  // TEXT SEGMENTS
+  
+  if (peakConfig.drawText.isTrue()) {
+    beginShape();
+    
+    stroke(255,0,0);
+    strokeWeight(1);
+    if (drawFill) fill(255,0,0,100);
+    else noFill();
+    
+    vertex(0,0);
+    
+    for (int i=0; i<textSegments.length(); i++) {
+       TextSegment tSeg = textSegments.get(i);
+       
+       y = -(tSeg.relLength() * maxH);
+       x = (i+1) * graphWidth/(num-1);
+       
+       pushStyle();
+       fill(255,0,0);
+       noStroke();
+       ellipse(x,y,3,3);
+       
+       popStyle();
+       
+       vertex(x,y);
+    }
+    vertex(graphWidth,0);
+    
+    endShape();
+  }
   
   //-----------------------------
   // VIDEO SEGMENTS
   
   // rel length
   
-  beginShape();
-  
-  stroke(0,0,255);
-  strokeWeight(1);
-  fill(0,0,255,100);
-  
-  vertex(0,0);
-  
-  for (int i=0; i<videoSegments.length(); i++) {
-     VideoSegment vSeg = videoSegments.get(i);
-     
-     y = -(vSeg.duration * maxH);
-     x = (i+1) * graphWidth/(num-1);
-     
-     pushStyle();
-     fill(0,0,255);
-     noStroke();
-     ellipse(x,y,3,3);
-     popStyle();
-     
-     vertex(x,y);
+  if (peakConfig.drawVidSegDur.isTrue()) {
+    beginShape();
+    
+    stroke(0,0,255);
+    strokeWeight(1);
+    if (drawFill) fill(0,0,255,100);
+    else noFill();
+    
+    vertex(0,0);
+    
+    for (int i=0; i<videoSegments.length(); i++) {
+       VideoSegment vSeg = videoSegments.get(i);
+       
+       y = -(vSeg.duration * maxH);
+       x = (i+1) * graphWidth/(num-1);
+       
+       pushStyle();
+       fill(0,0,255);
+       noStroke();
+       ellipse(x,y,3,3);
+       popStyle();
+       
+       vertex(x,y);
+    }
+    vertex(graphWidth,0);
+    
+    endShape();
   }
-  vertex(graphWidth,0);
-  
-  endShape();
-  
   
   // travaled
   
-  beginShape();
-  
-  stroke(0,255,0);
-  strokeWeight(1);
-  fill(0,255,0,100);
-  
-  vertex(0,0);
-  
-  for (int i=0; i<videoSegments.length(); i++) {
-     VideoSegment vSeg = videoSegments.get(i);
-     
-     y = -( (vSeg.traveled / videoData.positions.total) * maxH );
-     x = (i+1) * graphWidth/(num-1);
-     
-     pushStyle();
-     fill(0,255,0);
-     noStroke();
-     ellipse(x,y,3,3);
-     popStyle();
-     
-     vertex(x,y);
+  if (peakConfig.drawTraveled.isTrue()) {
+    beginShape();
+    
+    stroke(0,255,0);
+    strokeWeight(1);
+    if (drawFill) fill(0,255,0,100);
+    else noFill();
+    
+    vertex(0,0);
+    
+    for (int i=0; i<videoSegments.length(); i++) {
+       VideoSegment vSeg = videoSegments.get(i);
+       
+       y = -( (vSeg.traveled / videoData.positions.total) * maxH );
+       x = (i+1) * graphWidth/(num-1);
+       
+       pushStyle();
+       fill(0,255,0);
+       noStroke();
+       ellipse(x,y,3,3);
+       popStyle();
+       
+       vertex(x,y);
+    }
+    vertex(graphWidth,0);
+    
+    endShape();
   }
-  vertex(graphWidth,0);
   
-  endShape();
   
+  // movement
+  
+  if (peakConfig.drawMovement.isTrue()) {
+    beginShape();
+    
+    stroke(255,255,0);
+    strokeWeight(1);
+    if (drawFill) fill(255,255,0,100);
+    else noFill();
+    
+    vertex(0,0);
+    
+    for (int i=0; i<videoSegments.length(); i++) {
+       VideoSegment vSeg = videoSegments.get(i);
+       
+       y = -( (vSeg.movements.getTotalAverage() / videoData.movements.getTotalAverage()) * maxH );
+       x = (i+1) * graphWidth/(num-1);
+       
+       pushStyle();
+       fill(255,255,0);
+       noStroke();
+       ellipse(x,y,3,3);
+       popStyle();
+       
+       vertex(x,y);
+    }
+    vertex(graphWidth,0);
+    
+    endShape();
+  }
   
   
   popStyle();
@@ -155,11 +212,20 @@ void drawConnectedPeaks() {
   strokeWeight(1);
   rect(0,50,10,10);
   
+  fill(255,255,0,100);
+  stroke(255,255,0);
+  strokeWeight(1);
+  rect(0,75,10,10);
+  
   fill(0);
   translate(20,5);
   text("text segment length relative to total text length",0,5);
   text("video segment duration relative to total video duration",0,30);
   text("distance travaled per video segment relative to total distance travaled",0,55);
+  text("movement per video segment relative to total movement during the performance",0,80);
   
   popMatrix();
+  
+  text("1 - 4:", width-300, 65 );
+  text("toggle graphs", width-180, 65 );
 }

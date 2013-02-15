@@ -22,4 +22,20 @@ class MovementData {
   
   MovementData() {
   }
+  
+  int length() {
+    return camLeft.length();
+  }
+  
+  float getTotalAverage() {
+    return (camLeft.total + camRight.total + camCenter.total) /3;
+  }
+  
+  int[] lengthAll() {
+    int[] ar = new int[3];
+    ar[0] = camLeft.length();
+    ar[1] = camRight.length();
+    ar[2] = camCenter.length();
+    return ar;
+  }
 }

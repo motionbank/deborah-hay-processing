@@ -42,6 +42,8 @@ class VideoSegmentList {
      
     PositionData ps = _vd.positions;
     MovementData ms = _vd.movements;
+    int[] la = ms.lengthAll();
+    println("mov data " + la[0] + " " + la[1] + " " + la[2] + " / pos data " + ps.length() );
     
     for (int i=0; i<segments.length; i++) {
       VideoSegment s = segments[i];

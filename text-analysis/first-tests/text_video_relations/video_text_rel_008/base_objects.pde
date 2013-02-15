@@ -20,3 +20,21 @@ class IntListObject {
     return value.length;
   }
 }
+
+
+class ConfigObject {
+  
+  boolean value = true;
+  
+  ConfigObject(boolean _v) {
+    this.value = _v;
+  }
+  
+  boolean isTrue() {
+    return value;
+  }
+  
+  void toggle() {
+    this.value = !this.value;
+  }
+}
