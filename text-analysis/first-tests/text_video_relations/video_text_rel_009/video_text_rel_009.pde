@@ -102,7 +102,7 @@ void draw ()
     pushStyle();
     textAlign( LEFT );
     fill(0);
-    text("RIGHT ARROW:", width-300, 40 );
+    text("RIGHT & LEFT ARROW:", width-300, 40 );
     text("switch charts", width-180, 40 );
     textAlign( LEFT );
     textSize(30);
