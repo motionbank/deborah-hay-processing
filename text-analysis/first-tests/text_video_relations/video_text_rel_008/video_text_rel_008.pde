@@ -42,7 +42,7 @@ PeakConfig peakConfig = new PeakConfig();
 int idx = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = true;
+boolean saveAllFrames = false;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";

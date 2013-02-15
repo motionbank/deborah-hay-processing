@@ -56,7 +56,7 @@ void drawBarCharts () {
         fill(0,255,0);
         rect(x, y+1 + (h/3*2), w, (h/3)-1);
         
-        /*
+        
         // traveled vid diff
         x = sw*3;
         w = maxL*( (vSeg.traveled / videoData.positions.total) - vSeg.relLength() );
@@ -77,9 +77,9 @@ void drawBarCharts () {
         if (w>0) fill(0,0,255);
         else fill(255,0,0);
         rect(x,y+1, w,h);
-        */
         
         
+        /*
         // left total
         x = sw*2;
         w = maxL* (vSeg.movements.camLeft.total / videoData.movements.camLeft.total);
@@ -97,7 +97,7 @@ void drawBarCharts () {
         w = maxL* (vSeg.movements.camRight.total / videoData.movements.camRight.total);
         fill(0);
         rect(x,y+1, w,h);
-        
+        */
         
       /*} 
       else {
