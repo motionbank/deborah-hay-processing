@@ -29,14 +29,19 @@ class VideoSegmentList {
     
     
     //-------------------------------------------------------------
-    // POSITION PER SEGMENT
+    // POSITION & MOVEMENT PER SEGMENT
     
     int num = 0;
     int i0 = 0;
     
     println("seg length " + segments.length);
     
+    /*
+     *   position and movement data should have the same amount of values
+     */
+     
     PositionData ps = _vd.positions;
+    MovementData ms = _vd.movements;
     
     for (int i=0; i<segments.length; i++) {
       VideoSegment s = segments[i];
@@ -50,12 +55,14 @@ class VideoSegmentList {
       // add positions from i0 to i1 to the current video segment
       for (int j=i0; j<=i1; j++) {
         s.addPosition( ps.get(j) );
+        s.movementLeft.add( ms.camLeft.get(j) );
+        s.movementRight.add( ms.camRight.get(j) );
+        s.movementCenter.add( ms.camCenter.get(j) );
       }
       num += s.positions.length;
       
       i0 = i1 + 1;
     }
-    println("-- positions " + num);
   }
   
   
@@ -76,7 +83,12 @@ class VideoSegmentList {
 class VideoSegment {
   
   org.piecemaker.models.Event event;
-  PVector[] positions = new PVector[0];
+  
+  PVector[] positions  = new PVector[0];
+  IntListObject movementLeft   = new IntListObject();
+  IntListObject movementRight  = new IntListObject();
+  IntListObject movementCenter = new IntListObject();
+  
   float duration;
   float start;
   float end;
@@ -90,14 +102,10 @@ class VideoSegment {
   }
   
   void addPosition (PVector _p) {
-    
     if (positions.length > 1) {
-      float l = positions[positions.length-2].dist(_p);
-      this.traveled += l / videoData.positions.traveledTotal;
+      this.traveled += positions[positions.length-2].dist(_p);
     }
-    
     this.positions = (PVector[]) append( this.positions, _p );
-    
   }
   
   float relLength() {

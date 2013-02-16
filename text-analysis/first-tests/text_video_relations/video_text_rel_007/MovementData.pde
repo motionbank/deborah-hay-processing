@@ -1,9 +1,9 @@
 class MovementData {
   
-  int[] camLeft   = new int[0];
-  int[] camRight  = new int[0];
-  int[] camCenter = new int[0];
-  
+  IntListObject camLeft   = new IntListObject();
+  IntListObject camRight  = new IntListObject();
+  IntListObject camCenter = new IntListObject();
+
   MovementData(String _t, int _startIndex) {
     
     String[] parts = _t.split("_");
@@ -14,11 +14,11 @@ class MovementData {
     int[] center = int( loadStrings( path + "CamCenter/imageDifferences.txt" ) );
     
     for (int i=_startIndex; i<left.length; i++) {
-      this.camLeft   = (int[]) append( this.camLeft, left[i] );
-      this.camRight  = (int[]) append( this.camRight, right[i] );
-      this.camCenter = (int[]) append( this.camCenter, center[i] );
+      this.camLeft.add( left[i] );
+      this.camRight.add( right[i] );
+      this.camCenter.add( center[i] );
     }
     
-    println(">>>>>>>> movement " + camLeft.length + " " + camCenter.length + " " + camRight.length);
+    println(">>>>>>>> movement " + camLeft.length() + " " + camCenter.length() + " " + camRight.length());
   }
 }
