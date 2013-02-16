@@ -31,8 +31,27 @@ class PositionData {
     return positions[_i];
   }
   
+  PVector getFirst () {
+    PVector v = new PVector(0,0);
+    for (int i=0; i<this.length();i++) {
+      v = this.get(i);
+      if (v.mag() > 0) break;
+    }
+    return v;
+  }
+  
+  PVector getLast () {
+    PVector v = new PVector(0,0);
+    for (int i=this.length()-1; i>0;i--) {
+      v = this.get(i);
+      if (v.mag() > 0) break;
+    }
+    return v;
+  }
+  
   int length () {
     return positions.length;
   }
+  
   
 }

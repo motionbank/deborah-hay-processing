@@ -6,6 +6,7 @@ void drawPositionsOnStage() {
   stroke(0);
   strokeWeight(1);
   
+  int steps = 10;
   
   int n = floor(255/float(videoSegments.length()));
   
@@ -29,6 +30,8 @@ void drawPositionsOnStage() {
   }
   */
   
+  
+  /*
   pushStyle();
   strokeJoin(ROUND);
   for( int i=0; i<videoSegments.length(); i++) {
@@ -69,7 +72,46 @@ void drawPositionsOnStage() {
     }
     endShape();
   }
+  */
   
+  
+  PositionData ps = videoData.positions;
+  
+  pushStyle();
+  strokeJoin(ROUND);
+  noFill();
+  
+  for( int i=0; i<ps.length(); i+=1) {
+    PVector v = ps.get(i);
+    //float m = videoData.movements.getHighestFromRange(i,steps);
+    float m = videoData.movements.getAverage(i);
+    fill(255,0,0,20);
+    noStroke();
+    if (v.mag() != 0) ellipse(v.x*sf,v.y*sf,m*5.0f,m*5.0f);
+  }
+  popStyle();
+  
+  
+  beginShape();
+  stroke(0);
+  strokeWeight(1);
+  noFill();
+  
+  for( int i=0; i<ps.length(); i++) {
+    PVector v = ps.get(i);
+    if (v.mag() != 0) vertex(v.x*sf,v.y*sf);
+  }
+  endShape();
+  
+  PVector v = ps.getFirst();
+  stroke(0,0,255);
+  strokeWeight(2);
+  ellipse(v.x*sf,v.y*sf,10,10);
+  
+  v = ps.getLast();
+  stroke(0,255,0);
+  strokeWeight(2);
+  ellipse(v.x*sf,v.y*sf,10,10);
   
   popMatrix();
 }

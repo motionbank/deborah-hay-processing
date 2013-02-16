@@ -50,7 +50,7 @@ String loadingMessage = "Loading pieces ...";
 // missing markers at the start, currently only for juliette
 int skipStartMarker = 0;
 
-int drawMode = 1;
+int drawMode = 3;
 
 int[] videoIDs = {
   232, 233, 234, 236, 235, 247, 248, // ros           0 -  6

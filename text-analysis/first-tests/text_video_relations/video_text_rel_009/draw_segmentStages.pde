@@ -2,43 +2,37 @@ void drawSegmentStages() {
   pushMatrix();
   translate(100,100);
   
-  noFill();
-  stroke(0);
-  strokeWeight(1);
-  
-  
   int n = floor(255/float(videoSegments.length()));
   
   //float sf = 50;
   float x = 0;
   float y = 0;
-  float s = 150;
-  float gap = 20;
+  float s = 140;
+  
+  float gap = 30;
+  int steps = 10;
+  float sf = 2.5;
   
   
   pushStyle();
   strokeJoin(ROUND);
+  
   for( int i=0; i<videoSegments.length(); i++) {
     VideoSegment vSeg = videoSegments.get(i);
     
     pushMatrix();
     translate(x,y);
-    stroke(0);
-    strokeWeight(1);
-    rect(0,0,s,s);
     
     pushStyle();
-    stroke(255,0,0,80);
+    fill(255,0,0,20);
+    noStroke();
     
-    noFill();
-    beginShape();
-    for( int j=0; j<vSeg.positions.length(); j++) {
-      float m = (vSeg.movements.camLeft.get(j) + vSeg.movements.camCenter.get(j) + vSeg.movements.camRight.get(j)) / 3;
+    for( int j=0; j<vSeg.positions.length(); j+=1) {
+      //float m = vSeg.movements.getHighestFromRange(i,steps);
+      float m = vSeg.movements.getAverage(j);
       PVector v = vSeg.positions.get(j);
-      strokeWeight(m*10);
-      if (v.mag() != 0) vertex(v.x/12*s,v.y/12*s);
+      if (v.mag() != 0) ellipse(v.x/12*s,v.y/12*s,m*sf,m*sf);
     }
-    endShape();
     popStyle();
     popMatrix();
     
@@ -56,10 +50,20 @@ void drawSegmentStages() {
   
   for( int i=0; i<videoSegments.length(); i++) {
     VideoSegment vSeg = videoSegments.get(i);
+    TextSegment tSeg = textSegments.get(i);
     
     pushMatrix();
     translate(x,y);
-
+    
+    fill(0);
+    textAlign(LEFT);
+    text(tSeg.marker,0,-6);
+    
+    noFill();
+    stroke(0);
+    strokeWeight(1);
+    rect(0,0,s,s);
+    
     beginShape();
     for( int j=0; j<vSeg.positions.length(); j++) {
       PVector v = vSeg.positions.get(j);

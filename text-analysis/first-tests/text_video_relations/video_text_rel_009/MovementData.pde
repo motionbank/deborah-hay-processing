@@ -28,11 +28,36 @@ class MovementData {
   }
   
   float getTotalAverage() {
-    return (camLeft.total + camRight.total + camCenter.total) /3;
+    return (camLeft.total + camRight.total + camCenter.total) /3.0f;
   }
   
   float getAverage(int _i) {
-    return (camLeft.get(_i) + camRight.get(_i) + camCenter.get(_i) ) /3;
+    return (camLeft.get(_i) + camRight.get(_i) + camCenter.get(_i) ) /3.0f;
+  }
+  
+  float getRangeAverage(int _i, int range){
+    
+    float v = 0.0;
+    float skip = 0;
+    
+    for( int i=0; i<range; i++) {
+      int n = i+_i;
+      if (n<this.length()) v += this.getAverage(i+_i);
+      else skip++;
+    }
+    v /= range-skip;
+    return v;
+  }
+  
+  float getHighestFromRange(int _i, int range){
+    
+    float v = 0.0;
+    
+    for( int i=0; i<range && i+_i<this.length(); i++) {
+      float n = this.getAverage(i+_i);
+      if (v < n) v = n;
+    }
+    return v;
   }
   
   int[] lengthAll() {
