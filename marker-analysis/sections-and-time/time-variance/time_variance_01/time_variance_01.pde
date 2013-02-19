@@ -53,7 +53,7 @@ void setup ()
     //cal.setTimeZone( java.util.TimeZone.getTimeZone("UTC") );
     cal.set(2011,3,18,0,0,0); // 3 == April
     recordingsFrom = cal.getTimeInMillis();
-    cal.set(2011,3,19,0,0,0);
+    cal.set(2011,3,26,0,0,0);
     recordingsTo = cal.getTimeInMillis();
     
     api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" );

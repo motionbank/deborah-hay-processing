@@ -54,6 +54,8 @@
          for ( String file : folderFile.list() )
          {
              if ( file.indexOf(".txt") != file.length()-4 ) continue;
+             if ( file.indexOf("_25fps.txt") != -1 ) continue;
+             
              collector.add( rootDir.getPath() + File.separator + folder + File.separator + file );
          }
      }
@@ -73,14 +75,41 @@
          line = 0;
          
          String[] lines = loadStrings( file );
-         String[] lessLines = new String[lines.length/2];
+         int dimension = lines[0].split(" ").length;
+         
+         println( file + " " + dimension );
+         
+         float[][] lessLines = new float[lines.length/2][dimension];
          
          for ( int i = 0; i < lessLines.length; i++ )
          {
-             lessLines[i] = lines[i*2];
+             String[] point3D = split(lines[i*2], " ");
+             lessLines[i] = new float[dimension];
+             
+             for ( int ii = 0; ii < dimension; ii++ )
+             {
+                 lessLines[i][ii] = float( point3D[ii] );
+             }
          }
          
-         saveStrings( file.replace(".txt","_25fps.txt"), lessLines );
+         if ( dimension == 2 )
+             lessLines = fixZeroPoints2D( lessLines );
+         else 
+             lessLines = fixZeroPoints3D( lessLines );
+         
+         String[] lessLinesStr = new String[lessLines.length];
+         
+         for ( int i = 0; i < lessLines.length; i++ )
+         {
+             for ( int ii = 0; ii < dimension; ii++ )
+             {
+                 if ( ii > 0 ) lessLinesStr[i] += " ";
+                 if ( lessLinesStr[i] == null ) lessLinesStr[i] = "";
+                 lessLinesStr[i] += lessLines[i][ii];
+             }
+         }
+         
+         saveStrings( file.replace(".txt","_25fps.txt"), lessLinesStr );
          
          converted++;
          statusMessage = "Converted " + nf((float(converted)/files.length) * 100, 2, 0) + "% of " + files.length;

@@ -31,7 +31,7 @@ long recordingsFrom, recordingsTo;
 
 ArrayList<String> trackFiles;
 
-static String tracksBaseUrl = "http://lab.motionbank.org/dhay/data/";
+static String tracksBaseUrl = "http://lab.motionbank.org/dhay/data/"; // http://moba-lab.local/dhay/data/
 static {
     tracksBaseUrl = "/Users/fjenett/Desktop/MOBA/IGD_Positions/";
 }
