@@ -129,20 +129,21 @@ void draw ()
         
         // traveled total
         x = sw;
-        w = 700*vSeg.traveled - vSeg.relLength();
+        w = 700* (vSeg.traveled / videoData.positions.total);
         fill(0,255,0);
         rect(x, y+1 + (h/3*2), w, (h/3)-1);
         
+        
         // traveled vid diff
         x = sw*3;
-        w = 700*( vSeg.traveled - vSeg.relLength() );
+        w = 700*( (vSeg.traveled / videoData.positions.total) - vSeg.relLength() );
         if (w>0) fill(0,255,0);
         else fill(0,0,255);
         rect(x,y+1, w,h);
         
         // traveled text diff
         x = sw*4;
-        w = 700*( vSeg.traveled - tSeg.relLength() );
+        w = 700*( (vSeg.traveled / videoData.positions.total) - tSeg.relLength() );
         if (w>0) fill(0,255,0);
         else fill(255,0,0);
         rect(x,y+1, w,h);
@@ -153,6 +154,27 @@ void draw ()
         if (w>0) fill(0,0,255);
         else fill(255,0,0);
         rect(x,y+1, w,h);
+        
+        
+        /*
+        // left total
+        x = sw*3;
+        w = 700* (vSeg.movementLeft.total / videoData.movements.camLeft.total);
+        fill(0);
+        rect(x,y+1, w,h);
+        
+        // right total
+        x = sw*4;
+        w = 700* (vSeg.movementRight.total / videoData.movements.camRight.total);
+        fill(0);
+        rect(x,y+1, w,h);
+        
+        // center total
+        w = 700* (vSeg.movementCenter.total / videoData.movements.camCenter.total);
+        x = sw*2;
+        fill(0);
+        rect(x,y+1, w,h);
+        */
         
       /*} 
       else {
