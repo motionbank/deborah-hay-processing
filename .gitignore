@@ -2,3 +2,10 @@
 
 output
 docu
+web-export
+
+application.windows64
+application.windows32
+application.macosx
+application.linux64
+application.linux32
