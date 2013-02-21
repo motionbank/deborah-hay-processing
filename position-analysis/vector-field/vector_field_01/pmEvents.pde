@@ -19,13 +19,6 @@ void videosLoaded ( Videos vids, int piece_id )
         
         // building clusters from videos
         
-        // a cluster is all videos that overlap:
-        //   |-------|    video 1
-        // |-------|      video 2
-        //       |---|    video 3
-        // |=========|    cluster
-        
-        
         clusters = new ArrayList();
         ArrayList<VideoTimeCluster> clustersTemp = new ArrayList();
         
