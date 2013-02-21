@@ -49,6 +49,14 @@
      } else {
          fill( 0 );
          text( currentCluster.from() + " - " + currentCluster.to(), 20, 30 );
+         for ( Video v : currentCluster.getVideos() )
+         {
+             if ( v.getTitle().indexOf("AJA") != -1 )
+             {
+                 text( v.getTitle(), 20, 45 );
+                 break;
+             }
+         }
          
          drawTravelMovement();
      }
