@@ -52,9 +52,9 @@ void eventsLoaded ( Events events, EventTimeCluster cluster )
     
     for ( org.piecemaker.models.Event e : events.events )
     {
-        if ( e.getEventType().equals("scene") )
+        if ( e.getEventType().equals("scene") || e.getEventType().equals("data") )
         {
-            cluster.addEvent( e );
+            cluster.add( e );
         }
     }
     
@@ -62,6 +62,12 @@ void eventsLoaded ( Events events, EventTimeCluster cluster )
     
     if ( clustersExpected == 0 )
     {
+        java.util.Collections.sort( clusters, new java.util.Comparator(){
+            public int compare ( Object a, Object b ) {
+                return ((EventTimeCluster)a).from().compareTo( ((EventTimeCluster)b).from() );
+            }
+        } );
+        currentCluster = clusters.get( 0 );
         loading = false;
     }
 }
