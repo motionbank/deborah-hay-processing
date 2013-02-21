@@ -126,7 +126,7 @@ outer:
                         line( x, height - speeds2[x], x, height );
                     }
                     
-                    saveFrame( "saves/" + c.videos.get(0).title + "_gauss.png" );
+                    saveFrame( "output/" + c.videos.get(0).title + "_gauss.png" );
                     
                     //break outer;
                 }
