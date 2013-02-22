@@ -1,0 +1,4 @@
+attach 'c:\test\b.db3' as toMerge;           
+BEGIN; 
+insert into AuditRecords select * from toMerge.AuditRecords; 
+COMMIT;
