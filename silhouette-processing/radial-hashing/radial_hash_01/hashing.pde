@@ -52,56 +52,52 @@ int[] computeHash ( PImage img, int[] centerOfMass, int[] boundingBox )
     int cx = centerOfMass[0];
     int cy = centerOfMass[1];
     
-    int imgSize = 128;
-    int imgSizeHalf = imgSize / 2;
     int hashSize = 32;
     int hashSizeHalf = hashSize / 2;
 
     int wh = w > h ? w : h;
-    float s = (float)imgSize / wh;
+    float s = (hashSize + 1.0) / wh;
 
-    PGraphics pg = createGraphics( imgSize, imgSize );
+    PGraphics pg = createGraphics( hashSize+1, hashSize+1 );
     pg.beginDraw();
     pg.background( 255 );
-    pg.image( img, -cx * s + imgSizeHalf, -cy * s + imgSizeHalf, img.width * s, img.height * s );
-    removeCache( img );
+    pg.image( sil, -cx * s + hashSizeHalf, -cy * s + hashSizeHalf, sil.width * s, sil.height * s );
+    removeCache( sil );
     pg.endDraw();
 
-    PImage imgScaled = pg.get();
-    imgScaled.updatePixels();
+    PImage sil64 = pg.get();
+    sil64.updatePixels();
 
-    int[] hash = new int[hashSize];
+    int[] hash64 = new int[hashSize];
 
-    float stepRadians = TWO_PI / hashSize;
-    int stepAngle = 360 / hashSize;
-    
+    float stepAngle = TWO_PI / hashSize;
     float angle = 0;
     for ( int i = 0; i < hashSize; i++ )
     {
         int v = 0, vi = 0;
-        angle += stepRadians;
-        for ( int ia = 0; ia < stepAngle; ia++ )
+        angle += stepAngle;
+        for ( int ia = 0; ia < (360/hashSize); ia++ )
         {
             float a = angle + radians(ia);
             float sinAngle = sin(a);
             float cosAngle = cos(a);
-            for ( int ii = 0; ii < imgSizeHalf; ii++ )
+            for ( int ii = 0; ii <= hashSizeHalf; ii++ )
             {
-                int px = int( imgSizeHalf + cosAngle * ii ) + int( imgSizeHalf + sinAngle * ii ) * imgSize;
-                v += imgScaled.pixels[px] & 0xFF;
+                int px = int( (hashSizeHalf+1) + cosAngle * ii ) + int( (hashSizeHalf) + sinAngle * ii ) * (hashSize+1);
+                v += sil64.pixels[px] & 0xFF;
                 vi++;
-                imgScaled.pixels[px] = 0xFF00FF00 | (imgScaled.pixels[px] & 0xFF);
+                sil64.pixels[px] = 0xFF00FF00 | (sil64.pixels[px] & 0xFF);
             }
         }
         v /= vi;
-        hash[i] = v;
+        hash64[i] = v;
     }
     
-    normalizeHash( hash );
-    //hash = sortLargestFirst( hash );
+    normalizeHash( hash64 );
+    //hash64 = sortLargestFirst( hash64 );
     
-    sil = imgScaled.get();
+    sil = sil64.get();
     
-    return hash;
+    return hash64;
 }
 

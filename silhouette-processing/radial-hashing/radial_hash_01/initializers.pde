@@ -1,42 +1,58 @@
 void initPngs ()
 {
-    //silhouetteFolder = "/Users/fjenett/Desktop/silhouettes";
-    silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/Ros_D01T01_withBackgroundAdjustment_Corrected/Images_BackgroundSubstracted/CamCenter";
+    //silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results";
     
     File takesDir = new File( silhouetteFolder );
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.startsWith("Ros_D01") && n.endsWith("_Corrected");
+            return !n.startsWith("Ros_D02") && n.endsWith("_Corrected");
         }
     };
     java.io.FilenameFilter f2 = new java.io.FilenameFilter() {
-        public boolean accept ( File f, String n) {
+        public boolean accept ( File f, String n) { 
             return n.endsWith(".png");
         }
     };
     
-    //String[] takes = takesDir.list(f1);
+    String[] takes = takesDir.list(f1);
+    if ( takes == null )
+    {
+        System.err.println( "No silhouettes folders found at " + silhouetteFolder );
+        exit();
+        return;
+    }
     
     pngs = new String[0];
     
-//    for ( String t : takes )
-//    {
-        File takeDir = null; //new File( silhouetteFolder + "/" + t + "/" + "Images_BackgroundSubstracted/CamCenter" );
-        takeDir = new File( silhouetteFolder );
-        
+    for ( String t : takes )
+    {
+        File takeDir = new File( silhouetteFolder + "/" + t + "/" + "Images_BackgroundSubstracted/CamCenter" );
+
         String[] takePngs = takeDir.list( f2 );
-//        for ( int i = 0, k = takePngs.length; i < k; i++ ) {
-//            takePngs[i] = t + "/" + "Images_BackgroundSubstracted/CamCenter" + "/" + takePngs[i];
-//        }
+        for ( int i = 0, k = takePngs.length; i < k; i++ ) {
+            takePngs[i] = t + "/" + "Images_BackgroundSubstracted/CamCenter" + "/" + takePngs[i];
+        }
         pngs = concat( pngs, takePngs );
-//    }
+    }
     
     println( "PNGs found to be processed: " + pngs.length );
 }
 
 void initDatabase ()
 {
-    db = new SQLite( this, sketchPath("../db.sqlite") );
+    File dbFile = new File( sketchPath( dbFilePath ) );
+    if ( !dbFile.exists() )
+    {
+        try {
+            dbFile.createNewFile();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            exit();
+            return;
+        }
+    }
+    
+    db = new SQLite( this, dbFile.getPath() );
     
     if ( db.connect() )
     {
