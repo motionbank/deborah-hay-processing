@@ -1,7 +1,7 @@
 /**
  *    Motion Bank, http://motionbank.org
  *
- *    
+ *    Calculate the travel distance (3D) based on the 3D position track per recording
  *
  *    P2.0
  *    created: fjenett 20130220
