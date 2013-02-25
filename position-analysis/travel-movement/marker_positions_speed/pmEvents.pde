@@ -1,4 +1,5 @@
 
+
 void piecesLoaded ( Pieces pieces )
 {
     loadingMessage = "Loading videos ...";
@@ -19,14 +20,28 @@ void videosLoaded ( Videos vids, int piece_id )
         
         // building clusters from videos
         
+        // a cluster is all videos that overlap:
+        //   |-------|    video 1
+        // |-------|      video 2
+        //       |---|    video 3
+        // |=========|    cluster
+        
+        
         clusters = new ArrayList();
         ArrayList<VideoTimeCluster> clustersTemp = new ArrayList();
+        
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        //cal.setTimeZone( java.util.TimeZone.getTimeZone("UTC") );
+        cal.set(2011,3,18,0,0,0); // 3 == April
+        long from = cal.getTimeInMillis();
+        cal.set(2011,3,26,0,0,0);
+        long to = cal.getTimeInMillis();
         
         for ( Video v : videos ) 
         {
             // http://notimetofly.herokuapp.com/api/events/between/1298934000/1304200800.js
-            if ( v.getFinishedAt().getTime() < recordingsFrom || 
-                 v.getHappenedAt().getTime() > recordingsTo ) continue;
+            if ( v.getFinishedAt().getTime() < from || 
+                 v.getHappenedAt().getTime() > to ) continue;
             
             boolean hasCluster = false;
             for ( VideoTimeCluster c : clustersTemp )
@@ -111,7 +126,6 @@ void eventsLoaded ( Events evts, VideoTimeCluster c )
                 
                 trackRaw = fixZeroPoints( trackRaw );
                 track.setData( trackRaw );
-                track.applyToVectorField( field, fieldCounts, fieldWidth, fieldHeight );
                 
             } catch ( Exception exc ) {
                 exc.printStackTrace();
@@ -135,45 +149,7 @@ void eventsLoaded ( Events evts, VideoTimeCluster c )
     
     if ( clustersExpected == 0 ) 
     {
-        updateVectorField();
-        //addMoverGrid();
         loading = false;
-    }
-}
-
-void updateVectorField ()
-{
-    float fieldLength;
-    
-    for ( int i = 0; i < field.length; i++ )
-    {
-        if ( fieldCounts[i] == 0 ) continue;
-        
-        field[i].div( fieldCounts[i] );
-        //field[i].normalize();
-        
-        fieldLength = field[i].mag();
-        
-        fieldMean += fieldLength;
-        fieldMin = min( fieldMin, fieldLength );
-        fieldMax = max( fieldMax, fieldLength );
-        
-        fieldCountsMax = max( fieldCountsMax, fieldCounts[i] );
-        fieldCountsMin = min( fieldCountsMin, fieldCounts[i] );
-    }
-    
-    fieldMean /= field.length;
-    println( fieldMin + " " + fieldMax );
-}
-
-void addMoverGrid ()
-{
-    for ( int ix = 0; ix < width; ix += fieldGrid*1.25 )
-    {
-        for ( int iy = 0; iy < height; iy += fieldGrid*1.25 )
-        {
-            movers.add( new Mover( ix, iy ) );
-        }
     }
 }
 

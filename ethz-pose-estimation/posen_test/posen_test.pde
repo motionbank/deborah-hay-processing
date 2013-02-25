@@ -6,6 +6,9 @@
  *
  *    http://groups.inf.ed.ac.uk/calvin/articulated_human_pose_estimation_code/
  *
+ *    Comments here:
+ *    http://ws.motionbank.org/project/body-pose-tracking-tool-eth-zurich-2d
+ *
  *    P2.0
  *    changed: fjenett 20130220
  */
