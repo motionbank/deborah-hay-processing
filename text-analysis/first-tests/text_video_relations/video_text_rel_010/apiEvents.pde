@@ -58,7 +58,7 @@ void eventsLoaded ( Events evts, Video _vid )
       loading = false;
       initData();
       
-      videos.sort();
+      performers.sort();
     }
   }
   else {

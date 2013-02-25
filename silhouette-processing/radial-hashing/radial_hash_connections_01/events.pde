@@ -36,7 +36,7 @@ void mousePressed ()
                   "AND hamming_distance(%d,fasthash) < 1 "+
                   "AND file NOT LIKE \"%s\" "+
               "ORDER BY dist ASC "+
-              "LIMIT 5", 
+              "LIMIT 20", 
               vals, 
               id, 
               fasthash,

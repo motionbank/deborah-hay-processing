@@ -112,7 +112,7 @@ void loadXML() {
   
     srcXML = null;
   try {
-    srcXML = new XML( this, "NTTF_nodes_3.xml" );
+    srcXML = loadXML( "NTTF_nodes_3.xml" );
     //println(srcXML);
   } 
   catch ( Exception e ) {
