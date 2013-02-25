@@ -56,9 +56,8 @@ void eventsLoaded ( Events evts, Video _vid )
         
     if (toLoad == 0) {
       loading = false;
-      initData();
-      
       videos.sort();
+      initData();
     }
   }
   else {

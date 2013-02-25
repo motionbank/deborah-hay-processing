@@ -52,9 +52,9 @@ int performerIndex = 0;
 int drawMode = 3;
 
 int[] videoIDs = {
-  232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
-  249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
-  256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
+  232, 233, 234, 236, 235, 247, 248//, // ros           0 -  6
+  //249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
+  //256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
 };
 
 int toLoad = 0;

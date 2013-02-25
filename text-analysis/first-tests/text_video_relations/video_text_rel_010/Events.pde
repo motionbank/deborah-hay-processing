@@ -2,7 +2,7 @@ void keyPressed() {
   println(keyCode);
   
   if (key == 's') {
-    saveFrame("image_difference_variance3_" + performers.get(performerIndex).name + ".png");
+    saveFrame("image_difference_variance4_" + performers.get(performerIndex).name + ".png");
   }
   
   
