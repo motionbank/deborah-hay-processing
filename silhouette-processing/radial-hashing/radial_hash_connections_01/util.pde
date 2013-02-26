@@ -6,7 +6,7 @@ class Connection
     String file;
     PImage image;
     float x, y;
-    float hemmingDistance = 0;
+    float imageDistance = 0;
     
     Connection ( String p, int pi, int f, String ff, float d )
     {
@@ -15,8 +15,8 @@ class Connection
         frame = f;
         
         file = ff;
-        image = loadImage( silhouettesBase + "/" + file );
-        removeTurquoise( image );
+        //image = loadImage( silhouettesBase + "/" + file );
+        //removeTurquoise( image );
         
          int perfs = performances.size();
          float h = (height/perfs);
@@ -24,7 +24,7 @@ class Connection
          y = performanceIndex * h;
          y += h/2;
          
-         hemmingDistance = d;
+         imageDistance = d;
     }
 }
 

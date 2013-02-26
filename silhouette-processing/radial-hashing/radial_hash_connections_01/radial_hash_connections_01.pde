@@ -62,12 +62,13 @@
  void drawConnection ( Connection c )
  {
      line( c.x, c.y-10, c.x, c.y+10 );
-     image( c.image, 
-            c.x+1, 
-            c.y+1 - (performanceTrackHeight/2), 
-            c.image.width*((performanceTrackHeight-2.0)/c.image.height), 
-            performanceTrackHeight-2 );
-     removeCache( c.image );
+//     image( c.image,
+//            c.x+1, 
+//            c.y+1 - (performanceTrackHeight/2), 
+//            c.image.width*((performanceTrackHeight-2.0)/c.image.height), 
+//            performanceTrackHeight-2 );
+//     removeCache( c.image );
      
-     text( c.hemmingDistance, c.x+3, c.y );
+     fill( 0 );
+     text( c.imageDistance, c.x+3, c.y );
  }

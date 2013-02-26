@@ -33,7 +33,7 @@ void mousePressed ()
     db.query( "SELECT id, file, %s AS dist "+
               "FROM images "+
               "WHERE id IS NOT %d "+
-                  "AND hamming_distance(%d,fasthash) < 1 "+
+                  "AND hamming_distance_64(%d,fasthash) < 1 "+
                   "AND file NOT LIKE \"%s\" "+
               "ORDER BY dist ASC "+
               "LIMIT 20", 
