@@ -17,7 +17,7 @@
  Connection origin;
  
  SQLite db;
- String dbName = "db_Ros_D01-2.sqlite";
+ String dbName = "db_Ros_all.sqlite";
  String silhouettesBase = "/Volumes/Verytim/2011_FIGD_April_Results";
  
  void setup ()
