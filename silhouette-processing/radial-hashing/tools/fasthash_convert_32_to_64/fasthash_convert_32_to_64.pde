@@ -47,7 +47,8 @@
                  
                  int[] vals = new int[32];
                  int id = -1;
-                 long fHash = -1;
+                 long fHash64 = -1L;
+                 int fHash32 = -1;
                  
                  for ( int ii : ids )
                  {
@@ -65,9 +66,16 @@
                          continue;
                      }
                      
-                     fHash = toFastHash64( vals );
+                     fHash64 = toFastHash64( vals );
                      
-                     db.execute( "UPDATE images SET fasthash = %d WHERE id = %d", fHash, id );
+                     for ( int i = 0; i < 32; i++ )
+                     {
+                         vals[i] = vals[i] > 2 ? 1 : 0;
+                     }
+                     
+                     fHash32 = toFastHash32( vals );
+                     
+                     db.execute( "UPDATE images SET fasthash32 = %d, fasthash64 = %d WHERE id = %d", fHash32, fHash64, id );
                      
                      current++;
                  }
@@ -95,7 +103,7 @@
      arc( width/2, height/2, width/2, height/2, -HALF_PI, map( current, 0, total, 0, TWO_PI )-HALF_PI );
  }
  
- long toFastHash64 ( int ... values )
+long toFastHash64 ( int ... values )
 {
     long hash = 0L;
     
@@ -103,6 +111,20 @@
     {
         long v = values[i] & 0x3;
         int s = (62 - (i*2));
+        hash = hash + ( v << s );
+    }
+    
+    return hash;
+}
+
+int toFastHash32 ( int ... values )
+{
+    int hash = 0;
+    
+    for ( int i = 0; i < values.length; i++ )
+    {
+        int v = values[i] & 0x1;
+        int s = (31 - i);
         hash = hash + ( v << s );
     }
     

@@ -25,6 +25,16 @@ void setup ()
     println( Long.toBinaryString( hash2 ) );
     
     println( hammingDistance64( hash1, hash2 ) );
+    
+    println();
+    
+    for ( int i = 0; i < vals.length; i++ )
+    {
+        vals[i] = vals[i] > 0 ? 1 : 0;
+    }
+    
+    int hash3 = toFastHash32( vals );
+    println( Integer.toBinaryString(hash3) );
 }
  
 long toFastHash64 ( int ... values )
@@ -61,4 +71,18 @@ long hammingDistance64 ( long val0, long val1 )
     }
     
     return dist;
+}
+
+int toFastHash32 ( int ... values )
+{
+    int hash = 0;
+    
+    for ( int i = 0; i < values.length; i++ )
+    {
+        int v = values[i] & 0x1;
+        int s = (31 - i);
+        hash = hash + ( v << s );
+    }
+    
+    return hash;
 }

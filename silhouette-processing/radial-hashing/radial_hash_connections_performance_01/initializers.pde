@@ -10,8 +10,7 @@
          return;
      }
      
-     addSQLiteHammingDistance32();
-     addSQLiteHammingDistance64();
+     addSQLiteHammingDistances();
  }
  
  void getPerformances ()
@@ -35,7 +34,7 @@
      }
  }
  
-void addSQLiteHammingDistance32 ()
+void addSQLiteHammingDistances ()
 {
     // HAMMING DISTANCE in SQLite
     // http://en.wikipedia.org/wiki/Hamming_distance
@@ -74,12 +73,6 @@ void addSQLiteHammingDistance32 ()
     } catch ( Exception e ) {
         e.printStackTrace();
     }
-}
-
-void addSQLiteHammingDistance64 ()
-{
-    // HAMMING DISTANCE in SQLite
-    // http://en.wikipedia.org/wiki/Hamming_distance
     
     try {
     org.sqlite.Function.create( db.getConnection(), "hamming_distance_64", new org.sqlite.Function() {

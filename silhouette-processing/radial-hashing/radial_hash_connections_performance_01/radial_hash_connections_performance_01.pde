@@ -31,6 +31,7 @@
      getPerformances();
      performanceTrackHeight = height / performances.size();
      
+     frameNum = performancesLengths.get(perfNum) / 2;
      updatePerformancePosition( perfNum, frameNum );
  }
  
@@ -65,8 +66,8 @@
      
      if ( frameNum < performancesLengths.get(perfNum) )
      {
-         //frameNum += performancesLengths.get(perfNum) / (width-20); // one screen px
-         frameNum += 50; // 1 sec == 50 frames
+         frameNum += performancesLengths.get(perfNum) / (width-20); // one screen px
+         //frameNum += 50; // 1 sec == 50 frames
          //frameNum ++; // every frame
          updatePerformancePosition( perfNum, frameNum );
      }
@@ -78,12 +79,12 @@
  {
      line( c.x, c.y-10, c.x, c.y+10 );
      
-//     image( c.image,
-//            c.x+1, 
-//            c.y+1 - (performanceTrackHeight/2), 
-//            c.image.width*((performanceTrackHeight-2.0)/c.image.height), 
-//            performanceTrackHeight-2 );
-//     removeCache( c.image );
+     image( c.image,
+            c.x+1, 
+            c.y+1 - (performanceTrackHeight/2), 
+            c.image.width*((performanceTrackHeight-2.0)/c.image.height), 
+            performanceTrackHeight-2 );
+     removeCache( c.image );
      
      fill( 0 );
      text( c.imageDistance, c.x+3, c.y );

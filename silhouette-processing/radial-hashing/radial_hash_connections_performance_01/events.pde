@@ -40,23 +40,24 @@ void updatePerformancePosition ( int perf, int frame )
     {
         if ( pn.equals( perfName ) ) continue;
         
-        db.query( "SELECT id, file, %s AS dist "+
+        db.query( "SELECT id, file, %s AS dist, SUBSTR(file, 0, 11) AS perf "+
                   "FROM images "+
                   "WHERE id IS NOT %d "+
-                      "AND hamming_distance_64(%d,fasthash) < %d "+
+                      "AND hamming_distance_32(%d,fasthash32) < %d "+
                       "AND file LIKE \"%s\" "+
                   "ORDER BY dist ASC "+
-                  "LIMIT 1", 
+                  "LIMIT %d", 
                   vals, 
                   id, 
                   fasthash,
-                  3,
-                  pn + "%" );
+                  2,
+                  pn + "%",
+                  1 );
         
         while ( db.next() )
         {
             String rFile = db.getString("file");
-            String rPerfName = rFile.substring( 0, 10 );
+            String rPerfName = db.getString("perf");
             int rPerf = performances.indexOf( rPerfName );
             int rFrame = Integer.parseInt( rFile.substring( rFile.length()-10, rFile.length()-4 ) );
             float rDist = db.getFloat( "dist" );
