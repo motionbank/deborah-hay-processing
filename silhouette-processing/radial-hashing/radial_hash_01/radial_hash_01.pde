@@ -8,9 +8,11 @@
  */
  
 import de.bezier.data.sql.*;
+import org.motionbank.hashing.*;
+import org.motionbank.imaging.*;
 
 SQLite db;
-String dbFilePath = "../db/db_Ros_D02.sqlite";
+String dbFilePath = "../db/db_Test.sqlite";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
@@ -18,6 +20,7 @@ int xmi, ymi, xma, yma;
 String[] pngs;
 int currentSil = 0;
 boolean isNewHash = true;
+final static int HASH_SIZE = 128;
 
 void setup ()
 {
@@ -45,14 +48,14 @@ void draw ()
         }
         else
         {
-            int[] hash = radialHashing();
+            PImage silImage = loadPrepareBinaryImage();
+                    
+            ImageUtilities.PixelLocation com = ImageUtilities.getCenterOfMass( silImage.pixels, silImage.width, silImage.height );
+            ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( silImage.pixels, silImage.width, silImage.height );
+        
+            int[] hash = computeHash( silImage, com.x, com.y, bbox.xCenter, bbox.yCenter, bbox.width, bbox.height );
             
-            int simpleHash = 0;
-            for ( int i = 0; i < 32; i++ )
-            {
-                int bit = (hash[i] > 127) ? 0 : 1;
-                simpleHash = simpleHash + (bit << i);
-            }
+            FastHash fastHash = new FastHash( hash );
         
             noSmooth();
             image( sil, 0, 0, width, width );
@@ -71,16 +74,21 @@ void draw ()
             {
                 rect( 5 + i*3, height - 5 - hash[i], 2, hash[i] );
                 
-                if ( ((simpleHash >> i) & 0x1) == 0 )
+                if ( hash[i] > 127 )
                 {
                     rect( 5 + i*3, height - 5 - 255 - 10, 2, 5 );
                 }
             }
             
             fill( 0 );
-            text( simpleHash, 5, height - 275 );
+            text( fastHash.toHexString(), 5, height - 275 );
             
-            db.execute( "INSERT INTO %s ( fasthash, file ) VALUES (%d, \"%s\")", "images", simpleHash, pngs[currentSil] );
+            db.execute( 
+                "INSERT INTO %s ( fasthash, file ) VALUES ( \"%s\", \"%s\" )", 
+                "images", 
+                fastHash.toHexString(), 
+                pngs[currentSil]
+            );
             db.query( "SELECT last_insert_rowid() AS id" );
             id = db.getInt( "id" );
             

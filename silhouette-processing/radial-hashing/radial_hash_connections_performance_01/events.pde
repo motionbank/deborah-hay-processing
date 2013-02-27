@@ -43,7 +43,7 @@ void updatePerformancePosition ( int perf, int frame )
         db.query( "SELECT id, file, %s AS dist, SUBSTR(file, 0, 11) AS perf "+
                   "FROM images "+
                   "WHERE id IS NOT %d "+
-                      "AND hamming_distance_32(%d,fasthash32) < %d "+
+                      "AND hamming_distance_64(%d,fasthash) < %d "+
                       "AND file LIKE \"%s\" "+
                   "ORDER BY dist ASC "+
                   "LIMIT %d", 

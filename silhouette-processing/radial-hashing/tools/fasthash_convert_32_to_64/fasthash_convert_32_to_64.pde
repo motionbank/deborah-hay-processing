@@ -73,9 +73,9 @@
                          vals[i] = vals[i] > 2 ? 1 : 0;
                      }
                      
-                     fHash32 = toFastHash32( vals );
+                     //fHash32 = toFastHash32( vals );
                      
-                     db.execute( "UPDATE images SET fasthash32 = %d, fasthash64 = %d WHERE id = %d", fHash32, fHash64, id );
+                     db.execute( "UPDATE images SET fasthash = %d WHERE id = %d", fHash64, id );
                      
                      current++;
                  }

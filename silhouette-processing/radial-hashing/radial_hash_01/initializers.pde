@@ -5,7 +5,7 @@ void initPngs ()
     File takesDir = new File( silhouetteFolder );
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return !n.startsWith("Ros_D02") && n.endsWith("_Corrected");
+            return n.startsWith("Ros_D02T01") && n.endsWith("_Corrected");
         }
     };
     java.io.FilenameFilter f2 = new java.io.FilenameFilter() {
@@ -41,6 +41,7 @@ void initPngs ()
 void initDatabase ()
 {
     File dbFile = new File( sketchPath( dbFilePath ) );
+    dbFile.delete();
     if ( !dbFile.exists() )
     {
         try {
@@ -57,13 +58,13 @@ void initDatabase ()
     if ( db.connect() )
     {
         String vals = "";
-        for ( int i = 0; i < 32; i++ )
+        for ( int i = 0; i < HASH_SIZE; i++ )
         {
             vals += String.format( "v%03d INTEGER, ", i );
         }
         db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
                     "id INTEGER PRIMARY KEY , " +
-                    "fasthash INTEGER , " +
+                    "fasthash TEXT , " +
                     vals +
                     "file TEXT )" );
         
@@ -83,6 +84,8 @@ void addSQLiteHammingDistance ()
 {
     // HAMMING DISTANCE in SQLite
     // http://en.wikipedia.org/wiki/Hamming_distance
+    // This seems related:
+    // http://codeblow.com/questions/hamming-distance-on-binary-strings-in-sql/
     
     try {
     org.sqlite.Function.create( db.getConnection(), "hamming_distance", new org.sqlite.Function() {

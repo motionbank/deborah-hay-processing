@@ -1,17 +1,12 @@
 
-int[] radialHashing ()
+PImage loadPrepareBinaryImage ()
 {
     String s = pngs[currentSil];
 
     sil = loadImage( silhouetteFolder + "/" + s );
     sil.loadPixels();
-    for ( int p = 0, k = sil.pixels.length; p < k; p++ )
-    {
-        if ( sil.pixels[p] == 0xFF00FFFF )
-        {
-            sil.pixels[p] = 0xFFFFFFFF;
-        }
-    }
+    
+    removeTurquoise( sil );
 
     sil.filter( BLUR );
     sil.filter( GRAY );
@@ -34,31 +29,38 @@ int[] radialHashing ()
 //            yma = y > yma ? y : yma;
 //        }
 //    }
-
-    int[] bbox = boundingBox( sil );
-    int[] com = centerOfMass( sil );
-
-    return computeHash( sil, com, bbox );
-
-    //     currentSil++;
-    //     currentSil %= pngs.length;
+    
+    return sil;
 }
 
-
-int[] computeHash ( PImage img, int[] centerOfMass, int[] boundingBox )
+ void removeTurquoise ( PImage img )
 {
-    int w = boundingBox[6] + abs(boundingBox[2]-centerOfMass[0]);
-    int h = boundingBox[7] + abs(boundingBox[3]-centerOfMass[1]);
-    int cx = centerOfMass[0];
-    int cy = centerOfMass[1];
+    for ( int i = 0, k = img.pixels.length; i < k; i++ )
+    {
+        if ( img.pixels[i] == 0xFF00FFFF )
+        {
+            img.pixels[i] = 0xFFFFFFFF;
+        }
+    }
+}
+
+int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY, 
+                    int boundingBoxCenterX, int boundingBoxCenterY, int boundingBoxWidth, int boundingBoxHeight )
+{
+    // center silhouette in image of size hash_size ^ 2
     
-    int hashSize = 32;
-    int hashSizeHalf = hashSize / 2;
+    int w = boundingBoxWidth + abs(boundingBoxCenterX-centerOfMassX);
+    int h = boundingBoxHeight + abs(boundingBoxCenterY-centerOfMassY);
+    
+    int cx = centerOfMassX;
+    int cy = centerOfMassY;
+    
+    int hashSizeHalf = HASH_SIZE / 2;
 
-    int wh = w > h ? w : h;
-    float s = (hashSize + 1.0) / wh;
+    float wh = w > h ? w : h;
+    float s = HASH_SIZE / wh;
 
-    PGraphics pg = createGraphics( hashSize+1, hashSize+1 );
+    PGraphics pg = createGraphics( HASH_SIZE, HASH_SIZE );
     pg.beginDraw();
     pg.background( 255 );
     pg.image( sil, -cx * s + hashSizeHalf, -cy * s + hashSizeHalf, sil.width * s, sil.height * s );
@@ -68,36 +70,14 @@ int[] computeHash ( PImage img, int[] centerOfMass, int[] boundingBox )
     PImage sil64 = pg.get();
     sil64.updatePixels();
 
-    int[] hash64 = new int[hashSize];
+    // generate hash values
 
-    float stepAngle = TWO_PI / hashSize;
-    float angle = 0;
-    for ( int i = 0; i < hashSize; i++ )
-    {
-        int v = 0, vi = 0;
-        angle += stepAngle;
-        for ( int ia = 0; ia < (360/hashSize); ia++ )
-        {
-            float a = angle + radians(ia);
-            float sinAngle = sin(a);
-            float cosAngle = cos(a);
-            for ( int ii = 0; ii <= hashSizeHalf; ii++ )
-            {
-                int px = int( (hashSizeHalf+1) + cosAngle * ii ) + int( (hashSizeHalf) + sinAngle * ii ) * (hashSize+1);
-                v += sil64.pixels[px] & 0xFF;
-                vi++;
-                sil64.pixels[px] = 0xFF00FF00 | (sil64.pixels[px] & 0xFF);
-            }
-        }
-        v /= vi;
-        hash64[i] = v;
-    }
+    RadialHashGenerator generator = new RadialHashGenerator( HASH_SIZE );
+    int[] hash = generator.generateHash( sil64.pixels );
     
-    normalizeHash( hash64 );
-    //hash64 = sortLargestFirst( hash64 );
+    normalizeHash( hash );
     
     sil = sil64.get();
     
-    return hash64;
+    return hash;
 }
-
