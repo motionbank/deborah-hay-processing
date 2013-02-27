@@ -51,9 +51,12 @@ void draw ()
             PImage silImage = loadPrepareBinaryImage();
                     
             ImageUtilities.PixelLocation com = ImageUtilities.getCenterOfMass( silImage.pixels, silImage.width, silImage.height );
-            ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( silImage.pixels, silImage.width, silImage.height );
-        
-            int[] hash = computeHash( silImage, com.x, com.y, bbox.xCenter, bbox.yCenter, bbox.width, bbox.height );
+            
+            //ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( silImage.pixels, silImage.width, silImage.height );
+            //int[] hash = computeHash( silImage, com.x, com.y, bbox.xCenter, bbox.yCenter, bbox.width, bbox.height );
+            
+            ImageUtilities.PixelBoundingCircle bbCircle = ImageUtilities.getBoundingCircle( silImage.pixels, silImage.width, silImage.height, com.x, com.y );
+            int[] hash = computeHash( silImage, com.x, com.y, bbCircle.x, bbCircle.x, bbCircle.radius*2, bbCircle.radius*2 );
             
             FastHash fastHash = new FastHash( hash );
         

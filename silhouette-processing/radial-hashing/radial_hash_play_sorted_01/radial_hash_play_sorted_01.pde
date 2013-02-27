@@ -34,7 +34,7 @@
      
      db.query(
          "SELECT id, file, substr( file, 0, 11 ) AS perf FROM images ORDER BY %s",
-         "fasthash"
+         vals
      );
      
      frameRate( 999 );
@@ -53,10 +53,17 @@
          int[] binPixels = toBinaryPixels( img.pixels );
          
          ImageUtilities.PixelLocation com = ImageUtilities.getCenterOfMass( binPixels, img.width, img.height );
-         ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( binPixels, img.width, img.height );
          
-         int imgWidth  = bbox.width  + abs( bbox.xCenter - com.x );
-         int imgHeight = bbox.height + abs( bbox.yCenter - com.y );
+         //ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( binPixels, img.width, img.height );
+         //int bbCenterX = bbox.xCenter, bbCenterY = bbox.yCenter;
+         //int bbWidth = bbox.width, bbHeight = bbox.height;
+         
+         ImageUtilities.PixelBoundingCircle bbCircle = ImageUtilities.getBoundingCircle( binPixels, img.width, img.height, com.x, com.y );
+         int bbCenterX = bbCircle.x, bbCenterY = bbCircle.y;
+         int bbWidth = bbCircle.radius * 2, bbHeight = bbCircle.radius*2;
+         
+         int imgWidth  = bbWidth  + abs( bbCenterX - com.x );
+         int imgHeight = bbHeight + abs( bbCenterY - com.y );
          int padding = 50;
          float imgSize = width-(2*padding);
          float imgScale = imgSize / ( imgWidth > imgHeight ? imgWidth : imgHeight );
