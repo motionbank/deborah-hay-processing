@@ -1,7 +1,7 @@
 /** 
  *    Motion Bank research, http://motionbank.org/
  *
- *    Converter for 32bit hashes to 64bitz hashes ..
+ *    Converter for 32bit int hashes to hex keys
  *
  *    P2.0
  *    fjenett 20130226

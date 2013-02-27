@@ -14,7 +14,7 @@
  ArrayList<Integer> performancesLengths;
  
  SQLite db;
- String dbName = "db_Test.sqlite";
+ String dbName = "db_Ros_ALL.sqlite";
  String silhouettesBase = "/Volumes/Verytim/2011_FIGD_April_Results";
  
  void setup ()
@@ -25,17 +25,19 @@
      
      String vals = "";
      
-     for ( int i = 0; i < 128; i++ )
+     for ( int i = 0; i < 32; i++ )
      {
          if ( i > 0 )
              vals += ", ";
          vals += "v" + nf(i,3);
      }
      
+     long ts = System.currentTimeMillis();
      db.query(
          "SELECT id, file, substr( file, 0, 11 ) AS perf FROM images ORDER BY %s",
          vals
      );
+     println( (System.currentTimeMillis() - ts) / 1000 );
      
      frameRate( 999 );
  }
