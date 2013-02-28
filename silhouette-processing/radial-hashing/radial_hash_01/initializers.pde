@@ -68,11 +68,11 @@ void initDatabase ()
     
     if ( db.connect() )
     {
-        String vals = "";
-        for ( int i = 0; i < HASH_SIZE; i++ )
-        {
-            vals += String.format( (i > 0 ? ", " : " ") + "v%03d INTEGER ", i );
-        }
+//        String vals = "";
+//        for ( int i = 0; i < HASH_SIZE; i++ )
+//        {
+//            vals += String.format( (i > 0 ? ", " : " ") + "v%03d INTEGER ", i );
+//        }
         db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         "hash TEXT, " +
@@ -82,8 +82,6 @@ void initDatabase ()
                         "file TEXT " +
                         //vals +
                     ")" );
-        
-        addSQLiteHammingDistance();
         
 //        db.query( "SELECT hamming_distance(255,126) as v" );
 //        println( db.getInt( "v" ) );

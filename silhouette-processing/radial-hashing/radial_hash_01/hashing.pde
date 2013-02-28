@@ -71,8 +71,8 @@ int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY,
 
     // generate hash values
 
-    RadialHashGenerator generator = new RadialHashGenerator( HASH_SIZE );
-    int[] hash = generator.generateHash( sil64.pixels, tileSize );
+    RadialHashGenerator generator = new RadialHashGenerator();
+    int[] hash = generator.generateHash( sil64.pixels, tileSize, 8, 4 );
     
     HashingUtilities.normalizeValues( hash );
     

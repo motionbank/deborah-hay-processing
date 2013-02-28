@@ -22,7 +22,7 @@ String[] pngs;
 int currentPng = 0;
 PImage sil;
 
-final static int HASH_SIZE = 16;
+//final static int HASH_SIZE = 16;
 String camAngle = "CamCenter";
 
 void setup ()
@@ -59,6 +59,8 @@ void draw ()
         ImageUtilities.PixelBoundingCircle bbCircle = ImageUtilities.getBoundingCircle( silImage.pixels, silImage.width, silImage.height, com.x, com.y );
         
         int[] hash = computeHash( silImage, com.x, com.y, bbCircle.x, bbCircle.x, bbCircle.radius*2, bbCircle.radius*2 );
+        
+        // pack hash bytes into binary array
         
         int[] hashBits = new int[hash.length * 8];
         for ( int i = 0; i < hash.length; i++ )
