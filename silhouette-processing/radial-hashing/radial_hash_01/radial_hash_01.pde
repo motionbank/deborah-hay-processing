@@ -60,13 +60,18 @@ void draw ()
         
         int[] hash = computeHash( silImage, com.x, com.y, bbCircle.x, bbCircle.x, bbCircle.radius*2, bbCircle.radius*2 );
         
-        FastHash fastHash = new FastHash( hash );
+        int[] hash128 = new int[hash.length];
+        System.arraycopy( hash, 0, hash128, 0, hash.length );
+        HashingUtilities.binarizeValues( hash128, 127 );
+        FastHash fastHash = new FastHash( hash128 );
         
         int[] hash64 = new int[64];
-        for ( int i = 0; i < hash.length; i+= 2 )
+        for ( int i = 0, s = hash.length / hash64.length; i < hash.length; i += s )
         {
-            int v = (hash[i] + hash[i+1]) / 2;
-            hash64[i/2] = v;
+            int v = 0;
+            for ( int k = 0; k < s; k++ ) v += hash[i+k];
+            v /= s;
+            hash64[i/s] = v;
         }
         
         HashingUtilities.binarizeValues( hash64, 127 );
