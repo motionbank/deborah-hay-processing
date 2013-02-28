@@ -75,8 +75,7 @@ void initDatabase ()
         }
         db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        //"fasthash64 INT, " +
-                        "fasthash TEXT, " +
+                        "hash TEXT, " +
                         "framenumber INT, " +
                         "performance TEXT, " +
                         "angle TEXT, " +
@@ -93,48 +92,5 @@ void initDatabase ()
     {
         System.err.println( "Unable to connect to database!" );
         exit();
-    }
-}
-
-void addSQLiteHammingDistance ()
-{
-    // HAMMING DISTANCE in SQLite
-    // http://en.wikipedia.org/wiki/Hamming_distance
-    // This seems related:
-    // http://codeblow.com/questions/hamming-distance-on-binary-strings-in-sql/
-    
-    try {
-    org.sqlite.Function.create( db.getConnection(), "hamming_distance", new org.sqlite.Function() {
-        protected void xFunc() {
-            try {
-                
-                int val0 = value_int(0);
-                int val1 = value_int(1);
-                int dist = 0;
-                
-                if ( val0 == val1 ) 
-                {
-                    dist = 0;
-                }
-                else
-                {
-                    int val = val0 ^ val1;
-                
-                    while ( val != 0 )
-                    {
-                        ++dist;
-                        val &= val - 1;
-                    }
-                }
-                
-                result( dist );
-                
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-        }
-    });
-    } catch ( Exception e ) {
-        e.printStackTrace();
     }
 }

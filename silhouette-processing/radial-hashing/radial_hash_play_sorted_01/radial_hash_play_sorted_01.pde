@@ -35,12 +35,12 @@
      long ts = System.currentTimeMillis();
      db.query(
          "SELECT id, file, performance FROM images ORDER BY %s",
-         "fasthash"
+         "hash"
      );
      println( (System.currentTimeMillis() - ts) / 1000 );
      // Ros only (780000 entries) took 5508 secs to complete ... that's 1.5 hours!
      
-     frameRate( 25 );
+     frameRate( 10 );
  }
  
  void draw ()

@@ -43,7 +43,7 @@ void draw ()
     if ( db.next() )
     {
         int id = db.getInt( "id" );
-        String fasthash = db.getString( "fasthash" );
+        String fasthash = db.getString( "hash" );
         
 //        String vals = "";
 //        for ( int i = 0; i < 32; i++ )
@@ -51,7 +51,7 @@ void draw ()
 //            vals += (vals.length() > 0 ? " + " : "") + String.format( "abs(v%03d - %d)", i, db.getInt( String.format("v%03d", i) ) );
 //        }
         
-        db.query( "SELECT id, file FROM images WHERE id IS NOT %d AND hamming_distance_hex( \"%s\",fasthash ) < 5 LIMIT 26", id, fasthash );
+        db.query( "SELECT id, file, hex_dist( \"%s\", hash ) as dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist LIMIT 26", fasthash, id );
         
         //db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist ASC LIMIT 26", vals, id );
         
@@ -60,7 +60,7 @@ void draw ()
         while ( db.next() )
         {
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-            //int dist = db.getInt( "dist" );
+            int dist = db.getInt( "dist" );
             
             x += 250;
             if ( x > width )
@@ -74,11 +74,11 @@ void draw ()
             removeCache( img );
             
             fill( 0 );
-            //text( dist, x+5, y+15 );
+            text( dist, x+5, y+15 );
         }
     }
     
-    //currentSil += 10;
+    currentSil++;
 }
 
 void removeTurquoise ( PImage img )

@@ -121,7 +121,7 @@ void draw ()
         
         db.execute( 
             "INSERT INTO %s ( "+
-                " fasthash, framenumber, performance, angle, file "+
+                " hash, framenumber, performance, angle, file "+
             ") VALUES ( \"%s\", %d, \"%s\", \"%s\", \"%s\" )", 
             "images", 
             fastHash.toHexString(),
@@ -146,7 +146,7 @@ void draw ()
 //        }
     }
     
-    currentPng += 10;
+    currentPng++;
     if ( currentPng == pngs.length ) 
     {
         currentTake++;

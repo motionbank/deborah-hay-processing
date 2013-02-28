@@ -56,7 +56,7 @@ void addSQLiteHammingDistance ()
     // http://en.wikipedia.org/wiki/Hamming_distance
     
     try {
-    org.sqlite.Function.create( db.getConnection(), "hamming_distance_hex", new org.sqlite.Function() {
+    org.sqlite.Function.create( db.getConnection(), "hex_dist", new org.sqlite.Function() {
         protected void xFunc() {
             try {
                 
@@ -71,18 +71,12 @@ void addSQLiteHammingDistance ()
                 }
                 else
                 {
-                    for ( int i = 0, k = val0.length(); i < k; i += 4 )
+                    for ( int i = 0, k = val0.length(); i < k; i += 2 )
                     {
-                        int iVal0 = Integer.parseInt( val0.substring(i,i+4), 16 );
-                        int iVal1 = Integer.parseInt( val1.substring(i,i+4), 16 );
-                        
-                        int val = iVal0 ^ iVal1;
-                    
-                        while ( val != 0 )
-                        {
-                            ++dist;
-                            val &= val - 1;
-                        }
+                        int iVal0 = Integer.parseInt( val0.substring(i,i+2), 16 );
+                        int iVal1 = Integer.parseInt( val1.substring(i,i+2), 16 );
+                        int d = iVal0 - iVal1;
+                        dist += d > 0 ? d : -d;
                     }
                 }
                 
