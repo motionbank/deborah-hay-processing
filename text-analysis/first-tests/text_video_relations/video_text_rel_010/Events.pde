@@ -4,7 +4,7 @@ void keyPressed()
     {
         switch ( key ) {
             case 's':
-                saveFrame("image_difference_variance3_" + performers.get(performerIndex).name + ".png");
+                saveFrame("average_speed_variance1_" + performers.get(performerIndex).name + ".png");
                 break;
             case 'f':
                 drawFill = !drawFill;
@@ -19,7 +19,7 @@ void keyPressed()
             case UP:
                 drawFrame = true;
                 performerIndex += 1;
-                if (performerIndex > 2) performerIndex = 0;
+                if (performerIndex >= performers.length()) performerIndex = 0;
                 break;
             case RIGHT:
                 drawFrame = true;

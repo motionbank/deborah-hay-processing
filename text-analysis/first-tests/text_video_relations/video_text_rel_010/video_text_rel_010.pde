@@ -23,7 +23,9 @@ String API_KEY  = "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe";
 String API_URL  = "http://notimetofly.herokuapp.com/";
 String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 
-String TITLE = "image difference variance";
+//String TITLE = "image difference variance across all performances";
+//String TITLE = "segment length variance across all performances";
+String TITLE = "average movement speed per segment in relation to average performance speed variance across all performances";
 
 XML srcXML;
 String nttf;
@@ -52,9 +54,9 @@ int performerIndex = 0;
 int drawMode = 3;
 
 int[] videoIDs = {
-  232, 233, 234, 236, 235, 247, 248//, // ros           0 -  6
-  //249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
-  //256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
+  232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
+  249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
+  256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
 };
 
 int toLoad = 0;

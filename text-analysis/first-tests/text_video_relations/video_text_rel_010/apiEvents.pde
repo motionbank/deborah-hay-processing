@@ -47,17 +47,21 @@ void loadVideo( int _i ) {
 void eventsLoaded ( Events evts, Video _vid )
 {
   if (evts.events.length > 0 && evts != null) {
+    println("- video " + _vid.id + " loaded");
     //events = evts.events;
     //println(events);
     
     videos.add(_vid, evts.events);
     
     toLoad--;
+    println("> to load " + toLoad);
         
     if (toLoad == 0) {
+      println("- - all videos loaded");
       loading = false;
 
       videos.sort();
+      println("- - - init data");
       initData();
       performers.sort();
     }

@@ -6,8 +6,9 @@ class VideoObjectList {
     }
 
     void add ( org.piecemaker.models.Video _video, org.piecemaker.models.Event[] _events ) {
+        println("- - - - creating video object: " + _video.id );
         this.videos.add( new VideoObject( _video, _events ) );
-        println("video object created: " + _video.id );
+        println("- - - - video object created: " + _video.id );
     }
 
     VideoObject get (int _i) {
