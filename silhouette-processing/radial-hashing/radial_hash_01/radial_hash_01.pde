@@ -22,7 +22,7 @@ String[] pngs;
 int currentPng = 0;
 PImage sil;
 
-final static int HASH_SIZE = 128;
+final static int HASH_SIZE = 32;
 String camAngle = "CamCenter";
 
 void setup ()
@@ -60,22 +60,28 @@ void draw ()
         
         int[] hash = computeHash( silImage, com.x, com.y, bbCircle.x, bbCircle.x, bbCircle.radius*2, bbCircle.radius*2 );
         
-        int[] hash128 = new int[hash.length];
-        System.arraycopy( hash, 0, hash128, 0, hash.length );
-        HashingUtilities.binarizeValues( hash128, 127 );
-        FastHash fastHash = new FastHash( hash128 );
-        
-        int[] hash64 = new int[64];
-        for ( int i = 0, s = hash.length / hash64.length; i < hash.length; i += s )
+        int[] hashBits = new int[hash.length * 8];
+        for ( int i = 0; i < hash.length; i++ )
         {
-            int v = 0;
-            for ( int k = 0; k < s; k++ ) v += hash[i+k];
-            v /= s;
-            hash64[i/s] = v;
+            int aByte = hash[i] & 0xFF;
+            for ( int ii = 0; ii < 8; ii++ )
+            {
+                hashBits[i*8 + ii] = (aByte >> (7-ii)) & 0x1;
+            }
         }
+        FastHash fastHash = new FastHash( hashBits );
         
-        HashingUtilities.binarizeValues( hash64, 127 );
-        FastHash fastHash64 = new FastHash( hash64 );
+//        int[] hash32 = new int[64];
+//        for ( int i = 0, s = hash.length / hash64.length; i < hash.length; i += s )
+//        {
+//            int v = 0;
+//            for ( int k = 0; k < s; k++ ) v += hash[i+k];
+//            v /= s;
+//            hash64[i/s] = v;
+//        }
+//        
+//        HashingUtilities.binarizeValues( hash64, 127 );
+//        FastHash fastHash64 = new FastHash( hash64 );
     
         noSmooth();
         image( sil, 0, 0, width, width );
@@ -115,10 +121,9 @@ void draw ()
         
         db.execute( 
             "INSERT INTO %s ( "+
-                "fasthash64, fasthash128, framenumber, performance, angle, file "+
-            ") VALUES ( %d, \"%s\", %d, \"%s\", \"%s\", \"%s\" )", 
+                " fasthash, framenumber, performance, angle, file "+
+            ") VALUES ( \"%s\", %d, \"%s\", \"%s\", \"%s\" )", 
             "images", 
-            fastHash64.getLong64(),
             fastHash.toHexString(),
             frameNumber,
             performance,

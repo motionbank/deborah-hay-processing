@@ -75,8 +75,8 @@ void initDatabase ()
         }
         db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "fasthash64 INT, " +
-                        "fasthash128 TEXT, " +
+                        //"fasthash64 INT, " +
+                        "fasthash TEXT, " +
                         "framenumber INT, " +
                         "performance TEXT, " +
                         "angle TEXT, " +
