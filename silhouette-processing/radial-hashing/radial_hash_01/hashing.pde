@@ -1,9 +1,7 @@
 
-PImage loadPrepareBinaryImage ()
+PImage loadPrepareBinaryImage ( String png )
 {
-    String s = pngs[currentSil];
-
-    sil = loadImage( silhouetteFolder + "/" + s );
+    sil = loadImage( silhouetteFolder + "/" + png );
     sil.loadPixels();
     
     removeTurquoise( sil );
@@ -75,7 +73,7 @@ int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY,
     RadialHashGenerator generator = new RadialHashGenerator( HASH_SIZE );
     int[] hash = generator.generateHash( sil64.pixels );
     
-    normalizeHash( hash );
+    HashingUtilities.normalizeValues( hash );
     
     sil = sil64.get();
     

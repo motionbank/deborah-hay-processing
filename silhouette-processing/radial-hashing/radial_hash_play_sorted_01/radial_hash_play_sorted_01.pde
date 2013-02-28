@@ -38,6 +38,7 @@
          vals
      );
      println( (System.currentTimeMillis() - ts) / 1000 );
+     // Ros only (780000 entries) took 5508 secs to complete ... that's 1.5 hours!
      
      frameRate( 999 );
  }

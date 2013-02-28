@@ -1,20 +1,15 @@
-void initPngs ()
-{
-    //silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results";
-    
+void initTakes ()
+{    
     File takesDir = new File( silhouetteFolder );
+    
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.startsWith("Ros_D02T01") && n.endsWith("_Corrected");
-        }
-    };
-    java.io.FilenameFilter f2 = new java.io.FilenameFilter() {
-        public boolean accept ( File f, String n) { 
-            return n.endsWith(".png");
+            return /*n.startsWith("Ros_D02T01") &&*/ n.endsWith("_Corrected");
         }
     };
     
-    String[] takes = takesDir.list(f1);
+    takes = takesDir.list(f1);
+    
     if ( takes == null )
     {
         System.err.println( "No silhouettes folders found at " + silhouetteFolder );
@@ -22,26 +17,42 @@ void initPngs ()
         return;
     }
     
+    currentTake = 0;
+}
+
+void initPngs ()
+{
+    java.io.FilenameFilter f2 = new java.io.FilenameFilter() {
+        public boolean accept ( File f, String n) { 
+            return n.endsWith(".png");
+        }
+    };
+    
     pngs = new String[0];
     
-    for ( String t : takes )
-    {
-        File takeDir = new File( silhouetteFolder + "/" + t + "/" + "Images_BackgroundSubstracted/CamCenter" );
+    File takeDir = new File( silhouetteFolder + "/" + takes[currentTake] + "/" + "Images_BackgroundSubstracted/" + camAngle );
 
-        String[] takePngs = takeDir.list( f2 );
-        for ( int i = 0, k = takePngs.length; i < k; i++ ) {
-            takePngs[i] = t + "/" + "Images_BackgroundSubstracted/CamCenter" + "/" + takePngs[i];
-        }
-        pngs = concat( pngs, takePngs );
+    String[] takePngs = takeDir.list( f2 );
+    for ( int i = 0, k = takePngs.length; i < k; i++ ) 
+    {
+        takePngs[i] = takes[currentTake] + "/" + "Images_BackgroundSubstracted/" + camAngle + "/" + takePngs[i];
     }
+    pngs = concat( pngs, takePngs );
+    
+    currentPng = 0;
     
     println( "PNGs found to be processed: " + pngs.length );
 }
 
 void initDatabase ()
 {
-    File dbFile = new File( sketchPath( dbFilePath ) );
+    String[] pieces = takes[currentTake].split("_");
+    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
+    
+    File dbFile = new File( sketchPath( String.format( dbFilePath, take ) ) );
+    
     dbFile.delete();
+    
     if ( !dbFile.exists() )
     {
         try {
@@ -60,13 +71,18 @@ void initDatabase ()
         String vals = "";
         for ( int i = 0; i < HASH_SIZE; i++ )
         {
-            vals += String.format( "v%03d INTEGER, ", i );
+            vals += String.format( (i > 0 ? ", " : " ") + "v%03d INTEGER ", i );
         }
         db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
-                    "id INTEGER PRIMARY KEY , " +
-                    "fasthash TEXT , " +
-                    vals +
-                    "file TEXT )" );
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "fasthash64 INT, " +
+                        "fasthash128 TEXT, " +
+                        "framenumber INT, " +
+                        "performance TEXT, " +
+                        "angle TEXT, " +
+                        "file TEXT, " +
+                        vals +
+                    ")" );
         
         addSQLiteHammingDistance();
         

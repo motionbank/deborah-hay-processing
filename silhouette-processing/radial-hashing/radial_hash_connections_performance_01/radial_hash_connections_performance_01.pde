@@ -8,6 +8,7 @@
  */
  
  import de.bezier.data.sql.*;
+ import org.motionbank.hashing.*;
 
  ArrayList<String> performances;
  ArrayList<Integer> performancesLengths;
