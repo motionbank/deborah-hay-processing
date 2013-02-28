@@ -80,8 +80,8 @@ void initDatabase ()
                         "framenumber INT, " +
                         "performance TEXT, " +
                         "angle TEXT, " +
-                        "file TEXT, " +
-                        vals +
+                        "file TEXT " +
+                        //vals +
                     ")" );
         
         addSQLiteHammingDistance();

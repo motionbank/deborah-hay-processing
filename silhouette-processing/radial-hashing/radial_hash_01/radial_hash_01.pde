@@ -22,7 +22,7 @@ String[] pngs;
 int currentPng = 0;
 PImage sil;
 
-final static int HASH_SIZE = 32;
+final static int HASH_SIZE = 16;
 String camAngle = "CamCenter";
 
 void setup ()
@@ -134,19 +134,19 @@ void draw ()
         db.query( "SELECT last_insert_rowid() AS id" );
         id = db.getInt( "id" );
         
-        if ( id != -1 )
-        {
-            String vals = "";
-            for ( int i = 0; i < hash.length; i++ )
-            {
-                vals += (vals.length() == 0 ? "" : ",") + String.format( "v%03d = %d", i, hash[i] );
-            }
-            
-            db.execute( "UPDATE %s SET %s WHERE id = %d", "images", vals, id );
-        }
+//        if ( id != -1 )
+//        {
+//            String vals = "";
+//            for ( int i = 0; i < hash.length; i++ )
+//            {
+//                vals += (vals.length() == 0 ? "" : ",") + String.format( "v%03d = %d", i, hash[i] );
+//            }
+//            
+//            db.execute( "UPDATE %s SET %s WHERE id = %d", "images", vals, id );
+//        }
     }
     
-    currentPng++;
+    currentPng += 10;
     if ( currentPng == pngs.length ) 
     {
         currentTake++;

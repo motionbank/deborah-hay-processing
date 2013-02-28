@@ -2,7 +2,7 @@ void initPngs ()
 {
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.startsWith("Ros_D01") && n.endsWith("_Corrected");
+            return n.startsWith("Janine_D05T01") && n.endsWith("_Corrected");
         }
     };
     java.io.FilenameFilter f2 = new java.io.FilenameFilter() {
@@ -37,7 +37,7 @@ void initPngs ()
 
 void initDatabase ()
 {
-    db = new SQLite( this, sketchPath("../db/db_Ros_D01-2.sqlite") );
+    db = new SQLite( this, sketchPath( database ) );
     
     if ( db.connect() )
     {
@@ -56,26 +56,33 @@ void addSQLiteHammingDistance ()
     // http://en.wikipedia.org/wiki/Hamming_distance
     
     try {
-    org.sqlite.Function.create( db.getConnection(), "hamming_distance", new org.sqlite.Function() {
+    org.sqlite.Function.create( db.getConnection(), "hamming_distance_hex", new org.sqlite.Function() {
         protected void xFunc() {
             try {
                 
-                int val0 = value_int(0);
-                int val1 = value_int(1);
+                String val0 = value_text(0);
+                String val1 = value_text(1);
+                
                 int dist = 0;
                 
-                if ( val0 == val1 ) 
+                if ( val0.equals( val1 ) ) 
                 {
                     dist = 0;
                 }
                 else
                 {
-                    int val = val0 ^ val1;
-                
-                    while ( val != 0 )
+                    for ( int i = 0, k = val0.length(); i < k; i += 4 )
                     {
-                        ++dist;
-                        val &= val - 1;
+                        int iVal0 = Integer.parseInt( val0.substring(i,i+4), 16 );
+                        int iVal1 = Integer.parseInt( val1.substring(i,i+4), 16 );
+                        
+                        int val = iVal0 ^ iVal1;
+                    
+                        while ( val != 0 )
+                        {
+                            ++dist;
+                            val &= val - 1;
+                        }
                     }
                 }
                 

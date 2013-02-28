@@ -53,15 +53,16 @@ int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY,
     int cx = centerOfMassX;
     int cy = centerOfMassY;
     
-    int hashSizeHalf = HASH_SIZE / 2;
+    int tileSize = 128;
+    int tileSizeHalf = tileSize / 2;
 
     float wh = w > h ? w : h;
-    float s = HASH_SIZE / wh;
+    float s = tileSize / wh;
 
-    PGraphics pg = createGraphics( HASH_SIZE, HASH_SIZE );
+    PGraphics pg = createGraphics( tileSize, tileSize );
     pg.beginDraw();
     pg.background( 255 );
-    pg.image( sil, -cx * s + hashSizeHalf, -cy * s + hashSizeHalf, sil.width * s, sil.height * s );
+    pg.image( sil, -cx * s + tileSizeHalf, -cy * s + tileSizeHalf, sil.width * s, sil.height * s );
     removeCache( sil );
     pg.endDraw();
 
@@ -71,7 +72,7 @@ int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY,
     // generate hash values
 
     RadialHashGenerator generator = new RadialHashGenerator( HASH_SIZE );
-    int[] hash = generator.generateHash( sil64.pixels );
+    int[] hash = generator.generateHash( sil64.pixels, tileSize );
     
     HashingUtilities.normalizeValues( hash );
     

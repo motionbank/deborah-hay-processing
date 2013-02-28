@@ -11,11 +11,12 @@ import de.bezier.data.sql.*;
 
 SQLite db;
 String databasePath;
+String database = "../db/db_v2_Janine_D05T01_CamCenter.sqlite";
 
 PImage sil;
 String silhouetteFolder;
 String[] pngs;
-int currentSil = 15000;
+int currentSil = 0;
 
 void setup ()
 {
@@ -42,15 +43,15 @@ void draw ()
     if ( db.next() )
     {
         int id = db.getInt( "id" );
-        int fasthash = db.getInt( "fasthash" );
+        String fasthash = db.getString( "fasthash" );
         
-        String vals = "";
-        for ( int i = 0; i < 32; i++ )
-        {
-            vals += (vals.length() > 0 ? " + " : "") + String.format( "abs(v%03d - %d)", i, db.getInt( String.format("v%03d", i) ) );
-        }
+//        String vals = "";
+//        for ( int i = 0; i < 32; i++ )
+//        {
+//            vals += (vals.length() > 0 ? " + " : "") + String.format( "abs(v%03d - %d)", i, db.getInt( String.format("v%03d", i) ) );
+//        }
         
-        db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND hamming_distance(%d,fasthash) < 2 ORDER BY dist ASC LIMIT 26", vals, id, fasthash );
+        db.query( "SELECT id, file FROM images WHERE id IS NOT %d AND hamming_distance_hex( \"%s\",fasthash ) < 5 LIMIT 26", id, fasthash );
         
         //db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist ASC LIMIT 26", vals, id );
         
@@ -59,7 +60,7 @@ void draw ()
         while ( db.next() )
         {
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-            int dist = db.getInt( "dist" );
+            //int dist = db.getInt( "dist" );
             
             x += 250;
             if ( x > width )
@@ -73,11 +74,11 @@ void draw ()
             removeCache( img );
             
             fill( 0 );
-            text( dist, x+5, y+15 );
+            //text( dist, x+5, y+15 );
         }
     }
     
-    currentSil+=2;
+    //currentSil += 10;
 }
 
 void removeTurquoise ( PImage img )
