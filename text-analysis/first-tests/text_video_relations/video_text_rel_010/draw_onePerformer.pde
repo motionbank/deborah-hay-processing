@@ -58,20 +58,42 @@ void drawOnePerformer () {
     
     beginShape();
     
+    /*
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
-      /*
-      float m0 = s.movements.getTotal();
-      float l0 = s.movements.length();
-      float m1 = v.data.movements.getTotal();
-      float l1 = v.data.movements.length();
-      println("+++++++++++++++++++ " + m0 +  " " +  m1 + " " + (m0/m1 + l0/l1)/2);
-      */
       float m0 = s.movements.getTotalAverage();
       float m1 = v.segments.getMovementTotalAverage();
-      println("+++++++++++++++++++ " + m0 +  " " +  m1 + " " + m0/m1);
       y = map( m0/m1, 0, 1, 0, -size*3) + size;
+      x = j*(size/pv.length());
+      vertex(x,y);
+    }
+    */
+    
+    /*
+    for (int j=0; j<pv.length(); j++) {
+      VideoObject v = pv.get(j);
+      VideoSegment s = v.segments.get(i);
+      float m0 = s.duration;
+      //float m1 = v.data.duration;
+      //println("++++++++ " + m0 + " " + m1);
+      y = map( m0, 0, 1, 0, -size*3) + size;
+      x = j*(size/pv.length());
+      vertex(x,y);
+    }
+    */
+    
+    stroke(200);
+    line(0,(size-30)/2 + 30,size,(size-30)/2 + 30);
+    stroke(0);
+    
+    for (int j=0; j<pv.length(); j++) {
+      VideoObject v = pv.get(j);
+      VideoSegment s = v.segments.get(i);
+      float m0 = s.speeds.getAverage();
+      float m1 = v.data.speeds.getAverage();
+      if(i==0) println("++++++++ " + textSegments.get(i).marker + m0 + " " + m1);
+      y = map( m0-m1, 0, 1, 0, -size*10) + (size-30)/2 + 30;
       x = j*(size/pv.length());
       vertex(x,y);
     }
