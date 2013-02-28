@@ -4,6 +4,7 @@ class VideoSegmentList {
   VideoSegment[] segments;
   
   float mAvgTotal = -1;
+  float speedAvgTotal = -1;
 
   VideoSegmentList( VideoData _vd ) {
     
@@ -94,6 +95,20 @@ class VideoSegmentList {
       return mAvgTotal;
     }
     else return mAvgTotal;
+  }
+  
+  float getSpeedTotalAverage() {
+    
+    if (speedAvgTotal == -1){
+      speedAvgTotal = 0.0;
+      
+      for (int i=0; i<this.segments.length; i++) {
+        speedAvgTotal += segments[i].speeds.getAverage();
+      }
+      speedAvgTotal /= this.segments.length;
+      return speedAvgTotal;
+    }
+    else return speedAvgTotal;
   }
 }
 
