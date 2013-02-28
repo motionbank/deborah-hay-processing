@@ -23,7 +23,9 @@ String API_KEY  = "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe";
 String API_URL  = "http://notimetofly.herokuapp.com/";
 String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 
-String TITLE = "image difference variance";
+//String TITLE = "image difference variance across all performances";
+//String TITLE = "segment length variance across all performances";
+String TITLE = "average movement speed per segment in relation to average performance speed variance across all performances";
 
 XML srcXML;
 String nttf;

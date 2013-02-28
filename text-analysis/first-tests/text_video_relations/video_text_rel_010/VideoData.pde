@@ -2,6 +2,7 @@ class VideoData {
   
   MovementData                     movements;
   PositionData                     positions;
+  SpeedData                        speeds;
   
   org.piecemaker.models.Event[]    sceneEvents;
   org.piecemaker.models.Event[]    dataEvents;
@@ -56,12 +57,15 @@ class VideoData {
     org.piecemaker.models.Event dataEvent = dataEvents[0];
     String positionsFile = dataEvent.description.substring(7,dataEvent.description.length());
     positionsFile = positionsFile.substring(0,positionsFile.indexOf('.')) + "_interpolated.txt";
-    String[] positionData = loadStrings( DATA_URL + positionsFile);
+    //String[] positionData = loadStrings( DATA_URL + positionsFile);
     
     this.performer = positionsFile.substring(0,positionsFile.indexOf('_'));
     
+    String[] parts = file.title.split("_");
+    String path = "speed/" + parts[1] + "_" + parts[0] + "_withBackgroundAdjustment_Corrected/TravelDistances3D_interpolated.txt";
     
-    this.numFrames = positionData.length;
+    
+    //this.numFrames = positionData.length;
     
     float firstMarkerRel = (firstEvent.getHappenedAt().getTime() - file.getHappenedAt().getTime()) / (file.getDuration()*1000);
     this.firstMarkerIndex = floor( firstMarkerRel * numFrames );
@@ -69,12 +73,12 @@ class VideoData {
     
     //-------------------------------------------------------------
      
-    this.positions = new PositionData( positionData, this.firstMarkerIndex );
-    
+    //this.positions = new PositionData( positionData, this.firstMarkerIndex );
+    this.speeds = new SpeedData( loadStrings(path), this.firstMarkerIndex );
     this.movements = new MovementData( file.title, this.firstMarkerIndex );
-    
+        
     // check if positions is too long
-    if (this.positions.length() - this.movements.length() == 1) this.positions.positions.remove(this.positions.positions.size()-1);
+    //if (this.positions.length() - this.movements.length() == 1) this.positions.positions.remove(this.positions.positions.size()-1);
     
   }
 }
