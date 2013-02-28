@@ -91,9 +91,10 @@ void drawOnePerformer () {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
       float m0 = s.speeds.getAverage();
-      float m1 = v.data.speeds.getAverage();
-      if(i==0) println("++++++++ " + textSegments.get(i).marker + m0 + " " + m1);
+      float m1 = v.segments.getSpeedTotalAverage();
+      if(i==25) println("++++++++ " + textSegments.get(i).marker + m0 + " " + m1);
       y = map( m0-m1, 0, 1, 0, -size*10) + (size-30)/2 + 30;
+      //y = map( m0, 0, 1, 0, -size*10) + (size-30)/2 + 30;
       x = j*(size/pv.length());
       vertex(x,y);
     }
