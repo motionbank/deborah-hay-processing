@@ -99,7 +99,7 @@ void drawPerformerPerformances () {
       ellipse(vx,vy,20,20);
       fill(0);
       textAlign(CENTER);
-      text(j,vx,vy-5);
+      text(j,vx,vy+5);
       /*
       c = new CircleDrawer();
       c.radiusBase = 10;
