@@ -1,4 +1,4 @@
-void drawOnePerformer () {
+void drawPerformerSegments () {
   
   float graphY = floor(height/3*2);
   float graphX = 100;

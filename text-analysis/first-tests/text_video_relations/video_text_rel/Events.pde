@@ -4,7 +4,7 @@ void keyPressed()
     {
         switch ( key ) {
             case 's':
-                saveFrame("distance_traveled_variance1_" + performers.get(performerIndex).name + ".png");
+                saveFrame("average_position_perf1_" + performers.get(performerIndex).name + ".png");
                 break;
             case 'f':
                 drawFill = !drawFill;
