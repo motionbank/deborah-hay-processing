@@ -54,31 +54,34 @@ class VideoData {
     
     // load file here because we need the total amount of frames
     
-    org.piecemaker.models.Event dataEvent = dataEvents[0];
-    String positionsFile = dataEvent.description.substring(7,dataEvent.description.length());
-    positionsFile = positionsFile.substring(0,positionsFile.indexOf('.')) + "_interpolated.txt";
-    //String[] positionData = loadStrings( DATA_URL + positionsFile);
-    
-    this.performer = positionsFile.substring(0,positionsFile.indexOf('_'));
-    
     String[] parts = file.title.split("_");
     String path = "speed/" + parts[1] + "_" + parts[0] + "_withBackgroundAdjustment_Corrected/TravelDistances3D_interpolated.txt";
     
+    org.piecemaker.models.Event dataEvent = dataEvents[0];
+    //String positionsFile = dataEvent.description.substring(7,dataEvent.description.length());
+    //positionsFile = positionsFile.substring(0,positionsFile.indexOf('.')) + "_interpolated.txt";
+    String[] positionData = loadStrings( "data/positions/" + parts[1] + "_" + parts[0] + "_positions/Positions3D_interpolated.txt" );
+    //saveStrings("data/positions/" + parts[1] + "_" + parts[0] + "_positions/Positions3D_interpolated.txt", positionData);
     
-    //this.numFrames = positionData.length;
+    this.performer = parts[1];
+    
+    
+    
+    
+    this.numFrames = positionData.length;
     
     float firstMarkerRel = (firstEvent.getHappenedAt().getTime() - file.getHappenedAt().getTime()) / (file.getDuration()*1000);
     this.firstMarkerIndex = floor( firstMarkerRel * numFrames );
     
     
     //-------------------------------------------------------------
-     
-    //this.positions = new PositionData( positionData, this.firstMarkerIndex );
+    println("+ + + + + " + file.id + " " + file.title);
+    this.positions = new PositionData( positionData, this.firstMarkerIndex );
     this.speeds = new SpeedData( loadStrings(path), this.firstMarkerIndex );
     this.movements = new MovementData( file.title, this.firstMarkerIndex );
         
     // check if positions is too long
-    //if (this.positions.length() - this.movements.length() == 1) this.positions.positions.remove(this.positions.positions.size()-1);
+    if (this.positions.length() - this.movements.length() == 1) this.positions.positions.remove(this.positions.positions.size()-1);
     
   }
 }
