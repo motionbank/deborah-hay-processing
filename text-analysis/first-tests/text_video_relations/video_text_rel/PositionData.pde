@@ -40,6 +40,25 @@ class PositionData {
     return v;
   }
   
+  PVector getAverage() {
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+    float s = this.positions.size();
+    
+    for (int i=0; i<s; i++) {
+      PVector v = this.positions.get(i);
+      x += v.x;
+      y += v.y;
+      z += v.z;
+    }
+    x /= s;
+    y /= s;
+    z /= s;
+    println("========= " + s + " " + x + " " + y + " " + z);
+    return new PVector(x,y,z);
+  }
+  
   PVector getLast () {
     PVector v = new PVector(0,0);
     for (int i=this.length()-1; i>0;i--) {

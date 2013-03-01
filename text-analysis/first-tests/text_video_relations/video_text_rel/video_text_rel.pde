@@ -25,7 +25,10 @@ String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionbank/_data/";
 //String TITLE = "image difference variance across all performances";
 //String TITLE = "segment length variance across all performances";
-String TITLE = "average movement speed per segment in relation to average performance speed variance across all performances";
+//String TITLE = "average movement speed per segment in relation to average performance speed variance across all performances";
+//String TITLE = "average position on stage across all performances.\ngreen = first performace. blue = last performance. line = order of performances";
+String TITLE = "distance tranveled per segment across all performances";
+
 
 XML srcXML;
 String nttf;
@@ -54,9 +57,9 @@ int performerIndex = 0;
 int drawMode = 3;
 
 int[] videoIDs = {
-  232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
+  232, 233, 234, /*236,*/ 235, 247, 248, // ros           0 -  6
   249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
-  256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
+  256, /*257,*/ 258, 259, 260, 261, 262  // jeanine       14 - 20
 };
 
 int toLoad = 0;

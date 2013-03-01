@@ -42,11 +42,11 @@ class VideoSegmentList {
      *   position and movement data should have the same amount of values
      */
      
-    // ====== PositionData ps = _vd.positions;
+    PositionData ps = _vd.positions;
     MovementData ms = _vd.movements;
     SpeedData ss = _vd.speeds;
     int[] la = ms.lengthAll();
-    // ====== println("mov data " + la[0] + " " + la[1] + " " + la[2] + " / pos data " + ps.length() );
+    println("mov data " + la[0] + " " + la[1] + " " + la[2] + " / pos data " + ps.length() );
     
     for (int i=0; i<segments.length; i++) {
       VideoSegment s = segments[i];
@@ -59,13 +59,13 @@ class VideoSegmentList {
       
       // add positions and movements from i0 to i1 to the current video segment
       for (int j=i0; j<=i1; j++) {
-        // ====== s.positions.add( ps.get(j) );
+        s.positions.add( ps.get(j) );
         s.movements.camLeft.add( ms.camLeft.get(j) );
         s.movements.camRight.add( ms.camRight.get(j) );
         s.movements.camCenter.add( ms.camCenter.get(j) );
         s.speeds.add( ss.get(j) );
       }
-      // ====== num += s.positions.length();
+      num += s.positions.length();
       
       i0 = i1 + 1;
     }
