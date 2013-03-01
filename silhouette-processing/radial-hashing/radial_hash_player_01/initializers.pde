@@ -41,7 +41,7 @@ void initDatabase ()
     
     if ( db.connect() )
     {
-        addSQLiteHammingDistance();
+        addSQLiteDistanceFunctions();
     }
     else
     {
@@ -50,12 +50,12 @@ void initDatabase ()
     }
 }
 
-void addSQLiteHammingDistance ()
+void addSQLiteDistanceFunctions ()
 {
-    // HAMMING DISTANCE in SQLite
-    // http://en.wikipedia.org/wiki/Hamming_distance
-    
     try {
+        
+    // compare two blobs
+        
     org.sqlite.Function.create( db.getConnection(), "hex_dist", new org.sqlite.Function() {
         protected void xFunc() {
             try {
@@ -64,19 +64,12 @@ void addSQLiteHammingDistance ()
                 byte[] val1 = value_blob(1);
                 
                 int dist = 0;
-                
-//                if ( val0.equals( val1 ) ) 
-//                {
-//                    dist = 0;
-//                }
-//                else
-//                {
-                    for ( int i = 0, k = val0.length; i < k; i ++ )
-                    {
-                        int d = val0[i] - val1[i];
-                        dist += d > 0 ? d : -d;
-                    }
-//                }
+            
+                for ( int i = 0, k = val0.length; i < k; i ++ )
+                {
+                    int d = val0[i] - val1[i];
+                    dist += d > 0 ? d : -d;
+                }
                 
                 result( dist );
                 
@@ -85,6 +78,41 @@ void addSQLiteHammingDistance ()
             }
         }
     });
+    
+    // compare two longs
+    
+    org.sqlite.Function.create( db.getConnection(), "bit_dist", new org.sqlite.Function() {
+        protected void xFunc() {
+            try {
+                
+                long val0 = value_long(0);
+                long val1 = value_long(1);
+                
+                int dist = 0;
+                
+                if ( val0 == val1 ) 
+                {
+                    dist = 0;
+                }
+                else
+                {
+                    long val = val0 ^ val1;
+                
+                    while ( val != 0 )
+                    {
+                        ++dist;
+                        val &= val - 1;
+                    }
+                }
+                
+                result( dist );
+                
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+        }
+    });
+    
     } catch ( Exception e ) {
         e.printStackTrace();
     }

@@ -42,8 +42,10 @@ PImage loadPrepareBinaryImage ( String png )
     }
 }
 
-int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY, 
-                    int boundingBoxCenterX, int boundingBoxCenterY, int boundingBoxWidth, int boundingBoxHeight )
+int[] computeHash ( PImage img, 
+                    int centerOfMassX, int centerOfMassY, 
+                    int boundingBoxCenterX, int boundingBoxCenterY, 
+                    int boundingBoxWidth, int boundingBoxHeight )
 {
     // center silhouette in image of size hash_size ^ 2
     
@@ -71,8 +73,7 @@ int[] computeHash ( PImage img, int centerOfMassX, int centerOfMassY,
 
     // generate hash values
 
-    RadialHashGenerator generator = new RadialHashGenerator();
-    int[] hash = generator.generateHash( sil64.pixels, tileSize, 8, 4 );
+    int[] hash = RadialHashGenerator.generateHash( sil64.pixels, tileSize, 16, 8 );
     
     HashingUtilities.normalizeValues( hash );
     

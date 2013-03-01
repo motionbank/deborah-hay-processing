@@ -68,23 +68,25 @@ void initDatabase ()
     
     if ( db.connect() )
     {
+        
 //        String vals = "";
 //        for ( int i = 0; i < HASH_SIZE; i++ )
 //        {
 //            vals += String.format( (i > 0 ? ", " : " ") + "v%03d INTEGER ", i );
 //        }
-        db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
+
+        db.execute( "CREATE TABLE IF NOT EXISTS silhouettes ( "+
                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "fasthash INT, " +
                         "hash BLOB, " +
                         "framenumber INT, " +
                         "performance TEXT, " +
                         "angle TEXT, " +
-                        "file TEXT " +
-                        //vals +
+                        "file TEXT, " +
+                        "circle_x INT, " +
+                        "circle_y INT, " +
+                        "circle_radius REAL " +
                     ")" );
-        
-//        db.query( "SELECT hamming_distance(255,126) as v" );
-//        println( db.getInt( "v" ) );
     }
     else
     {

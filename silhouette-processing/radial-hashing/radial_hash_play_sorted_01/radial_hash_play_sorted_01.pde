@@ -60,7 +60,7 @@
          //int bbCenterX = bbox.xCenter, bbCenterY = bbox.yCenter;
          //int bbWidth = bbox.width, bbHeight = bbox.height;
          
-         ImageUtilities.PixelBoundingCircle bbCircle = ImageUtilities.getBoundingCircle( binPixels, img.width, img.height, com.x, com.y );
+         ImageUtilities.PixelCircumCircle bbCircle = ImageUtilities.getCircumCircle( binPixels, img.width, img.height, com.x, com.y );
          int bbCenterX = bbCircle.x, bbCenterY = bbCircle.y;
          int bbWidth = bbCircle.radius * 2, bbHeight = bbCircle.radius*2;
          

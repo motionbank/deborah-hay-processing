@@ -12,12 +12,15 @@ import de.bezier.data.sql.*;
 
 SQLite db;
 String databasePath;
-String database = "../db/db_v2_Ros_ALL_CamCenter.sqlite";
+String database = "../db/db_v3_Ros_D01T01_CamCenter.sqlite";
 
 PImage sil;
 String silhouetteFolder;
 String[] pngs;
 int currentSil = 1000;
+
+float ts1a = 0, ts2a = 0;
+int tsi = 0;
 
 void setup ()
 {
@@ -33,17 +36,18 @@ void draw ()
 {
     background( 255 );
     
-    int x = 0, y = 0;
+    int x = 0, y = 200;
     
     sil = loadImage( silhouetteFolder + "/" + pngs[currentSil] );
     
     drawSilhouette( sil, 0, 0, 200, 200 );
     
-    db.query( "SELECT id, hex(hash) as hash, performance FROM images WHERE file = \"%s\"", pngs[currentSil] );
+    db.query( "SELECT id, fasthash, hex(hash) as hash, performance FROM silhouettes WHERE file = \"%s\"", pngs[currentSil] );
     if ( db.next() )
     {
         int id = db.getInt( "id" );
-        String fasthash = db.getString( "hash" );
+        String hash = db.getString( "hash" );
+        long fasthash = db.getLong( "fasthash" );
         String performance = db.getString( "performance" );
         
 //        String vals = "";
@@ -52,23 +56,24 @@ void draw ()
 //            vals += (vals.length() > 0 ? " + " : "") + String.format( "abs(v%03d - %d)", i, db.getInt( String.format("v%03d", i) ) );
 //        }
         
-        long ts = System.currentTimeMillis();
+        long ts1 = System.currentTimeMillis();
         
         db.query( "SELECT id, file, hex_dist( X'%s', hash ) as dist, performance "+
-                      "FROM images "+
+                      "FROM silhouettes "+
                       "WHERE id IS NOT %d AND "+
-                            "performance NOT LIKE \"%s\" AND "+
-                            "dist < 200 "+
+                            //"performance NOT LIKE \"%s\" AND "+
+                            "dist < 1600 "+
                       "ORDER BY dist "+
-                      "LIMIT 26", 
-                      fasthash, 
+                      "LIMIT 5", 
+                      hash, 
                       id,
                       performance );
+
+        ts1a += (System.currentTimeMillis() - ts1) / 1000.0;
+        println( "Querytime: " + (ts1a / tsi) );
         
         //db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist ASC LIMIT 26", vals, id );
         //db.query( "SELECT id, file, fasthash, hamming_distance(%d,fasthash) AS hdist FROM images WHERE id != %d AND hdist < 2 ORDER BY hdist LIMIT 26" , fasthash, id );
-
-        println( (System.currentTimeMillis() - ts) / 1000.0 );
         
         while ( db.next() )
         {
@@ -76,19 +81,61 @@ void draw ()
             int dist = db.getInt( "dist" );
             String perf = db.getString( "performance" );
             
+            drawSilhouette( img, x, y, 200, 200 );
+            
+            fill( 0 );
+            text( dist, x+5, y+15 );
+            text( perf, x+5, y+35 );
+            
             x += 250;
             if ( x > width )
             {
                 x = 0;
                 y += 250;
             }
-            
-            drawSilhouette( img, x, y, 200, 200 );
-            
-            fill( 0 );
-            text( dist, x+5, y+15 );
-            text( perf, x+5, y+35 );
         }
+//        
+//        x = 0;
+//        y += 250;
+//        
+//        long ts2 = System.currentTimeMillis();
+//
+//        db.query( "SELECT id, file, bit_dist( %d, fasthash ) as dist, performance "+
+//                      "FROM silhouettes "+
+//                      "WHERE id IS NOT %d AND "+
+//                            //"performance NOT LIKE \"%s\" AND "+
+//                            "dist < 6 "+
+//                      "ORDER BY dist "+
+//                      "LIMIT 5", 
+//                      fasthash, 
+//                      id,
+//                      performance );
+//        
+//        ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
+//        
+//        while ( db.next() )
+//        {
+//            PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
+//            int dist = db.getInt( "dist" );
+//            String perf = db.getString( "performance" );
+//            
+//            drawSilhouette( img, x, y, 200, 200 );
+//            
+//            fill( 0 );
+//            text( dist, x+5, y+15 );
+//            text( perf, x+5, y+35 );
+//            
+//            x += 250;
+//            if ( x > width )
+//            {
+//                x = 0;
+//                y += 250;
+//            }
+//        }         
+
+//        println( "F/H " + (ts1a/tsi) + " / " + (ts2a/tsi) );
+//        println();
+        tsi++;           
     }
     
     currentSil += 3;
@@ -102,7 +149,7 @@ void drawSilhouette ( PImage img, int ix, int iy, int iwidth, int iheight )
      
      ImageUtilities.PixelLocation com = ImageUtilities.getCenterOfMass( binPixels, img.width, img.height );
      
-     ImageUtilities.PixelBoundingCircle bbCircle = ImageUtilities.getBoundingCircle( binPixels, img.width, img.height, com.x, com.y );
+     ImageUtilities.PixelCircumCircle bbCircle = ImageUtilities.getCircumCircle( binPixels, img.width, img.height, com.x, com.y );
      
      int bbCenterX = bbCircle.x, bbCenterY = bbCircle.y;
      int bbWidth = bbCircle.radius * 2, bbHeight = bbCircle.radius*2;
