@@ -2,7 +2,7 @@ void initPngs ()
 {
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.startsWith("Janine_D05T01") && n.endsWith("_Corrected");
+            return n.startsWith("Ros_D01") && n.endsWith("_Corrected");
         }
     };
     java.io.FilenameFilter f2 = new java.io.FilenameFilter() {
@@ -60,25 +60,23 @@ void addSQLiteHammingDistance ()
         protected void xFunc() {
             try {
                 
-                String val0 = value_text(0);
-                String val1 = value_text(1);
+                byte[] val0 = value_blob(0);
+                byte[] val1 = value_blob(1);
                 
                 int dist = 0;
                 
-                if ( val0.equals( val1 ) ) 
-                {
-                    dist = 0;
-                }
-                else
-                {
-                    for ( int i = 0, k = val0.length(); i < k; i += 2 )
+//                if ( val0.equals( val1 ) ) 
+//                {
+//                    dist = 0;
+//                }
+//                else
+//                {
+                    for ( int i = 0, k = val0.length; i < k; i ++ )
                     {
-                        int iVal0 = Integer.parseInt( val0.substring(i,i+2), 16 );
-                        int iVal1 = Integer.parseInt( val1.substring(i,i+2), 16 );
-                        int d = iVal0 - iVal1;
+                        int d = val0[i] - val1[i];
                         dist += d > 0 ? d : -d;
                     }
-                }
+//                }
                 
                 result( dist );
                 

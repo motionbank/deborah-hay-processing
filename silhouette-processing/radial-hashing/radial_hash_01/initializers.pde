@@ -4,7 +4,7 @@ void initTakes ()
     
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return /*n.startsWith("Ros_D02T01") &&*/ n.endsWith("_Corrected");
+            return n.startsWith("Ros_") && n.endsWith("_Corrected");
         }
     };
     
@@ -75,7 +75,7 @@ void initDatabase ()
 //        }
         db.execute( "CREATE TABLE IF NOT EXISTS images ( "+
                         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "hash TEXT, " +
+                        "hash BLOB, " +
                         "framenumber INT, " +
                         "performance TEXT, " +
                         "angle TEXT, " +

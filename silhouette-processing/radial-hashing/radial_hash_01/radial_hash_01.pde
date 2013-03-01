@@ -124,7 +124,7 @@ void draw ()
         db.execute( 
             "INSERT INTO %s ( "+
                 " hash, framenumber, performance, angle, file "+
-            ") VALUES ( \"%s\", %d, \"%s\", \"%s\", \"%s\" )", 
+            ") VALUES ( X'%s', %d, \"%s\", \"%s\", \"%s\" )", 
             "images", 
             fastHash.toHexString(),
             frameNumber,

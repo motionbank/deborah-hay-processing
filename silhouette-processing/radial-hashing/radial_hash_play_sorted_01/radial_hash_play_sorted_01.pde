@@ -14,7 +14,7 @@
  ArrayList<Integer> performancesLengths;
  
  SQLite db;
- String dbName = "db_v2_Janine_D05T01_CamCenter.sqlite";
+ String dbName = "db_v2_Ros_ALL_CamCenter.sqlite";
  String silhouettesBase = "/Volumes/Verytim/2011_FIGD_April_Results";
  
  void setup ()
@@ -34,8 +34,7 @@
      
      long ts = System.currentTimeMillis();
      db.query(
-         "SELECT id, file, performance FROM images ORDER BY %s",
-         "hash"
+         "SELECT id, file, performance FROM images ORDER BY hex(hash)"
      );
      println( (System.currentTimeMillis() - ts) / 1000 );
      // Ros only (780000 entries) took 5508 secs to complete ... that's 1.5 hours!
