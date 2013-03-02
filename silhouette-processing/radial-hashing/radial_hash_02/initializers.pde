@@ -4,7 +4,7 @@ void initTakes ()
     
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.startsWith("Ros_") && n.endsWith("_Corrected");
+            return n.endsWith("_Corrected");
         }
     };
     
@@ -46,25 +46,27 @@ void initPngs ()
 
 void initDatabase ()
 {
-    String[] pieces = takes[currentTake].split("_");
-    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
-    
-    File dbFile = new File( sketchPath( String.format( dbFilePath, take ) ) );
-    
-    dbFile.delete();
-    
-    if ( !dbFile.exists() )
-    {
-        try {
-            dbFile.createNewFile();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            exit();
-            return;
-        }
-    }
-    
-    db = new SQLite( this, dbFile.getPath() );
+//    String[] pieces = takes[currentTake].split("_");
+//    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
+//    
+//    File dbFile = new File( sketchPath( String.format( dbFilePath, take ) ) );
+//    
+//    //dbFile.delete();
+//    
+//    if ( !dbFile.exists() )
+//    {
+//        try {
+//            dbFile.createNewFile();
+//        } catch ( Exception e ) {
+//            e.printStackTrace();
+//            exit();
+//            return;
+//        }
+//    }
+//    
+//    db = new SQLite( this, dbFile.getPath() );
+
+    db = new MySQL( this, "localhost", "moba_silhouettes", "moba", "moba" );
     
     if ( db.connect() )
     {
@@ -76,16 +78,16 @@ void initDatabase ()
 //        }
 
         db.execute( "CREATE TABLE IF NOT EXISTS silhouettes ( "+
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "fasthash INT, " +
+                        "id INT(11) PRIMARY KEY AUTO_INCREMENT, " +
+                        "fasthash BIGINT NOT NULL DEFAULT 0, " +
                         "hash BLOB, " +
-                        "framenumber INT, " +
-                        "performance TEXT, " +
-                        "angle TEXT, " +
-                        "file TEXT, " +
-                        "circle_x INT, " +
-                        "circle_y INT, " +
-                        "circle_radius REAL " +
+                        "framenumber INTEGER NOT NULL DEFAULT 0, " +
+                        "performance TEXT NOT NULL, " +
+                        "angle TEXT NOT NULL, " +
+                        "file TEXT NOT NULL, " +
+                        "circle_x INTEGER NOT NULL DEFAULT 0, " +
+                        "circle_y INTEGER NOT NULL DEFAULT 0, " +
+                        "circle_radius REAL NOT NULL DEFAULT 0.0" +
                     ")" );
     }
     else

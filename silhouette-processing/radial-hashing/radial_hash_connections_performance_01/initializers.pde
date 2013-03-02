@@ -10,8 +10,7 @@
          return;
      }
      
-     addSQLiteHammingDistance32();
-     addSQLiteHammingDistance64();
+     addSQLiteHammingDistances();
  }
  
  void getPerformances ()
@@ -35,7 +34,7 @@
      }
  }
  
-void addSQLiteHammingDistance32 ()
+void addSQLiteHammingDistances ()
 {
     // HAMMING DISTANCE in SQLite
     // http://en.wikipedia.org/wiki/Hamming_distance
@@ -47,65 +46,22 @@ void addSQLiteHammingDistance32 ()
                 
                 int val0 = value_int(0);
                 int val1 = value_int(1);
-                int dist = 0;
                 
-                if ( val0 == val1 ) 
-                {
-                    dist = 0;
-                }
-                else
-                {
-                    int val = val0 ^ val1;
-                
-                    while ( val != 0 )
-                    {
-                        ++dist;
-                        val &= val - 1;
-                    }
-                }
-                
-                result( dist );
+                result( FastHash.getBinaryDistance( val0, val1 ) );
                 
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
         }
     });
-    } catch ( Exception e ) {
-        e.printStackTrace();
-    }
-}
-
-void addSQLiteHammingDistance64 ()
-{
-    // HAMMING DISTANCE in SQLite
-    // http://en.wikipedia.org/wiki/Hamming_distance
-    
-    try {
     org.sqlite.Function.create( db.getConnection(), "hamming_distance_64", new org.sqlite.Function() {
         protected void xFunc() {
             try {
                 
                 long val0 = value_int(0);
                 long val1 = value_int(1);
-                long dist = 0;
                 
-                if ( val0 == val1 ) 
-                {
-                    dist = 0;
-                }
-                else
-                {
-                    long val = val0 ^ val1;
-                
-                    while ( val != 0 )
-                    {
-                        ++dist;
-                        val &= val - 1;
-                    }
-                }
-                
-                result( dist );
+                result( FastHash.getBinaryDistance( val0, val1 ) );
                 
             } catch ( Exception e ) {
                 e.printStackTrace();

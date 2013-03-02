@@ -11,8 +11,8 @@ import de.bezier.data.sql.*;
 import org.motionbank.hashing.*;
 import org.motionbank.imaging.*;
 
-SQLite db;
-String dbFilePath = "../db/db_v3_%s.sqlite";
+MySQL db;
+String dbFilePath = "../db/db_v4_%s.sqlite";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 String[] takes;
@@ -32,6 +32,8 @@ void setup ()
     initTakes();
     initDatabase();
     initPngs();
+    
+    frameRate( 999 );
 }
 
 void draw ()
@@ -85,7 +87,7 @@ void draw ()
         // byte to bit ---------
         
         int[] hashLong64 = new int[64];
-        for ( int i = 0; i < hashLong64.length; i++ )
+        for ( int i = 0; i < hashLong64.length && i < hash.length; i++ )
         {
             hashLong64[i] = (hash[i] & 0xFF) > 127 ? 1 : 0;
         }
@@ -131,7 +133,8 @@ void draw ()
             circumCircle.radius
         );
         
-        db.query( "SELECT last_insert_rowid() AS id" );
+        db.query( "SELECT last_insert_id() AS id" );
+        db.next();
         id = db.getInt( "id" );
         
         if ( id != -1 )

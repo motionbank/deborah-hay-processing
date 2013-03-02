@@ -8,21 +8,23 @@
  */
  
 import de.bezier.data.sql.*;
+ import org.motionbank.imaging.*;
 
 SQLite db;
-String databasePath;
+String database = "../db/dbV4ALLCenterCam.sqlite";
+String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
-String silhouetteFolder;
-String[] pngs;
-int currentSil = 15000;
+int currentId = 1000;
+
+float ts1a = 0, ts2a = 0;
+int tsi = 0;
 
 void setup ()
 {
     size( 250 * 6, 250 * 4 );
     
     initDatabase();
-    initPngs();
     
     frameRate( 10 );
 }
@@ -31,35 +33,59 @@ void draw ()
 {
     background( 255 );
     
-    int x = 0, y = 0;
+    db.query( "SELECT id, fasthash, hex(hash) AS hash, performance, file FROM silhouettes WHERE id > %d ORDER BY id LIMIT 1", currentId );
     
-    sil = loadImage( silhouetteFolder + "/" + pngs[currentSil] );
-    removeTurquoise( sil );
-    image( sil, 0, 0 );
-    removeCache( sil );
-    
-    db.query( "SELECT * FROM images WHERE file = \"%s\"", pngs[currentSil] );
     if ( db.next() )
     {
-        int id = db.getInt( "id" );
-        int fasthash = db.getInt( "fasthash" );
+        currentId = db.getInt( "id" );
+        String hash = db.getString( "hash" );
+        long fasthash = db.getLong( "fasthash" );
+        String performance = db.getString( "performance" );
+        String file = db.getString( "file" );
         
-        String vals = "";
-        for ( int i = 0; i < 32; i++ )
-        {
-            vals += (vals.length() > 0 ? " + " : "") + String.format( "abs(v%03d - %d)", i, db.getInt( String.format("v%03d", i) ) );
-        }
+        sil = loadImage( silhouetteFolder + "/" + file );
+        drawSilhouette( sil, 0, 0, 200, 200 );
         
-        db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND hamming_distance(%d,fasthash) < 2 ORDER BY dist ASC LIMIT 26", vals, id, fasthash );
+        long ts1 = System.currentTimeMillis();
+        
+        db.query( "SELECT id, "+
+                         "file, "+
+                         "bit_dist( %d, fasthash ) AS bdist, "+
+                         "hex_dist( X'%s', hash ) AS dist, "+
+                         "performance "+
+                      "FROM silhouettes "+
+                      "WHERE id IS NOT %d AND "+
+                            //"bdist <= 1 AND "+
+                            "dist < ((length(hash) * 255) / 10) "+
+                            //"performance NOT LIKE \"%s\" AND "+
+                      "ORDER BY dist ASC "+
+                      "LIMIT 5", 
+                      fasthash,
+                      hash, 
+                      currentId
+                      //, performance
+                 );
+
+        ts1a += (System.currentTimeMillis() - ts1) / 1000.0;
+        println( "Querytime: " + (ts1a / tsi) );
         
         //db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist ASC LIMIT 26", vals, id );
-        
         //db.query( "SELECT id, file, fasthash, hamming_distance(%d,fasthash) AS hdist FROM images WHERE id != %d AND hdist < 2 ORDER BY hdist LIMIT 26" , fasthash, id );
+        
+        int x = 0, y = 250;
         
         while ( db.next() )
         {
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
             int dist = db.getInt( "dist" );
+            int bitDist = db.getInt( "bdist" );
+            String perf = db.getString( "performance" );
+            
+            drawSilhouette( img, x, y, 200, 200 );
+            
+            fill( 0 );
+            text( dist + " | " + bitDist, x+5, y+15 );
+            text( perf, x+5, y+35 );
             
             x += 250;
             if ( x > width )
@@ -67,18 +93,90 @@ void draw ()
                 x = 0;
                 y += 250;
             }
+        }
+        
+        x = 0;
+        y += 250;
+        
+        long ts2 = System.currentTimeMillis();
+
+        db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
+                      "FROM silhouettes "+
+                      "WHERE id IS NOT %d AND "+
+                            //"performance NOT LIKE \"%s\" AND "+
+                            "dist <= 0 "+
+                      "ORDER BY dist "+
+                      "LIMIT 5", 
+                      fasthash, 
+                      currentId,
+                      performance );
+        
+        ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
+        
+        while ( db.next() )
+        {
+            PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
+            int dist = db.getInt( "dist" );
+            String perf = db.getString( "performance" );
             
-            removeTurquoise( img );
-            image( img, x, y );
-            removeCache( img );
+            drawSilhouette( img, x, y, 200, 200 );
             
             fill( 0 );
             text( dist, x+5, y+15 );
-        }
+            text( perf, x+5, y+35 );
+            
+            x += 250;
+            if ( x > width )
+            {
+                x = 0;
+                y += 250;
+            }
+        }         
+
+        println( "F/H " + (ts1a/tsi) + " / " + (ts2a/tsi) );
+        println();
+
+        tsi++;           
     }
-    
-    currentSil+=2;
 }
+
+void drawSilhouette ( PImage img, int ix, int iy, int iwidth, int iheight )
+{
+    removeTurquoise( img );
+    
+    int[] binPixels = toBinaryPixels( img.pixels );
+     
+     ImageUtilities.PixelLocation com = ImageUtilities.getCenterOfMass( binPixels, img.width, img.height );
+     
+     ImageUtilities.PixelCircumCircle bbCircle = ImageUtilities.getCircumCircle( binPixels, img.width, img.height, com.x, com.y );
+     
+     int bbCenterX = bbCircle.x, bbCenterY = bbCircle.y;
+     int bbWidth = bbCircle.radius * 2, bbHeight = bbCircle.radius*2;
+     
+     int imgWidth  = bbWidth  + abs( bbCenterX - com.x );
+     int imgHeight = bbHeight + abs( bbCenterY - com.y );
+     int padding = 0;
+     float imgSize = iwidth;
+     float imgScale = imgSize / ( imgWidth > imgHeight ? imgWidth : imgHeight );
+     
+     image( img, ix + padding + -com.x * imgScale + imgSize/2, 
+                 iy + padding + -com.y * imgScale + imgSize/2, 
+                 img.width * imgScale, 
+                 img.height * imgScale );
+    
+    removeCache( img );
+}
+
+ int[] toBinaryPixels ( int[] pixels )
+ {
+     int[] tmp = new int[pixels.length];
+     for ( int i = 0; i < pixels.length; i++ )
+     {
+         tmp[i] = (((pixels[i] >> 16) & 0xFF) + ((pixels[i] >> 8) & 0xFF) + (pixels[i]& 0xFF)) / 3;
+         tmp[i] = tmp[i] > 255 / 2 ? 255 : 0;
+     }
+     return tmp;
+ }
 
 void removeTurquoise ( PImage img )
 {

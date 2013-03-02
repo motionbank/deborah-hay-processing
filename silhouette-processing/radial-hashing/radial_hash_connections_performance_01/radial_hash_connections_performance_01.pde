@@ -1,13 +1,14 @@
 /**
  *    Motion Bank research, http://motionbank.org/
  *
- *    Show silhouette connections
+ *    Per run, calculate average value of best connections to other performances
  *
  *    P2.0
  *    created: fjenett 20130222
  */
  
  import de.bezier.data.sql.*;
+ import org.motionbank.hashing.*;
 
  ArrayList<String> performances;
  ArrayList<Integer> performancesLengths;
@@ -20,6 +21,9 @@
  String dbName = "db_Ros_all.sqlite";
  String silhouettesBase = "/Volumes/Verytim/2011_FIGD_April_Results";
  
+ int perfNum = 0;
+ int frameNum = 0;
+ 
  void setup ()
  {
      size( 1000, 500 );
@@ -27,6 +31,9 @@
      initDb();
      getPerformances();
      performanceTrackHeight = height / performances.size();
+     
+     frameNum = performancesLengths.get(perfNum) / 2;
+     updatePerformancePosition( perfNum, frameNum );
  }
  
  void draw ()
@@ -57,17 +64,28 @@
              }
          }
      }
+     
+     if ( frameNum < performancesLengths.get(perfNum) )
+     {
+         frameNum += performancesLengths.get(perfNum) / (width-20); // one screen px
+         //frameNum += 50; // 1 sec == 50 frames
+         //frameNum ++; // every frame
+         updatePerformancePosition( perfNum, frameNum );
+     }
+     else
+         exit();
  }
  
  void drawConnection ( Connection c )
  {
      line( c.x, c.y-10, c.x, c.y+10 );
-//     image( c.image,
-//            c.x+1, 
-//            c.y+1 - (performanceTrackHeight/2), 
-//            c.image.width*((performanceTrackHeight-2.0)/c.image.height), 
-//            performanceTrackHeight-2 );
-//     removeCache( c.image );
+     
+     image( c.image,
+            c.x+1, 
+            c.y+1 - (performanceTrackHeight/2), 
+            c.image.width*((performanceTrackHeight-2.0)/c.image.height), 
+            performanceTrackHeight-2 );
+     removeCache( c.image );
      
      fill( 0 );
      text( c.imageDistance, c.x+3, c.y );

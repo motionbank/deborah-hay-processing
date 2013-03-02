@@ -15,8 +15,8 @@ class Connection
         frame = f;
         
         file = ff;
-        //image = loadImage( silhouettesBase + "/" + file );
-        //removeTurquoise( image );
+        image = loadImage( silhouettesBase + "/" + file );
+        removeTurquoise( image );
         
          int perfs = performances.size();
          float h = (height/perfs);
