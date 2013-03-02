@@ -12,7 +12,8 @@ import org.motionbank.hashing.*;
 import org.motionbank.imaging.*;
 
 MySQL db;
-String dbFilePath = "../db/db_v4_%s.sqlite";
+//String dbFilePath = "../db/db_v5_%s.sqlite";
+String currentTable = "";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 String[] takes;
@@ -40,7 +41,7 @@ void draw ()
 {
     background( 255 );
 
-    db.query( "SELECT id FROM %s WHERE file = \"%s\"", "silhouettes", pngs[currentPng] );
+    db.query( "SELECT id FROM %s WHERE file = \"%s\"", currentTable, pngs[currentPng] );
     
     int id = -1;
     String performance = "", camAngle = "";
@@ -86,12 +87,19 @@ void draw ()
         
         // byte to bit ---------
         
-        int[] hashLong64 = new int[64];
-        for ( int i = 0; i < hashLong64.length && i < hash.length; i++ )
+        int[] hashFast = new int[64];
+        float k = ceil(hash.length / (float)hashFast.length);
+        for ( int i = 0, ii = 0; i < hash.length; i++ )
         {
-            hashLong64[i] = (hash[i] & 0xFF) > 127 ? 1 : 0;
+            ii = (int)round(i / k);
+            if ( ii < hashFast.length )
+                hashFast[ii] += (hash[i] & 0xFF) > 127 ? 1 : 0;
         }
-        FastHash fastHash = new FastHash( hashLong64 );
+        for ( int i = 0; i < hashFast.length; i++ )
+        {
+            hashFast[i] /= k;
+        }
+        FastHash fastHash = new FastHash( hashFast );
         
         // store it -------------
         
@@ -109,7 +117,7 @@ void draw ()
         performance = pieces[0] + "_" + pieces[1];
         
         db.execute( 
-            "INSERT INTO silhouettes ( "+
+            "INSERT INTO %s ( "+
                 "fasthash ," +
                 "hash, "+
                 "framenumber, "+
@@ -122,6 +130,7 @@ void draw ()
             ") VALUES ( "+
                 "%d, X'%s', %d, \"%s\", \"%s\", \"%s\", %d, %d, %d "+
             ")", 
+            currentTable,
             fastHash.toLong64(),
             fullHash.toHexString(),
             frameNumber,
@@ -148,24 +157,27 @@ void draw ()
         image( sil, 0, 0, width, width );
         removeCache( sil );
         
-        stroke( 0 );
-        noFill();
-        rect( 5, height-5-255, 3*hash.length, 255 );
+        float vWidth = (width-10.0) / hash.length;
+        int vWidthInt = (int)(vWidth) - 1;
+        vWidthInt = vWidthInt < 1 ? 1 : vWidthInt;
+        
+        stroke( 0 ); noFill();
+        rect( 5, height-5-255, hash.length*vWidth, 255 );
     
-        noStroke();
-        fill( 0 );
-        for ( int i = 0; i < hash.length; i++ )
+        noStroke(); fill( 0 );
+        
+        for ( int i = 0, ii = 0; i < hash.length; i++ )
         {
-            rect( 5 + i*3, height - 5 - hash[i], 2, hash[i] );
+            rect( 5+i*vWidth, height-5-hash[i], vWidthInt, hash[i] );
             
-            if ( hash[i] > 127 )
-            {
-                rect( 5 + i*3, height - 5 - 255 - 10, 2, 5 );
-            }
+            ii = (int)round(i / k);
+            if ( ii < hashFast.length && hashFast[ii] == 1 )
+                rect( 5+i*vWidth, height-5-255-5-5, vWidth, 5 );
         }
         
-        fill( 0 );
-        text( fullHash.toHexString(), 5, height - 275 );
+//        fill( 0 );
+//        textSize( 9 );
+//        text( fullHash.toHexString(), 5, height - 275 );
     }
     
     currentPng++;
@@ -182,6 +194,7 @@ void draw ()
     }
     
     fill( 0 );
+    textSize( 12 );
     text( String.format( "%d%% % 6d of % 6d", (int)(((float)currentPng / pngs.length) * 100), currentPng, pngs.length), 10, 20 );
     text( String.format( "%s %s %06d", performance, camAngle, frameNumber ), 10, 36 );
 }

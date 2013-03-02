@@ -11,7 +11,7 @@ import de.bezier.data.sql.*;
  import org.motionbank.imaging.*;
 
 SQLite db;
-String database = "../db/dbV4ALLCenterCam.sqlite";
+String database = "../db/dbV4Test.sqlite";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
@@ -55,15 +55,15 @@ void draw ()
                          "performance "+
                       "FROM silhouettes "+
                       "WHERE id IS NOT %d AND "+
-                            //"bdist <= 1 AND "+
+                            "bdist <= 2 AND "+
                             "dist < ((length(hash) * 255) / 10) "+
-                            //"performance NOT LIKE \"%s\" AND "+
+                            "AND performance NOT LIKE \"%s\" "+
                       "ORDER BY dist ASC "+
-                      "LIMIT 5", 
+                      "LIMIT 1",
                       fasthash,
                       hash, 
                       currentId
-                      //, performance
+                      , performance
                  );
 
         ts1a += (System.currentTimeMillis() - ts1) / 1000.0;
@@ -95,43 +95,48 @@ void draw ()
             }
         }
         
-        x = 0;
-        y += 250;
-        
-        long ts2 = System.currentTimeMillis();
-
-        db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
-                      "FROM silhouettes "+
-                      "WHERE id IS NOT %d AND "+
-                            //"performance NOT LIKE \"%s\" AND "+
-                            "dist <= 0 "+
-                      "ORDER BY dist "+
-                      "LIMIT 5", 
-                      fasthash, 
-                      currentId,
-                      performance );
-        
-        ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
-        
-        while ( db.next() )
+        if ( false )
         {
-            PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-            int dist = db.getInt( "dist" );
-            String perf = db.getString( "performance" );
             
-            drawSilhouette( img, x, y, 200, 200 );
+            x = 0;
+            y += 250;
             
-            fill( 0 );
-            text( dist, x+5, y+15 );
-            text( perf, x+5, y+35 );
+            long ts2 = System.currentTimeMillis();
+    
+            db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
+                          "FROM silhouettes "+
+                          "WHERE id IS NOT %d AND "+
+                                //"performance NOT LIKE \"%s\" AND "+
+                                "dist <= 0 "+
+                          "ORDER BY dist "+
+                          "LIMIT 5", 
+                          fasthash, 
+                          currentId,
+                          performance );
             
-            x += 250;
-            if ( x > width )
+            ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
+            
+            while ( db.next() )
             {
-                x = 0;
-                y += 250;
+                PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
+                int dist = db.getInt( "dist" );
+                String perf = db.getString( "performance" );
+                
+                drawSilhouette( img, x, y, 200, 200 );
+                
+                fill( 0 );
+                text( dist, x+5, y+15 );
+                text( perf, x+5, y+35 );
+                
+                x += 250;
+                if ( x > width )
+                {
+                    x = 0;
+                    y += 250;
+                }
             }
-        }         
+        
+        }
 
         println( "F/H " + (ts1a/tsi) + " / " + (ts2a/tsi) );
         println();

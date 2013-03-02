@@ -14,6 +14,11 @@ void initDatabase ()
     }
 }
 
+void addMySQLDistanceFucntion ()
+{
+    db.execute( "CREATE FUNCTION bit_dist (val0 BIGINT, val1 BIGINT) RETURNS INT RETURN BIT_COUNT(val0 ^ val1)" );
+}
+
 void addSQLiteDistanceFunctions ()
 {
     try {

@@ -38,13 +38,16 @@ void buttonPressed ()
     results = null;
     
     float[] bbox = skeleton.getBoundingBox();
+    
     PGraphics pg = createGraphics( (int)(bbox[2]-bbox[0])+100, (int)(bbox[3]-bbox[1])+100 );
     pg.beginDraw();
     pg.background( 255 );
     pg.translate( -(int)bbox[0]+50, -(int)bbox[1]+50 );
     skeleton.drawSkeleton(pg);
     pg.endDraw();
+    
     PImage img = pg.get();
+    
     for ( int i = 0, k = img.pixels.length; i < k; i++ )
     {
         if ( img.pixels[i] != 0xFFFFFFFF ) img.pixels[i] = 0xFF000000;
@@ -53,22 +56,65 @@ void buttonPressed ()
     
     img.filter( BLUR, 2 );
     img.filter( THRESHOLD, 0.7 );
+
+    ImageUtilities.PixelLocation centerOfMass = 
+        ImageUtilities.getCenterOfMass( img.pixels, 
+                                        img.width, img.height );
+
+    ImageUtilities.PixelCircumCircle circumCircle = 
+        ImageUtilities.getCircumCircle( img.pixels, 
+                                        img.width, img.height, 
+                                        centerOfMass.x, centerOfMass.y );
     
-    int[] bbx = boundingBox( img );
-    int[] com = centerOfMass( img );
-    int[] hash = computeHash(img, com, bbx);
-    int fasthash = toFasthash(hash);
+    int[] hash = computeHash( img, 
+                              centerOfMass.x, centerOfMass.y, 
+                              circumCircle.x, circumCircle.y, 
+                              circumCircle.radius*2, circumCircle.radius*2 );
+    
+    int[] hashBits = new int[hash.length * 8];
+    for ( int i = 0; i < hash.length; i++ )
+    {
+        int aByte = hash[i] & 0xFF;
+        for ( int ii = 0; ii < 8; ii++ )
+        {
+            hashBits[i*8 + ii] = (aByte >> (7-ii)) & 0x1;
+        }
+    }
+    FastHash fullHash = new FastHash( hashBits );
+    
+    int[] hashFast = new int[64];
+    float k = ceil(hash.length / (float)hashFast.length);
+    for ( int i = 0, ii = 0; i < hash.length; i++ )
+    {
+        ii = (int)round(i / k);
+        if ( ii < hashFast.length )
+            hashFast[ii] += (hash[i] & 0xFF) > 127 ? 1 : 0;
+    }
+    for ( int i = 0; i < hashFast.length; i++ )
+    {
+        hashFast[i] /= k;
+    }
+    FastHash fastHash = new FastHash( hashFast );
     
     PImage[] imgs = null;
     if ( db != null )
     {
         imgs = new PImage[0];
-        String vals = "";
-        for ( int i = 0; i < 32; i++ )
-        {
-            vals += (vals.length() > 0 ? " + " : "") + String.format( "abs(v%03d - %d)", i, hash[i] );
-        }
-        db.query( "SELECT file, hamming_distance(fasthash, %d) AS hdist, (%s) AS dist FROM %s WHERE hdist < 3 ORDER BY dist LIMIT 16", fasthash, vals, "images" );
+
+        db.query( "SELECT id, "+
+                         "file, "+
+                         "bit_dist( %d, fasthash ) AS bdist, "+
+                         "hex_dist( X'%s', hash ) AS dist, "+
+                         "performance "+
+                      "FROM silhouettes "+
+                      "WHERE "+
+                            "bdist <= 2 AND "+
+                            "dist < ((length(hash) * 255) / 10) "+
+                      "ORDER BY dist ASC "+
+                      "LIMIT 20",
+                      fastHash.toLong64(),
+                      fullHash.toHexString()
+                 );
         
         String basePath = "/Volumes/Verytim/2011_FIGD_April_Results";
         if ( ! new File(basePath).exists() ) {

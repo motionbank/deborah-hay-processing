@@ -46,9 +46,19 @@ void initPngs ()
 
 void initDatabase ()
 {
-//    String[] pieces = takes[currentTake].split("_");
-//    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
-//    
+    String[] pieces = takes[currentTake].split("_");
+    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
+    currentTable = String.format( "silhouettes_%s", take.toLowerCase() );
+    
+    // i'm using taps to transfer the data from MySQL to SQLite later on,
+    // MySQL is just faster when begin hosed like this ..
+    
+    // start taps server:
+    // taps server -p 7777 mysql://moba:moba@localhost/moba_silhouettes x x
+    
+    // transfer data to SQLite file:
+    // taps pull sqlite://dbV4ALLCenterCam.sqlite http://x:x@localhost:7777
+
 //    File dbFile = new File( sketchPath( String.format( dbFilePath, take ) ) );
 //    
 //    //dbFile.delete();
@@ -66,33 +76,28 @@ void initDatabase ()
 //    
 //    db = new SQLite( this, dbFile.getPath() );
 
-    db = new MySQL( this, "localhost", "moba_silhouettes", "moba", "moba" );
-    
-    if ( db.connect() )
+    if ( db == null )
     {
+        db = new MySQL( this, "localhost", "moba_silhouettes", "moba", "moba" );
         
-//        String vals = "";
-//        for ( int i = 0; i < HASH_SIZE; i++ )
-//        {
-//            vals += String.format( (i > 0 ? ", " : " ") + "v%03d INTEGER ", i );
-//        }
+        if ( !db.connect() )
+        {
+            System.err.println( "Unable to connect to database!" );
+            exit();
+            return;
+        }
+    }
 
-        db.execute( "CREATE TABLE IF NOT EXISTS silhouettes ( "+
-                        "id INT(11) PRIMARY KEY AUTO_INCREMENT, " +
-                        "fasthash BIGINT NOT NULL DEFAULT 0, " +
-                        "hash BLOB, " +
-                        "framenumber INTEGER NOT NULL DEFAULT 0, " +
-                        "performance TEXT NOT NULL, " +
-                        "angle TEXT NOT NULL, " +
-                        "file TEXT NOT NULL, " +
-                        "circle_x INTEGER NOT NULL DEFAULT 0, " +
-                        "circle_y INTEGER NOT NULL DEFAULT 0, " +
-                        "circle_radius REAL NOT NULL DEFAULT 0.0" +
-                    ")" );
-    }
-    else
-    {
-        System.err.println( "Unable to connect to database!" );
-        exit();
-    }
+    db.execute( "CREATE TABLE IF NOT EXISTS %s ( "+
+                    "id INT(11) PRIMARY KEY AUTO_INCREMENT, " +
+                    "fasthash BIGINT NOT NULL DEFAULT 0, " +
+                    "hash BLOB, " +
+                    "framenumber INTEGER NOT NULL DEFAULT 0, " +
+                    "performance TEXT NOT NULL, " +
+                    "angle TEXT NOT NULL, " +
+                    "file TEXT NOT NULL, " +
+                    "circle_x INTEGER NOT NULL DEFAULT 0, " +
+                    "circle_y INTEGER NOT NULL DEFAULT 0, " +
+                    "circle_radius REAL NOT NULL DEFAULT 0.0" +
+                ")", currentTable );
 }

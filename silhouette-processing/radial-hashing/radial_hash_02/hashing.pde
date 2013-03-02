@@ -64,8 +64,8 @@ int[] computeHash ( PImage img,
     PGraphics pg = createGraphics( tileSize, tileSize );
     pg.beginDraw();
     pg.background( 255 );
-    pg.image( sil, -cx * s + tileSizeHalf, -cy * s + tileSizeHalf, sil.width * s, sil.height * s );
-    removeCache( sil );
+    pg.image( img, -cx * s + tileSizeHalf, -cy * s + tileSizeHalf, img.width * s, img.height * s );
+    removeCache( img );
     pg.endDraw();
 
     PImage sil64 = pg.get();

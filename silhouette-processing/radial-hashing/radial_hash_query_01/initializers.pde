@@ -1,7 +1,7 @@
 void initDatabase ()
 {
-    db = new SQLite( this, sketchPath("../db.sqlite") );
+    db = new SQLite( this, sketchPath(dbPath + "/" + dbFile) );
     db.connect();
-    addSQLiteHammingDistance();
+    addSQLiteDistanceFunctions();
 }
 
