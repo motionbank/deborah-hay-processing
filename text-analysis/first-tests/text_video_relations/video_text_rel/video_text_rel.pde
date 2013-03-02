@@ -76,7 +76,7 @@ void setup ()
 {
   size( 1400, 800 );
   //API_URL = "http://192.168.0.10:3000/";
-  api = new PieceMakerApi( this, API_KEY,  API_URL);
+  api = new PieceMakerApi( this, API_KEY, API_URL);
   api.loadPieces( api.createCallback( "piecesLoaded" ) );
   loadXML();
   textFont( createFont( "", 10 ) );
@@ -88,35 +88,35 @@ void draw ()
     drawLoading();
     return;
   }
-  
+
   else if (setupFinished && drawFrame) {
     drawFrame = false;
-    
+
     background( 255 );
-    
+
     //drawPerformerSegments();
     drawPerformerPerformances();
     /*
     // cycles through all videos in videoIDs
-    if (saveAllFrames) {
-      setupFinished = false;
-      saveFrame(video.title + "_#####_2.png");
-      loading = true;
-      idx++;
-      if (idx == videoIDs.length) exit();
-      else {
-        currentID = videoIDs[idx];
-        loadVideo(currentID);
-      }
-    }
-    */
+     if (saveAllFrames) {
+     setupFinished = false;
+     saveFrame(video.title + "_#####_2.png");
+     loading = true;
+     idx++;
+     if (idx == videoIDs.length) exit();
+     else {
+     currentID = videoIDs[idx];
+     loadVideo(currentID);
+     }
+     }
+     */
   }
 }
 
 
 void loadXML() {
-  
-    srcXML = null;
+
+  srcXML = null;
   try {
     srcXML = loadXML( "NTTF_nodes_3.xml" );
     //println(srcXML);
@@ -152,11 +152,11 @@ void loadXML() {
 
 
 void initData() {
-  
+
   for (int i=0; i<videos.length(); i++) {
     VideoObject video = videos.get(i);
     String n = video.data.performer;
-        
+
     if ( performers.has(n) ) {
       performers.get(n).add(video);
     }
@@ -164,11 +164,11 @@ void initData() {
       performers.add(n, video);
     }
   }
-      
+
   drawFrame = true;
-  
+
   float total = 0;
-        
+
   println("events loaded");
   setupFinished = true;
 }
@@ -183,6 +183,5 @@ void drawLoading ()
   textAlign( CENTER );
   text( loadingMessage, width/2, height/2 );
 }
-
 
 
