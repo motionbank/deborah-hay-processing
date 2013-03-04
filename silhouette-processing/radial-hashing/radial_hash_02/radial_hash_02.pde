@@ -3,7 +3,7 @@
  *
  *    Experimenting with radial hashing for silhouette similarity search
  *
- *    P2.0
+ *    Processing 2.0b
  *    fjenett 20121214
  */
  
@@ -41,7 +41,7 @@ void draw ()
 {
     background( 255 );
 
-    db.query( "SELECT id FROM %s WHERE file = \"%s\"", currentTable, pngs[currentPng] );
+    db.query( "SELECT id FROM %s WHERE file = \"%s\" LIMIT 1", currentTable, pngs[currentPng] );
     
     int id = -1;
     String performance = "", camAngle = "";
@@ -49,7 +49,7 @@ void draw ()
     
     if ( db.next() )
     {
-        println( String.format( "Entry with id %d already exists", db.getInt( "id" ) ) );
+        //println( String.format( "Entry with id %d already exists", db.getInt( "id" ) ) );
     }
     else
     {
@@ -116,39 +116,42 @@ void draw ()
         pieces = pieces[0].split( "_" );
         performance = pieces[0] + "_" + pieces[1];
         
-        db.execute( 
-            "INSERT INTO %s ( "+
-                "fasthash ," +
-                "hash, "+
-                "framenumber, "+
-                "performance, "+
-                "angle, "+
-                "file, "+
-                "circle_x, "+
-                "circle_y, "+
-                "circle_radius "+
-            ") VALUES ( "+
-                "%d, X'%s', %d, \"%s\", \"%s\", \"%s\", %d, %d, %d "+
-            ")", 
-            currentTable,
-            fastHash.toLong64(),
-            fullHash.toHexString(),
-            frameNumber,
-            performance,
-            camAngle,
-            pngs[currentPng],
-            circumCircle.x,
-            circumCircle.x,
-            circumCircle.radius
-        );
-        
-        db.query( "SELECT last_insert_id() AS id" );
-        db.next();
-        id = db.getInt( "id" );
-        
-        if ( id != -1 )
+        if ( false ) 
         {
+            db.execute( 
+                "INSERT INTO %s ( "+
+                    "fasthash ," +
+                    "hash, "+
+                    "framenumber, "+
+                    "performance, "+
+                    "angle, "+
+                    "file, "+
+                    "circle_x, "+
+                    "circle_y, "+
+                    "circle_radius "+
+                ") VALUES ( "+
+                    "%d, X'%s', %d, \"%s\", \"%s\", \"%s\", %d, %d, %d "+
+                ")", 
+                currentTable,
+                fastHash.toLong64(),
+                fullHash.toHexString(),
+                frameNumber,
+                performance,
+                camAngle,
+                pngs[currentPng],
+                circumCircle.x,
+                circumCircle.x,
+                circumCircle.radius
+            );
             
+            db.query( "SELECT last_insert_id() AS id" );
+            db.next();
+            id = db.getInt( "id" );
+            
+            if ( id != -1 )
+            {
+                
+            }
         }
         
         // draw it -------------------------------------
@@ -178,7 +181,8 @@ void draw ()
 //        fill( 0 );
 //        textSize( 9 );
 //        text( fullHash.toHexString(), 5, height - 275 );
-    }
+    
+    } // entry exists?
     
     currentPng++;
     if ( currentPng == pngs.length ) 

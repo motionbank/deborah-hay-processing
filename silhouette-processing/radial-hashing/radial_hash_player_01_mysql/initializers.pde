@@ -1,11 +1,11 @@
 
 void initDatabase ()
 {
-    db = new SQLite( this, sketchPath( database ) );
+    db = new MySQL( this, "localhost", "moba_silhouettes", "moba", "moba" );
     
     if ( db.connect() )
     {
-        addSQLiteDistanceFunctions();
+        //addSQLiteDistanceFunctions();
     }
     else
     {

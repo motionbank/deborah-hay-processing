@@ -6,27 +6,9 @@ PImage loadPrepareBinaryImage ( String png )
     
     removeTurquoise( sil );
 
-    sil.filter( BLUR );
     sil.filter( GRAY );
+    sil.filter( BLUR );
     sil.filter( THRESHOLD, 0.7 );
-
-//    xmi = Integer.MAX_VALUE; 
-//    xma = Integer.MIN_VALUE; 
-//    ymi = Integer.MAX_VALUE;
-//    yma = Integer.MIN_VALUE;
-//
-//    for ( int i = 0, k = sil.pixels.length; i < k; i++ )
-//    {
-//        if ( sil.pixels[i] != 0xFFFFFFFF )
-//        {
-//            int x = i % sil.width;
-//            int y = i / sil.width;
-//            xmi = x < xmi ? x : xmi;
-//            xma = x > xma ? x : xma;
-//            ymi = y < ymi ? y : ymi;
-//            yma = y > yma ? y : yma;
-//        }
-//    }
     
     return sil;
 }

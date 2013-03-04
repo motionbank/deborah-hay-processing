@@ -4,7 +4,7 @@ void initTakes ()
     
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.endsWith("_Corrected");
+            return (n.startsWith("Ros_D02T02") || n.startsWith("Ros_D02T03")) && n.endsWith("_Corrected");
         }
     };
     
@@ -48,7 +48,7 @@ void initDatabase ()
 {
     String[] pieces = takes[currentTake].split("_");
     String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
-    currentTable = String.format( "silhouettes_%s", take.toLowerCase() );
+    currentTable = String.format( "silhouettes_test_%s", take.toLowerCase() );
     
     // i'm using taps to transfer the data from MySQL to SQLite later on,
     // MySQL is just faster when begin hosed like this ..
