@@ -105,8 +105,9 @@ void draw ()
 
     background( 255 );
 
-    //drawPerformerSegments();
-    drawPerformerPerformances();
+    drawPerformerSegments();
+    //drawPerformerPerformances();
+    //drawSegmentStages();
     /*
     // cycles through all videos in videoIDs
      if (saveAllFrames) {

@@ -49,14 +49,14 @@ void drawPerformerSegments () {
     stroke(200);
     strokeWeight(1);
     
-    
+    /*
     // grid
     for (int j=0; j<pv.length(); j++) {
       x = j*(size/pv.length());
       //line(x,30,x,size);
       line(x,0,x,size);
     }
-    
+    */
     
     
     stroke(0);
@@ -89,11 +89,14 @@ void drawPerformerSegments () {
     }
     */
     
-    
+    /*
+    // AVERAGE MIDDLE LINE
     stroke(200);
     line(0,(size-30)/2 + 30,size,(size-30)/2 + 30);
     stroke(0);
+    */
     
+    /*
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
@@ -105,8 +108,9 @@ void drawPerformerSegments () {
       x = j*(size/pv.length());
       vertex(x,y);
     }
+    */
     
-    
+    /*
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
@@ -119,7 +123,11 @@ void drawPerformerSegments () {
     }
     
     endShape();
+    */
     
+    
+    // ----------------------------------------------------
+    // AVERAGE POSITION ON STAGE
     /*
     beginShape();
     pushStyle();
@@ -143,6 +151,33 @@ void drawPerformerSegments () {
     
     rect(0,0,size,size);
     */
+    
+    // ----------------------------------------------------
+    // CONVEX HULLS
+    pushStyle();
+    
+    fill(255,0,0,40);
+    noStroke();
+    
+    for (int j=0; j<pv.length(); j++) {
+      VideoObject vid = pv.get(j);
+      VideoSegment s = vid.segments.get(i);
+      
+      Point2D[] hull = new Point2D[s.positions.length()+1];
+      int number = nearHull2D( s.positions.getPoint2D(), hull );
+      
+      beginShape();
+      for( int k=0; k<number; k+=1) {
+        Point2D p = hull[k];
+        if ( p == null ) break;
+        else vertex(p.x/12*size,p.y/12*size);
+      }
+      endShape();
+      
+    }
+    popStyle();
+    
+    rect(0,0,size,size);
     
     
     popMatrix();

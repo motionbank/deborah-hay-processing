@@ -36,7 +36,9 @@ class VideoSegmentList {
     int num = 0;
     int i0 = 0;
     
-    println("seg length " + segments.length);
+    println("seg length " + _vd.file.id + " " + segments.length);
+    
+    
     
     /*
      *   position and movement data should have the same amount of values

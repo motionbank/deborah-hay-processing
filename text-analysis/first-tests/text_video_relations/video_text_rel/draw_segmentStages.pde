@@ -1,9 +1,9 @@
 void drawSegmentStages() {
-  /*
+  
   pushMatrix();
   translate(100,100);
   
-  int n = floor(255/float(videoSegments.length()));
+  //int n = floor(255/float(videoSegments.length()));
   
   //float sf = 50;
   float x = 0;
@@ -14,12 +14,14 @@ void drawSegmentStages() {
   int steps = 10;
   float sf = 2.5;
   
+  VideoObject vid = videos.get(0);
+  
   
   pushStyle();
   strokeJoin(ROUND);
   
-  for( int i=0; i<videoSegments.length(); i++) {
-    VideoSegment vSeg = videoSegments.get(i);
+  for( int i=0; i<vid.segments.length(); i++) {
+    VideoSegment vSeg = vid.segments.get(i);
     
     pushMatrix();
     translate(x,y);
@@ -28,13 +30,19 @@ void drawSegmentStages() {
     fill(255,0,0,20);
     noStroke();
     
-    for( int j=0; j<vSeg.positions.length(); j+=1) {
-      //float m = vSeg.movements.getHighestFromRange(i,steps);
-      float m = vSeg.movements.getAverage(j);
-      PVector v = vSeg.positions.get(j);
-      if (v.mag() != 0) ellipse(v.x/12*s,v.y/12*s,m*sf,m*sf);
+    Point2D[] hull = new Point2D[vSeg.positions.length()+1];
+    int num = nearHull2D( vSeg.positions.getPoint2D(), hull );
+    
+    beginShape();
+    for( int j=0; j<hull.length; j+=1) {
+      Point2D p = hull[j];
+      if ( p == null ) break;
+      else vertex(p.x/12*s,p.y/12*s);
     }
+    endShape();
+    
     popStyle();
+    
     popMatrix();
     
     x += s+gap;
@@ -49,8 +57,8 @@ void drawSegmentStages() {
   x = 0;
   y = 0;
   
-  for( int i=0; i<videoSegments.length(); i++) {
-    VideoSegment vSeg = videoSegments.get(i);
+   for( int i=0; i<vid.segments.length(); i++) {
+    VideoSegment vSeg = vid.segments.get(i);
     TextSegment tSeg = textSegments.get(i);
     
     pushMatrix();
@@ -82,5 +90,5 @@ void drawSegmentStages() {
   }
   
   popMatrix();
-  */
+  
 }

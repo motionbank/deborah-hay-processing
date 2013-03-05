@@ -5,6 +5,8 @@ class PositionData {
   String[] data;
   float total = 0;
   
+  Point2D[] point2D = null;
+  
   PositionData(String[] _data, int _startIndex) {
     
     this.data = _data;
@@ -66,6 +68,20 @@ class PositionData {
       if (v.mag() > 0) break;
     }
     return v;
+  }
+  
+  Point2D[] getPoint2D() {
+    if (point2D == null) {
+      
+      point2D = new Point2D[positions.size()];
+      
+      for (int i=0; i<point2D.length;i++) {
+        PVector v = this.get(i);
+        point2D[i] = new Point2D(v.x,v.y);
+      }
+    }
+    
+    return point2D;
   }
   
   int length () {
