@@ -29,8 +29,8 @@ String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionban
 //String TITLE = "average movement speed per segment in relation to average performance speed variance across all performances";
 //String TITLE = "average position on stage across all performances.\ngreen = first performace. blue = last performance. line = order of performances";
 //String TITLE = "distance tranveled per segment across all performances";
-String TITLE = "average position on stage per performance\ngreen = first segment. blue = last segment. line = order of segments";
-
+//String TITLE = "average position on stage per performance\ngreen = first segment. blue = last segment. line = order of segments";
+String TITLE = "simplified movement on stage";
 
 XML srcXML;
 String nttf;
@@ -105,23 +105,19 @@ void draw ()
 
     background( 255 );
 
-    drawPerformerSegments();
+    //drawPerformerSegments();
     //drawPerformerPerformances();
-    //drawSegmentStages();
-    /*
+    drawSegmentStages();
+    
     // cycles through all videos in videoIDs
-     if (saveAllFrames) {
-     setupFinished = false;
-     saveFrame(video.title + "_#####_2.png");
-     loading = true;
-     idx++;
-     if (idx == videoIDs.length) exit();
-     else {
-     currentID = videoIDs[idx];
-     loadVideo(currentID);
-     }
-     }
-     */
+    if (saveAllFrames) {
+     
+      saveFrame("simplified_position2_" + videos.get(idx).data.file.title + ".png");
+      drawFrame = true;
+      idx++;
+      if (idx == videoIDs.length) exit(); 
+    }
+     
   }
 }
 
