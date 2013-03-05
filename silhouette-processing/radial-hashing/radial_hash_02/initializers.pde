@@ -4,7 +4,7 @@ void initTakes ()
     
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.endsWith("_Corrected");
+            return (n.startsWith("Ros_D02T02") || n.startsWith("Ros_D02T03")) && n.endsWith("_Corrected");
         }
     };
     
@@ -46,9 +46,19 @@ void initPngs ()
 
 void initDatabase ()
 {
-//    String[] pieces = takes[currentTake].split("_");
-//    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
-//    
+    String[] pieces = takes[currentTake].split("_");
+    String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
+    currentTable = String.format( tableNameTemplate, take.toLowerCase() );
+    
+    // i'm using taps to transfer the data from MySQL to SQLite later on,
+    // MySQL is just faster when begin hosed like this ..
+    
+    // start taps server:
+    // taps server -p 7777 mysql://moba:moba@localhost/moba_silhouettes x x
+    
+    // transfer data to SQLite file:
+    // taps pull sqlite://dbV4ALLCenterCam.sqlite http://x:x@localhost:7777
+
 //    File dbFile = new File( sketchPath( String.format( dbFilePath, take ) ) );
 //    
 //    //dbFile.delete();
@@ -66,33 +76,38 @@ void initDatabase ()
 //    
 //    db = new SQLite( this, dbFile.getPath() );
 
-    db = new MySQL( this, "localhost", "moba_silhouettes", "moba", "moba" );
-    
-    if ( db.connect() )
+    if ( db == null )
     {
+        db = new MySQL( this, "localhost", "moba_silhouettes", "moba", "moba" );
         
-//        String vals = "";
-//        for ( int i = 0; i < HASH_SIZE; i++ )
-//        {
-//            vals += String.format( (i > 0 ? ", " : " ") + "v%03d INTEGER ", i );
-//        }
-
-        db.execute( "CREATE TABLE IF NOT EXISTS silhouettes ( "+
-                        "id INT(11) PRIMARY KEY AUTO_INCREMENT, " +
-                        "fasthash BIGINT NOT NULL DEFAULT 0, " +
-                        "hash BLOB, " +
-                        "framenumber INTEGER NOT NULL DEFAULT 0, " +
-                        "performance TEXT NOT NULL, " +
-                        "angle TEXT NOT NULL, " +
-                        "file TEXT NOT NULL, " +
-                        "circle_x INTEGER NOT NULL DEFAULT 0, " +
-                        "circle_y INTEGER NOT NULL DEFAULT 0, " +
-                        "circle_radius REAL NOT NULL DEFAULT 0.0" +
-                    ")" );
+        if ( !db.connect() )
+        {
+            System.err.println( "Unable to connect to database!" );
+            exit();
+            return;
+        }
     }
-    else
+    
+    String valQuery = "";
+    for ( int i = 0; i < 124; i++ )
     {
-        System.err.println( "Unable to connect to database!" );
-        exit();
+        if ( i > 0 ) valQuery += " , ";
+        valQuery += "val"+nf(i,3)+" TINYINT UNSIGNED NOT NULL ";
     }
+    
+    db.execute( "TRUNCATE TABLE %s", currentTable );
+
+    db.execute( "CREATE TABLE IF NOT EXISTS %s ( "+
+                    "id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT, " +
+                    "fasthash BIGINT NOT NULL DEFAULT 0, " +
+                    "framenumber INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+                    "performance VARCHAR(20) NOT NULL, " +
+                    "angle VARCHAR(20) NOT NULL, " +
+                    "file TEXT NOT NULL, " +
+                    "center_x INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+                    "center_y INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+                    "circle_radius REAL NOT NULL DEFAULT 0.0, " +
+                    valQuery+" , "+
+                    "UNIQUE perf_key (performance, framenumber) "+
+                ")", currentTable );
 }

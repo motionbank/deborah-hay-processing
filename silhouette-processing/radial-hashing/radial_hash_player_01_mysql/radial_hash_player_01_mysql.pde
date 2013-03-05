@@ -10,12 +10,15 @@
 import de.bezier.data.sql.*;
  import org.motionbank.imaging.*;
 
-SQLite db;
-String database = "../db/dbV4Test.sqlite";
+MySQL db;
+String table = "silhouettes_test_ros_d02t02_camcenter";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
-int currentId = 1000;
+int currentId = 0;
+int currentFrame = 0;
+
+int hashLength = 124; // 4 + 8 + 16 + 32 + 64
 
 float ts1a = 0, ts2a = 0;
 int tsi = 0;
@@ -24,6 +27,7 @@ void setup ()
 {
     size( 250 * 6, 250 * 4 );
     
+    currentFrame = (int)random( 1000 );
     initDatabase();
 }
 
@@ -31,38 +35,47 @@ void draw ()
 {
     background( 255 );
     
-    db.query( "SELECT id, fasthash, hex(hash) AS hash, performance, file FROM silhouettes WHERE id > %d ORDER BY id LIMIT 1", currentId );
+    db.query( "SELECT * FROM %s WHERE framenumber = %d LIMIT 1", table, currentFrame );
     
     if ( db.next() )
     {
         currentId = db.getInt( "id" );
-        String hash = db.getString( "hash" );
         long fasthash = db.getLong( "fasthash" );
         String performance = db.getString( "performance" );
         String file = db.getString( "file" );
+        
+        int[] vals = new int[hashLength];
+        String valQuery = "";
+        for ( int i = 0; i < vals.length; i++ )
+        {
+            vals[i] = db.getInt( "val" + nf(i,3) );
+            
+            valQuery += (i > 0 ? " + " : " " ) + " ABS( val"+nf(i,3)+" - "+vals[i]+" )";
+        }
         
         sil = loadImage( silhouetteFolder + "/" + file );
         drawSilhouette( sil, 0, 0, 200, 200 );
         
         long ts1 = System.currentTimeMillis();
         
-        println( String.format( "SELECT id, "+
-                         "file, "+
-                         "bit_dist( %d, fasthash ) AS bdist, "+
-                         "hex_dist( X'%s', hash ) AS dist, "+
-                         "performance "+
-                      "FROM silhouettes "+
-                      "WHERE id IS NOT %d AND "+
-                            "bdist <= 0 "+
-                            "AND dist < ((length(hash) * 255) / 25) "+ // (64 * 255)/10 = 1632
-                            "AND performance NOT LIKE \"%s\" "+
+        db.query( "SELECT *, "+
+                          "BIT_COUNT( %d ^ fasthash ) AS bitdist "+
+                          ", ( %s ) AS dist " +
+                      "FROM %s "+
+                      "WHERE NOT framenumber = %d "+
+                          //"AND performance NOT LIKE \"%s\" " +
+                      "HAVING "+
+                          //"bitdist <= 2 " + 
+                          //"AND "+
+                          "dist < 100 "+
                       "ORDER BY dist ASC "+
                       "LIMIT 1",
                       fasthash,
-                      hash, 
-                      currentId
-                      , performance
-                 ));
+                      valQuery,
+                      table,
+                      currentFrame,
+                      performance
+                 );
 
         ts1a += (System.currentTimeMillis() - ts1) / 1000.0;
         println( "Querytime: " + (ts1a / tsi) );
@@ -74,10 +87,12 @@ void draw ()
         
         while ( db.next() )
         {
+            currentId = db.getInt( "id" );
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-            int dist = 0; //db.getInt( "dist" );
-            int bitDist = db.getInt( "bdist" );
-            String perf = db.getString( "performance" );
+            int dist = db.getInt( "dist" );
+            int bitDist = db.getInt( "bitdist" );
+            currentFrame = db.getInt( "framenumber" )+1;
+            String perf = db.getString( "performance" ) + "_" + currentFrame;
             
             drawSilhouette( img, x, y, 200, 200 );
             
@@ -101,16 +116,17 @@ void draw ()
             
             long ts2 = System.currentTimeMillis();
     
-            db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
-                          "FROM silhouettes "+
-                          "WHERE id IS NOT %d AND "+
-                                //"performance NOT LIKE \"%s\" AND "+
-                                "dist <= 0 "+
-                          "ORDER BY dist "+
-                          "LIMIT 5", 
-                          fasthash, 
-                          currentId,
-                          performance );
+//            db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
+//                          "FROM silhouettes "+
+//                          "WHERE id IS NOT %d AND "+
+//                                //"performance NOT LIKE \"%s\" AND "+
+//                                "dist <= 0 "+
+//                          "ORDER BY dist "+
+//                          "LIMIT 5", 
+//                          fasthash, 
+//                          currentId
+//                          //performance 
+//                          );
             
             ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
             
@@ -140,6 +156,11 @@ void draw ()
         println();
 
         tsi++;           
+    }
+    else
+    {
+        println( "Nothing to do .. bye!" );
+        exit();
     }
 }
 

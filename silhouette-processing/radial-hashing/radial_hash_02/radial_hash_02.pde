@@ -3,7 +3,7 @@
  *
  *    Experimenting with radial hashing for silhouette similarity search
  *
- *    P2.0
+ *    Processing 2.0b
  *    fjenett 20121214
  */
  
@@ -12,7 +12,9 @@ import org.motionbank.hashing.*;
 import org.motionbank.imaging.*;
 
 MySQL db;
-String dbFilePath = "../db/db_v4_%s.sqlite";
+//String dbFilePath = "../db/db_v5_%s.sqlite";
+String currentTable = "";
+String tableNameTemplate = "silhouettes_test2_%s";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 String[] takes;
@@ -40,7 +42,7 @@ void draw ()
 {
     background( 255 );
 
-    db.query( "SELECT id FROM %s WHERE file = \"%s\"", "silhouettes", pngs[currentPng] );
+    db.query( "SELECT id FROM %s WHERE file = \"%s\" LIMIT 1", currentTable, pngs[currentPng] );
     
     int id = -1;
     String performance = "", camAngle = "";
@@ -48,18 +50,32 @@ void draw ()
     
     if ( db.next() )
     {
-        println( String.format( "Entry with id %d already exists", db.getInt( "id" ) ) );
+        //println( String.format( "Entry with id %d already exists", db.getInt( "id" ) ) );
     }
     else
     {
         PImage silImage = loadPrepareBinaryImage( pngs[currentPng] );
-                
-        ImageUtilities.PixelLocation centerOfMass = 
-            ImageUtilities.getCenterOfMass( silImage.pixels, 
-                                            silImage.width, silImage.height );
         
-        //ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( silImage.pixels, silImage.width, silImage.height );
-        //int[] hash = computeHash( silImage, centerOfMass.x, centerOfMass.y, bbox.xCenter, bbox.yCenter, bbox.width, bbox.height );
+        PImage silImageGross = silImage.get();
+
+        if ( silImageGross.width > 10 )
+        {
+            silImageGross.filter( BLUR, 15 );
+            silImageGross.filter( THRESHOLD, 0.5 );
+        }
+        
+        ImageUtilities.PixelLocation centerOfMass = 
+            ImageUtilities.getCenterOfMass( silImageGross.pixels, 
+                                            silImageGross.width, silImageGross.height );
+        
+//        ImageUtilities.PixelBoundingBox bbox = 
+//            ImageUtilities.getBoundingBox( silImageGross.pixels, 
+//                                           silImageGross.width, silImageGross.height );
+//        
+//        int[] hash = computeHash( silImage, 
+//                                  centerOfMass.x, centerOfMass.y, 
+//                                  bbox.x, bbox.y, 
+//                                  bbox.width, bbox.height );
         
         ImageUtilities.PixelCircumCircle circumCircle = 
             ImageUtilities.getCircumCircle( silImage.pixels, 
@@ -73,25 +89,33 @@ void draw ()
         
         // pack hash bytes into binary array
         
-        int[] hashBits = new int[hash.length * 8];
+        String hashVals = "", hashColumns = "";
         for ( int i = 0; i < hash.length; i++ )
         {
-            int aByte = hash[i] & 0xFF;
-            for ( int ii = 0; ii < 8; ii++ )
-            {
-                hashBits[i*8 + ii] = (aByte >> (7-ii)) & 0x1;
-            }
+            if ( i > 0 )
+           {
+               hashVals += " , ";
+               hashColumns += " , ";
+           }
+            hashVals += (hash[i] & 0xFF);
+            hashColumns += "val"+nf(i,3);
         }
-        FastHash fullHash = new FastHash( hashBits );
         
         // byte to bit ---------
         
-        int[] hashLong64 = new int[64];
-        for ( int i = 0; i < hashLong64.length && i < hash.length; i++ )
+        int[] hashFast = new int[64];
+        float k = ceil(hash.length / (float)hashFast.length);
+        for ( int i = 0, ii = 0; i < hash.length; i++ )
         {
-            hashLong64[i] = (hash[i] & 0xFF) > 127 ? 1 : 0;
+            ii = (int)round(i / k);
+            if ( ii < hashFast.length )
+                hashFast[ii] += (hash[i] & 0xFF) > 127 ? 1 : 0;
         }
-        FastHash fastHash = new FastHash( hashLong64 );
+        for ( int i = 0; i < hashFast.length; i++ )
+        {
+            hashFast[i] /= k;
+        }
+        FastHash fastHash = new FastHash( hashFast );
         
         // store it -------------
         
@@ -108,38 +132,42 @@ void draw ()
         pieces = pieces[0].split( "_" );
         performance = pieces[0] + "_" + pieces[1];
         
-        db.execute( 
-            "INSERT INTO silhouettes ( "+
-                "fasthash ," +
-                "hash, "+
-                "framenumber, "+
-                "performance, "+
-                "angle, "+
-                "file, "+
-                "circle_x, "+
-                "circle_y, "+
-                "circle_radius "+
-            ") VALUES ( "+
-                "%d, X'%s', %d, \"%s\", \"%s\", \"%s\", %d, %d, %d "+
-            ")", 
-            fastHash.toLong64(),
-            fullHash.toHexString(),
-            frameNumber,
-            performance,
-            camAngle,
-            pngs[currentPng],
-            circumCircle.x,
-            circumCircle.x,
-            circumCircle.radius
-        );
-        
-        db.query( "SELECT last_insert_id() AS id" );
-        db.next();
-        id = db.getInt( "id" );
-        
-        if ( id != -1 )
+        if ( true ) 
         {
+            db.execute( 
+                "INSERT INTO %s ( "+
+                    "fasthash ," +
+                    "framenumber, "+
+                    "performance, "+
+                    "angle, "+
+                    "file, "+
+                    "center_x, "+
+                    "center_y, "+
+                    "circle_radius, "+
+                    hashColumns +" "+
+                ") VALUES ( "+
+                    "%d, %d, \"%s\", \"%s\", \"%s\", %d, %d, %d, %s "+
+                ")", 
+                currentTable,
+                fastHash.toLong64(),
+                frameNumber,
+                performance,
+                camAngle,
+                pngs[currentPng],
+                centerOfMass.x,
+                centerOfMass.y,
+                circumCircle.radius,
+                hashVals
+            );
             
+            db.query( "SELECT last_insert_id() AS id" );
+            db.next();
+            id = db.getInt( "id" );
+            
+            if ( id != -1 )
+            {
+                
+            }
         }
         
         // draw it -------------------------------------
@@ -148,25 +176,29 @@ void draw ()
         image( sil, 0, 0, width, width );
         removeCache( sil );
         
-        stroke( 0 );
-        noFill();
-        rect( 5, height-5-255, 3*hash.length, 255 );
+        float vWidth = (width-10.0) / hash.length;
+        int vWidthInt = (int)(vWidth) - 1;
+        vWidthInt = vWidthInt < 1 ? 1 : vWidthInt;
+        
+        stroke( 0 ); noFill();
+        rect( 5, height-5-255, hash.length*vWidth, 255 );
     
-        noStroke();
-        fill( 0 );
-        for ( int i = 0; i < hash.length; i++ )
+        noStroke(); fill( 0 );
+        
+        for ( int i = 0, ii = 0; i < hash.length; i++ )
         {
-            rect( 5 + i*3, height - 5 - hash[i], 2, hash[i] );
+            rect( 5+i*vWidth, height-5-(255-hash[i]), vWidthInt, (255-hash[i]) );
             
-            if ( hash[i] > 127 )
-            {
-                rect( 5 + i*3, height - 5 - 255 - 10, 2, 5 );
-            }
+            ii = (int)round(i / k);
+            if ( ii < hashFast.length && hashFast[ii] == 0 )
+                rect( 5+i*vWidth, height-5-255-5-5, vWidth, 5 );
         }
         
-        fill( 0 );
-        text( fullHash.toHexString(), 5, height - 275 );
-    }
+//        fill( 0 );
+//        textSize( 9 );
+//        text( fullHash.toHexString(), 5, height - 275 );
+    
+    } // entry exists?
     
     currentPng++;
     if ( currentPng == pngs.length ) 
@@ -182,6 +214,7 @@ void draw ()
     }
     
     fill( 0 );
+    textSize( 12 );
     text( String.format( "%d%% % 6d of % 6d", (int)(((float)currentPng / pngs.length) * 100), currentPng, pngs.length), 10, 20 );
     text( String.format( "%s %s %06d", performance, camAngle, frameNumber ), 10, 36 );
 }
