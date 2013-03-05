@@ -28,9 +28,9 @@
          int num = nearHull2D( pointsClicked, hull );
          
          beginShape();
-         for ( Point2D p : hull )
+         for( int i=0; i<num; i++)
          {
-             if ( p == null ) break;
+             Point2D p = hull[i];
              vertex( p.x, p.y );
          }
          endShape();
