@@ -89,7 +89,7 @@ void drawPerformerSegments () {
     }
     */
     
-    /*
+    
     stroke(200);
     line(0,(size-30)/2 + 30,size,(size-30)/2 + 30);
     stroke(0);
@@ -105,7 +105,7 @@ void drawPerformerSegments () {
       x = j*(size/pv.length());
       vertex(x,y);
     }
-    */
+    
     
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);

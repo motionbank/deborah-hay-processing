@@ -1,8 +1,9 @@
 /** 
  *    Motion Bank research, http://motionbank.org/
  *
- *    TODO: sketch description
- *
+ *    TODO: - sketch description
+ *          - first frame = data event happenedAt      
+ *    
  *    P-2.0
  *    created: mbaer 20121228
  *    
@@ -57,10 +58,20 @@ int performerIndex = 0;
 
 int drawMode = 3;
 
+/*
+// AJA
 int[] videoIDs = {
-  232, 233, 234, /*236,*/ 235, 247, 248, // ros           0 -  6
+  232, 233, 234, 236, 235, 247, 248, // ros           0 -  6
   249, 250, 251, 252, 253, 255, 254, // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
-  256, /*257,*/ 258, 259, 260, 261, 262  // jeanine       14 - 20
+  256, 257, 258, 259, 260, 261, 262  // jeanine       14 - 20
+};
+*/
+
+// CENTER CAM
+int[] videoIDs = {
+  76, 77, 79, 81, 82, 83, 80,  // ros           0 -  6
+  84, 87, 88, 89, 90, 91, 86,  // juliette      7 - 13 | 2 markers missing at start, "scenefaux" marker added
+  95, 96, 97, 98, 99, 85, 100  // jeanine       14 - 20
 };
 
 int toLoad = 0;
