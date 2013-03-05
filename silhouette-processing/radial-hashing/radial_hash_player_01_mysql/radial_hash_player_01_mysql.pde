@@ -11,11 +11,14 @@ import de.bezier.data.sql.*;
  import org.motionbank.imaging.*;
 
 MySQL db;
-//String database = "../db/dbV4Test.sqlite";
+String table = "silhouettes_test_ros_d02t02_camcenter";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
-int currentId = 50 * 60 * 10;
+int currentId = 0;
+int currentFrame = 0;
+
+int hashLength = 124; // 4 + 8 + 16 + 32 + 64
 
 float ts1a = 0, ts2a = 0;
 int tsi = 0;
@@ -24,6 +27,7 @@ void setup ()
 {
     size( 250 * 6, 250 * 4 );
     
+    currentFrame = (int)random( 1000 );
     initDatabase();
 }
 
@@ -31,7 +35,7 @@ void draw ()
 {
     background( 255 );
     
-    db.query( "SELECT * FROM sil_test WHERE id > %d ORDER BY id LIMIT 1", currentId );
+    db.query( "SELECT * FROM %s WHERE framenumber = %d LIMIT 1", table, currentFrame );
     
     if ( db.next() )
     {
@@ -40,7 +44,7 @@ void draw ()
         String performance = db.getString( "performance" );
         String file = db.getString( "file" );
         
-        int[] vals = new int[60];
+        int[] vals = new int[hashLength];
         String valQuery = "";
         for ( int i = 0; i < vals.length; i++ )
         {
@@ -55,19 +59,21 @@ void draw ()
         long ts1 = System.currentTimeMillis();
         
         db.query( "SELECT *, "+
-                         "BIT_COUNT( %d ^ fasthash ) AS bitdist "+
-                         ", ( %s ) AS dist " +
-                      "FROM sil_test "+
-                      "WHERE NOT id = %d "+
-                          "AND performance NOT LIKE \"%s\" " +
+                          "BIT_COUNT( %d ^ fasthash ) AS bitdist "+
+                          ", ( %s ) AS dist " +
+                      "FROM %s "+
+                      "WHERE NOT framenumber = %d "+
+                          //"AND performance NOT LIKE \"%s\" " +
                       "HAVING "+
-                            "bitdist <= 1 " + 
-                            "AND "+"dist < 1224 "+
+                          //"bitdist <= 2 " + 
+                          //"AND "+
+                          "dist < 100 "+
                       "ORDER BY dist ASC "+
-                      "LIMIT 5",
+                      "LIMIT 1",
                       fasthash,
                       valQuery,
-                      currentId,
+                      table,
+                      currentFrame,
                       performance
                  );
 
@@ -81,10 +87,12 @@ void draw ()
         
         while ( db.next() )
         {
+            currentId = db.getInt( "id" );
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-            int dist = 0; //db.getInt( "dist" );
+            int dist = db.getInt( "dist" );
             int bitDist = db.getInt( "bitdist" );
-            String perf = db.getString( "performance" );
+            currentFrame = db.getInt( "framenumber" )+1;
+            String perf = db.getString( "performance" ) + "_" + currentFrame;
             
             drawSilhouette( img, x, y, 200, 200 );
             
@@ -108,17 +116,17 @@ void draw ()
             
             long ts2 = System.currentTimeMillis();
     
-            db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
-                          "FROM silhouettes "+
-                          "WHERE id IS NOT %d AND "+
-                                //"performance NOT LIKE \"%s\" AND "+
-                                "dist <= 0 "+
-                          "ORDER BY dist "+
-                          "LIMIT 5", 
-                          fasthash, 
-                          currentId
-                          //performance 
-                          );
+//            db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
+//                          "FROM silhouettes "+
+//                          "WHERE id IS NOT %d AND "+
+//                                //"performance NOT LIKE \"%s\" AND "+
+//                                "dist <= 0 "+
+//                          "ORDER BY dist "+
+//                          "LIMIT 5", 
+//                          fasthash, 
+//                          currentId
+//                          //performance 
+//                          );
             
             ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
             
@@ -148,6 +156,11 @@ void draw ()
         println();
 
         tsi++;           
+    }
+    else
+    {
+        println( "Nothing to do .. bye!" );
+        exit();
     }
 }
 

@@ -48,7 +48,7 @@ void initDatabase ()
 {
     String[] pieces = takes[currentTake].split("_");
     String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
-    currentTable = String.format( "silhouettes_test_%s", take.toLowerCase() );
+    currentTable = String.format( tableNameTemplate, take.toLowerCase() );
     
     // i'm using taps to transfer the data from MySQL to SQLite later on,
     // MySQL is just faster when begin hosed like this ..
@@ -87,17 +87,27 @@ void initDatabase ()
             return;
         }
     }
+    
+    String valQuery = "";
+    for ( int i = 0; i < 124; i++ )
+    {
+        if ( i > 0 ) valQuery += " , ";
+        valQuery += "val"+nf(i,3)+" TINYINT UNSIGNED NOT NULL ";
+    }
+    
+    db.execute( "TRUNCATE TABLE %s", currentTable );
 
     db.execute( "CREATE TABLE IF NOT EXISTS %s ( "+
-                    "id INT(11) PRIMARY KEY AUTO_INCREMENT, " +
+                    "id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT, " +
                     "fasthash BIGINT NOT NULL DEFAULT 0, " +
-                    "hash BLOB, " +
-                    "framenumber INTEGER NOT NULL DEFAULT 0, " +
-                    "performance TEXT NOT NULL, " +
-                    "angle TEXT NOT NULL, " +
+                    "framenumber INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+                    "performance VARCHAR(20) NOT NULL, " +
+                    "angle VARCHAR(20) NOT NULL, " +
                     "file TEXT NOT NULL, " +
-                    "circle_x INTEGER NOT NULL DEFAULT 0, " +
-                    "circle_y INTEGER NOT NULL DEFAULT 0, " +
-                    "circle_radius REAL NOT NULL DEFAULT 0.0" +
+                    "center_x INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+                    "center_y INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+                    "circle_radius REAL NOT NULL DEFAULT 0.0, " +
+                    valQuery+" , "+
+                    "UNIQUE perf_key (performance, framenumber) "+
                 ")", currentTable );
 }

@@ -78,6 +78,8 @@ void setup ()
                     current++;
                 }
             }
+            
+            exit();
         }
     }.start();
 }

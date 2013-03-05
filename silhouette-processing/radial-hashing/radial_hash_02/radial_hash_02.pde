@@ -14,6 +14,7 @@ import org.motionbank.imaging.*;
 MySQL db;
 //String dbFilePath = "../db/db_v5_%s.sqlite";
 String currentTable = "";
+String tableNameTemplate = "silhouettes_test2_%s";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 String[] takes;
@@ -54,13 +55,27 @@ void draw ()
     else
     {
         PImage silImage = loadPrepareBinaryImage( pngs[currentPng] );
-                
-        ImageUtilities.PixelLocation centerOfMass = 
-            ImageUtilities.getCenterOfMass( silImage.pixels, 
-                                            silImage.width, silImage.height );
         
-        //ImageUtilities.PixelBoundingBox bbox = ImageUtilities.getBoundingBox( silImage.pixels, silImage.width, silImage.height );
-        //int[] hash = computeHash( silImage, centerOfMass.x, centerOfMass.y, bbox.xCenter, bbox.yCenter, bbox.width, bbox.height );
+        PImage silImageGross = silImage.get();
+
+        if ( silImageGross.width > 10 )
+        {
+            silImageGross.filter( BLUR, 15 );
+            silImageGross.filter( THRESHOLD, 0.5 );
+        }
+        
+        ImageUtilities.PixelLocation centerOfMass = 
+            ImageUtilities.getCenterOfMass( silImageGross.pixels, 
+                                            silImageGross.width, silImageGross.height );
+        
+//        ImageUtilities.PixelBoundingBox bbox = 
+//            ImageUtilities.getBoundingBox( silImageGross.pixels, 
+//                                           silImageGross.width, silImageGross.height );
+//        
+//        int[] hash = computeHash( silImage, 
+//                                  centerOfMass.x, centerOfMass.y, 
+//                                  bbox.x, bbox.y, 
+//                                  bbox.width, bbox.height );
         
         ImageUtilities.PixelCircumCircle circumCircle = 
             ImageUtilities.getCircumCircle( silImage.pixels, 
@@ -74,16 +89,17 @@ void draw ()
         
         // pack hash bytes into binary array
         
-        int[] hashBits = new int[hash.length * 8];
+        String hashVals = "", hashColumns = "";
         for ( int i = 0; i < hash.length; i++ )
         {
-            int aByte = hash[i] & 0xFF;
-            for ( int ii = 0; ii < 8; ii++ )
-            {
-                hashBits[i*8 + ii] = (aByte >> (7-ii)) & 0x1;
-            }
+            if ( i > 0 )
+           {
+               hashVals += " , ";
+               hashColumns += " , ";
+           }
+            hashVals += (hash[i] & 0xFF);
+            hashColumns += "val"+nf(i,3);
         }
-        FastHash fullHash = new FastHash( hashBits );
         
         // byte to bit ---------
         
@@ -116,32 +132,32 @@ void draw ()
         pieces = pieces[0].split( "_" );
         performance = pieces[0] + "_" + pieces[1];
         
-        if ( false ) 
+        if ( true ) 
         {
             db.execute( 
                 "INSERT INTO %s ( "+
                     "fasthash ," +
-                    "hash, "+
                     "framenumber, "+
                     "performance, "+
                     "angle, "+
                     "file, "+
-                    "circle_x, "+
-                    "circle_y, "+
-                    "circle_radius "+
+                    "center_x, "+
+                    "center_y, "+
+                    "circle_radius, "+
+                    hashColumns +" "+
                 ") VALUES ( "+
-                    "%d, X'%s', %d, \"%s\", \"%s\", \"%s\", %d, %d, %d "+
+                    "%d, %d, \"%s\", \"%s\", \"%s\", %d, %d, %d, %s "+
                 ")", 
                 currentTable,
                 fastHash.toLong64(),
-                fullHash.toHexString(),
                 frameNumber,
                 performance,
                 camAngle,
                 pngs[currentPng],
-                circumCircle.x,
-                circumCircle.x,
-                circumCircle.radius
+                centerOfMass.x,
+                centerOfMass.y,
+                circumCircle.radius,
+                hashVals
             );
             
             db.query( "SELECT last_insert_id() AS id" );
@@ -171,10 +187,10 @@ void draw ()
         
         for ( int i = 0, ii = 0; i < hash.length; i++ )
         {
-            rect( 5+i*vWidth, height-5-hash[i], vWidthInt, hash[i] );
+            rect( 5+i*vWidth, height-5-(255-hash[i]), vWidthInt, (255-hash[i]) );
             
             ii = (int)round(i / k);
-            if ( ii < hashFast.length && hashFast[ii] == 1 )
+            if ( ii < hashFast.length && hashFast[ii] == 0 )
                 rect( 5+i*vWidth, height-5-255-5-5, vWidth, 5 );
         }
         

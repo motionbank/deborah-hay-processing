@@ -57,7 +57,7 @@ int[] computeHash ( PImage img,
 
     int[] hash = RadialHashGenerator.generateHashAdaptive( sil64.pixels, tileSize, 5 );
     
-    HashingUtilities.normalizeValues( hash );
+    //HashingUtilities.normalizeValues( hash );
     
     sil = sil64.get();
     
