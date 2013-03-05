@@ -30,8 +30,8 @@ void drawSegmentStages() {
   strokeJoin(ROUND);
   
   
-  float steps = 5;
-  
+  float steps = 11;
+  int oc = 0;
   
   for( int i=0; i<vid.segments.length(); i++) {
     VideoSegment vSeg = vid.segments.get(i);
@@ -58,6 +58,9 @@ void drawSegmentStages() {
     
     float lastPx = 0.0;
     float lastPy = 0.0;
+    int count = 0;
+    boolean occupied = false;
+    
     
     beginShape();
     for( int j=0; j<vSeg.positions.length(); j++) {
@@ -68,7 +71,21 @@ void drawSegmentStages() {
       if (py > steps-1) py = steps-1;
       if (px < 0) px = 0;
       if (py < 0) py = 0;
-      //ellipse(px * s/3 + s/6,py * s/3 + s/6,10,10);
+      
+      if (lastPx == px && lastPy == py) {
+        if (count >= 250 && !occupied) {
+          vertex(px * s/steps + s/(steps*2.0),py * s/steps + s/(steps*2.0));
+          occupied = true;
+          //println("occupy this square!");
+          oc++;
+        }
+        else count ++;
+      }
+      else {
+        count = 0;
+        occupied = false;
+      }
+      
       if (px != lastPx || py != lastPy) vertex(px * s/steps + s/(steps*2.0),py * s/steps + s/(steps*2.0));
       lastPx = px;
       lastPy = py;
@@ -92,13 +109,15 @@ void drawSegmentStages() {
   }
   popStyle();
   
+  println(oc + " occupied");
   
   x = 0;
   y = 0;
   
-  /*
+  
   // POSITION PATH
   
+  /*
   for( int i=0; i<vid.segments.length(); i++) {
     VideoSegment vSeg = vid.segments.get(i);
     TextSegment tSeg = textSegments.get(i);
@@ -115,6 +134,9 @@ void drawSegmentStages() {
     strokeWeight(1);
     rect(0,0,s,s);
     
+    stroke(0,0,255);
+    strokeWeight(1);
+    noFill();
     beginShape();
     for( int j=0; j<vSeg.positions.length(); j++) {
       PVector v = vSeg.positions.get(j);
@@ -131,6 +153,7 @@ void drawSegmentStages() {
     }
   }
   */
+  
   
   popMatrix();
   

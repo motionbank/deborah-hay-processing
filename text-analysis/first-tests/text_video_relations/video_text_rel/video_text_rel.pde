@@ -46,7 +46,7 @@ PerformerVideosList performers = new PerformerVideosList();
 int idx = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = false;
+boolean saveAllFrames = true;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
@@ -112,7 +112,7 @@ void draw ()
     // cycles through all videos in videoIDs
     if (saveAllFrames) {
      
-      saveFrame("simplified_position2_" + videos.get(idx).data.file.title + ".png");
+      saveFrame("simplified_position4_" + videos.get(idx).data.file.title + ".png");
       drawFrame = true;
       idx++;
       if (idx == videoIDs.length) exit(); 
