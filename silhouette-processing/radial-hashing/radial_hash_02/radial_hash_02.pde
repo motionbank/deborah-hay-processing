@@ -14,7 +14,7 @@ import org.motionbank.imaging.*;
 MySQL db;
 //String dbFilePath = "../db/db_v5_%s.sqlite";
 String currentTable = "";
-String tableNameTemplate = "silhouettes_test2_%s";
+String tableNameTemplate = "silhouettes_test_%s";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 String[] takes;

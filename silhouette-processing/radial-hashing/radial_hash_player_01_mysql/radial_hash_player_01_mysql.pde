@@ -25,9 +25,9 @@ int tsi = 0;
 
 void setup ()
 {
-    size( 250 * 6, 250 * 4 );
+    size( 500, 250 );
     
-    currentFrame = (int)random( 1000 );
+    currentId = 0;
     initDatabase();
 }
 
@@ -35,7 +35,7 @@ void draw ()
 {
     background( 255 );
     
-    db.query( "SELECT * FROM %s WHERE framenumber = %d LIMIT 1", table, currentFrame );
+    db.query( "SELECT * FROM %s WHERE id > %d ORDER BY id LIMIT 1", table, currentId );
     
     if ( db.next() )
     {
@@ -54,7 +54,7 @@ void draw ()
         }
         
         sil = loadImage( silhouetteFolder + "/" + file );
-        drawSilhouette( sil, 0, 0, 200, 200 );
+        drawSilhouette( sil, 0, 0, 250, 250 );
         
         long ts1 = System.currentTimeMillis();
         
@@ -62,18 +62,18 @@ void draw ()
                           "BIT_COUNT( %d ^ fasthash ) AS bitdist "+
                           ", ( %s ) AS dist " +
                       "FROM %s "+
-                      "WHERE NOT framenumber = %d "+
+                      "WHERE NOT id = %d "+
                           //"AND performance NOT LIKE \"%s\" " +
                       "HAVING "+
-                          //"bitdist <= 2 " + 
-                          //"AND "+
+                          "bitdist <= 2 " + 
+                          "AND "+
                           "dist < 100 "+
                       "ORDER BY dist ASC "+
                       "LIMIT 1",
                       fasthash,
                       valQuery,
                       table,
-                      currentFrame,
+                      currentId,
                       performance
                  );
 
@@ -83,22 +83,21 @@ void draw ()
         //db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist ASC LIMIT 26", vals, id );
         //db.query( "SELECT id, file, fasthash, hamming_distance(%d,fasthash) AS hdist FROM images WHERE id != %d AND hdist < 2 ORDER BY hdist LIMIT 26" , fasthash, id );
         
-        int x = 0, y = 250;
+        int x = 250, y = 0;
         
         while ( db.next() )
         {
-            currentId = db.getInt( "id" );
+            //currentId = db.getInt( "id" );
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
             int dist = db.getInt( "dist" );
             int bitDist = db.getInt( "bitdist" );
-            currentFrame = db.getInt( "framenumber" )+1;
-            String perf = db.getString( "performance" ) + "_" + currentFrame;
+            String perf = db.getString( "performance" ) + "_" + db.getInt( "framenumber" );
             
-            drawSilhouette( img, x, y, 200, 200 );
+            drawSilhouette( img, x, y, 250, 250 );
             
             fill( 0 );
-            text( dist + " | " + bitDist, x+5, y+15 );
-            text( perf, x+5, y+35 );
+            //text( dist + " | " + bitDist, x+5, y+15 );
+            //text( perf, x+5, y+35 );
             
             x += 250;
             if ( x > width )
@@ -108,51 +107,10 @@ void draw ()
             }
         }
         
-        if ( false )
-        {
-            
-            x = 0;
-            y += 250;
-            
-            long ts2 = System.currentTimeMillis();
-    
-//            db.query( "SELECT id, file, bit_dist( %d, fasthash ) AS dist, performance "+
-//                          "FROM silhouettes "+
-//                          "WHERE id IS NOT %d AND "+
-//                                //"performance NOT LIKE \"%s\" AND "+
-//                                "dist <= 0 "+
-//                          "ORDER BY dist "+
-//                          "LIMIT 5", 
-//                          fasthash, 
-//                          currentId
-//                          //performance 
-//                          );
-            
-            ts2a += (System.currentTimeMillis() - ts2) / 1000.0;
-            
-            while ( db.next() )
-            {
-                PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-                int dist = db.getInt( "dist" );
-                String perf = db.getString( "performance" );
-                
-                drawSilhouette( img, x, y, 200, 200 );
-                
-                fill( 0 );
-                text( dist, x+5, y+15 );
-                text( perf, x+5, y+35 );
-                
-                x += 250;
-                if ( x > width )
-                {
-                    x = 0;
-                    y += 250;
-                }
-            }
+        saveFrame( "output" + "/" + nf(currentId,7) + ".png" );
+        currentId += 2;
         
-        }
-
-        println( "F/H " + (ts1a/tsi) + " / " + (ts2a/tsi) );
+        println( ts1a/tsi );
         println();
 
         tsi++;           
