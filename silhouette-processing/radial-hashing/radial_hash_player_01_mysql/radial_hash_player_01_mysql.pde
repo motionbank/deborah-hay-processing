@@ -11,7 +11,7 @@ import de.bezier.data.sql.*;
 import org.motionbank.imaging.*;
 
 MySQL db;
-String table = "silhouettes_test3_ros_d01t01_camcenter";
+String table = "silhouettes";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
@@ -79,10 +79,10 @@ void draw ()
             "ABS( %d - framenumber ) AS framedist "+
             "FROM %s "+
             "WHERE NOT id = %d "+
-                //"AND performance NOT LIKE \"%s\" " +
+                "AND performance NOT LIKE \"%s\" " +
             "HAVING "+
-                "bitdist > 32 " + 
-            "ORDER BY framedist DESC, bitdist ASC "+
+                "bitdist < 64 " + 
+            "ORDER BY bitdist ASC, framedist DESC "+
             "LIMIT 1", 
             hashes[0], hashes[1], hashes[2], hashes[3], 
             framenumber,
@@ -92,7 +92,7 @@ void draw ()
             );
 
         ts1a += (System.currentTimeMillis() - ts1) / 1000.0;
-        println( "Querytime: " + (ts1a / tsi) );
+        //println( "Querytime: " + (ts1a / tsi) );
 
         //db.query( "SELECT id, file, (%s) AS dist FROM images WHERE id IS NOT %d AND dist < 200 ORDER BY dist ASC LIMIT 26", vals, id );
         //db.query( "SELECT id, file, fasthash, hamming_distance(%d,fasthash) AS hdist FROM images WHERE id != %d AND hdist < 2 ORDER BY hdist LIMIT 26" , fasthash, id );
@@ -121,11 +121,8 @@ void draw ()
             }
         }
 
-        //saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
+        saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
         //currentId += 2;
-
-        println( ts1a/tsi );
-        println();
 
         tsi++;
     }
