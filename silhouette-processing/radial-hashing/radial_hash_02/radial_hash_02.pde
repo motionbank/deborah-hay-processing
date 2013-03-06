@@ -14,7 +14,7 @@ import org.motionbank.imaging.*;
 MySQL db;
 //String dbFilePath = "../db/db_v5_%s.sqlite";
 String currentTable = "";
-String tableNameTemplate = "silhouettes_test_%s";
+String tableNameTemplate = "silhouettes_test3_%s";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 String[] takes;
@@ -60,8 +60,8 @@ void draw ()
 
         if ( silImageGross.width > 10 )
         {
-            silImageGross.filter( BLUR, 15 );
-            silImageGross.filter( THRESHOLD, 0.5 );
+            silImageGross.filter( BLUR, 3 );
+            silImageGross.filter( THRESHOLD, 0.7 );
         }
         
         ImageUtilities.PixelLocation centerOfMass = 
@@ -89,33 +89,33 @@ void draw ()
         
         // pack hash bytes into binary array
         
-        String hashVals = "", hashColumns = "";
-        for ( int i = 0; i < hash.length; i++ )
-        {
-            if ( i > 0 )
-           {
-               hashVals += " , ";
-               hashColumns += " , ";
-           }
-            hashVals += (hash[i] & 0xFF);
-            hashColumns += "val"+nf(i,3);
-        }
+//        String hashVals = "", hashColumns = "";
+//        for ( int i = 0; i < hash.length; i++ )
+//        {
+//            if ( i > 0 )
+//           {
+//               hashVals += " , ";
+//               hashColumns += " , ";
+//           }
+//            hashVals += (hash[i] & 0xFF);
+//            hashColumns += "val"+nf(i,3);
+//        }
         
         // byte to bit ---------
         
-        int[] hashFast = new int[64];
-        float k = ceil(hash.length / (float)hashFast.length);
-        for ( int i = 0, ii = 0; i < hash.length; i++ )
+        String[] hashes = new String[4];
+        
+        for ( int h = 0; h < hashes.length; h++ )
         {
-            ii = (int)round(i / k);
-            if ( ii < hashFast.length )
-                hashFast[ii] += (hash[i] & 0xFF) > 127 ? 1 : 0;
+            int[] hashBlock = new int[64];
+            
+            for ( int i = 0, k = h*64; i < 64; i++ )
+            {
+                hashBlock[i] = (hash[k+i] & 0xFF) > 127 ? 1 : 0;
+            }
+            FastHash hashBlockObj = new FastHash( hashBlock );
+            hashes[h] = hashBlockObj.toHexString();
         }
-        for ( int i = 0; i < hashFast.length; i++ )
-        {
-            hashFast[i] /= k;
-        }
-        FastHash fastHash = new FastHash( hashFast );
         
         // store it -------------
         
@@ -136,7 +136,6 @@ void draw ()
         {
             db.execute( 
                 "INSERT INTO %s ( "+
-                    "fasthash ," +
                     "framenumber, "+
                     "performance, "+
                     "angle, "+
@@ -144,12 +143,13 @@ void draw ()
                     "center_x, "+
                     "center_y, "+
                     "circle_radius, "+
-                    hashColumns +" "+
+                    "hash64, hash128, hash192, hash256 "+
                 ") VALUES ( "+
-                    "%d, %d, \"%s\", \"%s\", \"%s\", %d, %d, %d, %s "+
+                    "%d, \"%s\", \"%s\", \"%s\", "+
+                    "%d, %d, %d, "+
+                    " X'%s', X'%s', X'%s', X'%s'"+
                 ")", 
                 currentTable,
-                fastHash.toLong64(),
                 frameNumber,
                 performance,
                 camAngle,
@@ -157,7 +157,10 @@ void draw ()
                 centerOfMass.x,
                 centerOfMass.y,
                 circumCircle.radius,
-                hashVals
+                hashes[0],
+                hashes[1],
+                hashes[2],
+                hashes[3]
             );
             
             db.query( "SELECT last_insert_id() AS id" );
@@ -189,9 +192,9 @@ void draw ()
         {
             rect( 5+i*vWidth, height-5-(255-hash[i]), vWidthInt, (255-hash[i]) );
             
-            ii = (int)round(i / k);
-            if ( ii < hashFast.length && hashFast[ii] == 0 )
-                rect( 5+i*vWidth, height-5-255-5-5, vWidth, 5 );
+//            ii = (int)round(i / k);
+//            if ( ii < hashFast.length && hashFast[ii] == 0 )
+//                rect( 5+i*vWidth, height-5-255-5-5, vWidth, 5 );
         }
         
 //        fill( 0 );

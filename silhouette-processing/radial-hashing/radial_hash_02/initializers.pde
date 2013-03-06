@@ -50,6 +50,8 @@ void initDatabase ()
     String take = pieces[0] + "_" + pieces[1] + "_" + camAngle;
     currentTable = String.format( tableNameTemplate, take.toLowerCase() );
     
+    println( String.format( "Using table: %s", currentTable ) );
+    
     // i'm using taps to transfer the data from MySQL to SQLite later on,
     // MySQL is just faster when begin hosed like this ..
     
@@ -88,18 +90,31 @@ void initDatabase ()
         }
     }
     
-    String valQuery = "";
-    for ( int i = 0; i < 124; i++ )
-    {
-        if ( i > 0 ) valQuery += " , ";
-        valQuery += "val"+nf(i,3)+" TINYINT UNSIGNED NOT NULL ";
-    }
+//    String valQuery = "";
+//    for ( int i = 0; i < 124; i++ )
+//    {
+//        if ( i > 0 ) valQuery += " , ";
+//        valQuery += "val"+nf(i,3)+" TINYINT UNSIGNED NOT NULL DEFAULT 0";
+//    }
     
-    db.execute( "TRUNCATE TABLE %s", currentTable );
+    //db.execute( "TRUNCATE TABLE %s", currentTable );
+
+//    db.execute( "CREATE TABLE IF NOT EXISTS %s ( "+
+//                    "id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT, " +
+//                    "fasthash BIGINT NOT NULL DEFAULT 0, " +
+//                    "framenumber INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+//                    "performance VARCHAR(20) NOT NULL, " +
+//                    "angle VARCHAR(20) NOT NULL, " +
+//                    "file TEXT NOT NULL, " +
+//                    "center_x INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+//                    "center_y INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
+//                    "circle_radius REAL NOT NULL DEFAULT 0.0, " +
+//                    valQuery+" , "+
+//                    "UNIQUE perf_key (performance, framenumber) "+
+//                ")", currentTable );
 
     db.execute( "CREATE TABLE IF NOT EXISTS %s ( "+
                     "id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT, " +
-                    "fasthash BIGINT NOT NULL DEFAULT 0, " +
                     "framenumber INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
                     "performance VARCHAR(20) NOT NULL, " +
                     "angle VARCHAR(20) NOT NULL, " +
@@ -107,7 +122,12 @@ void initDatabase ()
                     "center_x INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
                     "center_y INTEGER UNSIGNED NOT NULL DEFAULT 0, " +
                     "circle_radius REAL NOT NULL DEFAULT 0.0, " +
-                    valQuery+" , "+
-                    "UNIQUE perf_key (performance, framenumber) "+
+                    
+                    "hash64 BIGINT UNSIGNED NOT NULL, "+
+                    "hash128 BIGINT UNSIGNED NOT NULL, "+
+                    "hash192 BIGINT UNSIGNED NOT NULL, "+
+                    "hash256 BIGINT UNSIGNED NOT NULL, "+
+                    
+                    "UNIQUE INDEX perf_key (performance, framenumber) "+
                 ")", currentTable );
 }
