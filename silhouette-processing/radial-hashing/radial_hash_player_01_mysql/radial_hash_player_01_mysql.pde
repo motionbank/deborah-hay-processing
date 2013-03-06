@@ -11,7 +11,7 @@ import de.bezier.data.sql.*;
 import org.motionbank.imaging.*;
 
 MySQL db;
-String table = "silhouettes_test_ros_d02t02_camcenter";
+String table = "silhouettes_test3_ros_d01t01_camcenter";
 String silhouetteFolder = "/Volumes/Verytim/2011_FIGD_April_Results/";
 
 PImage sil;
@@ -35,23 +35,36 @@ void draw ()
 {
     background( 255 );
 
-    db.query( "SELECT * FROM %s WHERE id > %d ORDER BY id LIMIT 1", table, currentId );
+    db.query( "SELECT *, "+
+        "LPAD(HEX(hash64) ,16,'F') AS hash64_hex, "+
+        "LPAD(HEX(hash128),16,'F') AS hash128_hex, "+
+        "LPAD(HEX(hash192),16,'F') AS hash192_hex, "+
+        "LPAD(HEX(hash256),16,'F') AS hash256_hex "+
+        "FROM %s WHERE id > %d ORDER BY id LIMIT 1", table, currentId );
 
     if ( db.next() )
     {
         currentId = db.getInt( "id" );
-        long fasthash = db.getLong( "fasthash" );
+        //long fasthash = db.getLong( "fasthash" );
         String performance = db.getString( "performance" );
         String file = db.getString( "file" );
+        int framenumber = db.getInt( "framenumber" );
 
-        int[] vals = new int[hashLength];
-        String valQuery = "";
-        for ( int i = 0; i < vals.length; i++ )
-        {
-            vals[i] = db.getInt( "val" + nf(i, 3) );
+        String[] hashes = {
+            db.getString( "hash64_hex" ), 
+            db.getString( "hash128_hex" ), 
+            db.getString( "hash192_hex" ), 
+            db.getString( "hash256_hex" )
+        };
 
-            valQuery += (i > 0 ? " + " : " " ) + " ABS( val"+nf(i, 3)+" - "+vals[i]+" )";
-        }
+//            int[] vals = new int[hashLength];
+//        String valQuery = "";
+//        for ( int i = 0; i < vals.length; i++ )
+//        {
+//            vals[i] = db.getInt( "val" + nf(i, 3) );
+//
+//            valQuery += (i > 0 ? " + " : " " ) + " ABS( val"+nf(i, 3)+" - "+vals[i]+" )";
+//        }
 
         sil = loadImage( silhouetteFolder + "/" + file );
         drawSilhouette( sil, 0, 0, 250, 250 );
@@ -59,22 +72,23 @@ void draw ()
         long ts1 = System.currentTimeMillis();
 
         db.query( "SELECT *, "+
-            "BIT_COUNT( %d ^ fasthash ) AS bitdist "+
-            ", ( %s ) AS dist " +
+            "BIT_COUNT( X'%s' ^ hash64 ) + "+
+            "BIT_COUNT( X'%s' ^ hash128 ) + "+
+            "BIT_COUNT( X'%s' ^ hash192 ) + "+
+            "BIT_COUNT( X'%s' ^ hash256 ) AS bitdist, "+
+            "ABS( %d - framenumber ) AS framedist "+
             "FROM %s "+
             "WHERE NOT id = %d "+
-            //"AND performance NOT LIKE \"%s\" " +
-        "HAVING "+
-            "bitdist <= 2 " + 
-            "AND "+
-            "dist < 100 "+
-            "ORDER BY dist ASC "+
+                //"AND performance NOT LIKE \"%s\" " +
+            "HAVING "+
+                "bitdist > 32 " + 
+            "ORDER BY framedist DESC, bitdist ASC "+
             "LIMIT 1", 
-        fasthash, 
-        valQuery, 
-        table, 
-        currentId, 
-        performance
+            hashes[0], hashes[1], hashes[2], hashes[3], 
+            framenumber,
+            table, 
+            currentId, 
+            performance
             );
 
         ts1a += (System.currentTimeMillis() - ts1) / 1000.0;
@@ -89,7 +103,7 @@ void draw ()
         {
             //currentId = db.getInt( "id" );
             PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-            int dist = db.getInt( "dist" );
+            //int dist = db.getInt( "dist" );
             int bitDist = db.getInt( "bitdist" );
             String perf = db.getString( "performance" ) + "_" + db.getInt( "framenumber" );
 
@@ -107,7 +121,7 @@ void draw ()
             }
         }
 
-        saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
+        //saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
         //currentId += 2;
 
         println( ts1a/tsi );
@@ -141,9 +155,9 @@ void drawSilhouette ( PImage img, int ix, int iy, int iwidth, int iheight )
     float imgScale = imgSize / ( imgWidth > imgHeight ? imgWidth : imgHeight );
 
     image( img, ix + padding + -com.x * imgScale + imgSize/2, 
-            iy + padding + -com.y * imgScale + imgSize/2, 
-            img.width * imgScale, 
-            img.height * imgScale );
+    iy + padding + -com.y * imgScale + imgSize/2, 
+    img.width * imgScale, 
+    img.height * imgScale );
 
     removeCache( img );
 }
