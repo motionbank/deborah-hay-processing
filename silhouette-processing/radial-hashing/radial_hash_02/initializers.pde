@@ -4,7 +4,7 @@ void initTakes ()
     
     java.io.FilenameFilter f1 = new java.io.FilenameFilter() {
         public boolean accept ( File f, String n ) {
-            return n.startsWith("Ros_") && !n.startsWith("Ros_D01T01") && n.endsWith("_Corrected");
+            return n.startsWith("Ros_D02") && n.endsWith("_Corrected");
         }
     };
     

@@ -1,16 +1,14 @@
 
  void initDb ()
  {
-     db = new SQLite( this, "../db/" + dbName );
+     db = new MySQL( this, "localhost", dbDatabase, "moba", "moba" );
      
      if ( !db.connect() )
      {
-         System.err.println( "Unable to connect to database " + dbName );
+         System.err.println( "Unable to connect to database " + dbDatabase );
          exit();
          return;
      }
-     
-     addSQLiteDistanceFunctions();
  }
  
  void addSQLiteDistanceFunctions ()

@@ -13,8 +13,9 @@
  ArrayList<String> performances;
  ArrayList<Integer> performancesLengths;
  
- SQLite db;
- String dbName = "db_v2_Ros_ALL_CamCenter.sqlite";
+ MySQL db;
+ String dbDatabase = "moba_silhouettes";
+ String dbTableName = "silhouettes";
  String silhouettesBase = "/Volumes/Verytim/2011_FIGD_April_Results";
  
  void setup ()
@@ -23,23 +24,16 @@
      
      initDb();
      
-     String vals = "";
-     
-     for ( int i = 0; i < 32; i++ )
-     {
-         if ( i > 0 )
-             vals += ", ";
-         vals += "v" + nf(i,3);
-     }
-     
      long ts = System.currentTimeMillis();
      db.query(
-         "SELECT id, file, performance FROM images ORDER BY hex(hash)"
+         "SELECT id, file, performance "+
+         "FROM %s "+
+         "ORDER BY CONCAT( LPAD(HEX(hash64),16,'F'), LPAD(HEX(hash128),16,'F'), LPAD(HEX(hash192),16,'F'), LPAD(HEX(hash256),16,'F') ), framenumber",
+         dbTableName
      );
-     println( (System.currentTimeMillis() - ts) / 1000 );
-     // Ros only (780000 entries) took 5508 secs to complete ... that's 1.5 hours!
+     println( (System.currentTimeMillis() - ts) / 1000.0 );
      
-     frameRate( 10 );
+     // Ros only (780000 entries) took 5508 secs to complete ... that's 1.5 hours!
  }
  
  void draw ()
@@ -48,6 +42,8 @@
      
      if ( db.next() )
      {
+         if ( new File(sketchPath("output2/" + nf(frameCount, 15) + ".png")).exists() ) return;
+         
          String f = db.getString( "file" );
          PImage img = loadImage( silhouettesBase + "/" + f );
          removeTurquoise( img );
@@ -80,8 +76,8 @@
      }
      else
          exit();
-         
-     //saveFrame( "output/" + nf(frameCount, 15) + ".png" );
+     
+     saveFrame( "output2/" + nf(frameCount, 15) + ".png" );
  }
  
  int[] toBinaryPixels ( int[] pixels )
