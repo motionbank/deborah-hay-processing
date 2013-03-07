@@ -20,7 +20,7 @@ String[] lastFrames;
 
 void setup ()
 {
-    size( 500, 250 );
+    size( 250, 250 );
 
     initDatabase();
     lastFrames = new String[]{
@@ -67,57 +67,40 @@ void draw ()
         sil = loadImage( silhouetteFolder + "/" + file );
         drawSilhouette( sil, 0, 0, 250, 250 );
         
-            db.query( "SELECT *, "+
-                "BIT_COUNT( X'%s' ^ hash64 ) + "+
-                "BIT_COUNT( X'%s' ^ hash128 ) + "+
-                "BIT_COUNT( X'%s' ^ hash192 ) + "+
-                "BIT_COUNT( X'%s' ^ hash256 ) AS bitdist, "+
-                "ABS( %d - framenumber ) AS framedist "+
-                "FROM %s "+
-                "WHERE "+
-                    "performance NOT LIKE \"%s\" AND framenumber >= %d " +
-                "HAVING "+
-                    "bitdist < 20 " +
-                "ORDER BY bitdist ASC, framedist DESC "+
-                "LIMIT 1", 
-                hashes[0], hashes[1], hashes[2], hashes[3], 
-                currentFrame,
-                table, 
-                currentPerformance,
-                currentFrame
-                );
-    
-            int x = 250, y = 0;
-    
-            if ( db.next () )
-            {
-//                PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
-//                int bitDist = db.getInt( "bitdist" );
-                
-                currentPerformance = db.getString( "performance" );
-                currentFrame = db.getInt( "framenumber" );
-    
-//                drawSilhouette( img, x, y, 250, 250 );
-//    
-//                fill( 0 );
-//                //text( dist + " | " + bitDist, x+5, y+15 );
-//                //text( perf, x+5, y+35 );
-//    
-//                x += 250;
-//                if ( x > width )
-//                {
-//                    x = 0;
-//                    y += 250;
-//                }
-            }
+        db.query( "SELECT *, "+
+            "BIT_COUNT( X'%s' ^ hash64 ) + "+
+            "BIT_COUNT( X'%s' ^ hash128 ) + "+
+            "BIT_COUNT( X'%s' ^ hash192 ) + "+
+            "BIT_COUNT( X'%s' ^ hash256 ) AS bitdist, "+
+            "ABS( %d - framenumber ) AS framedist "+
+            "FROM %s "+
+            "WHERE "+
+                "performance NOT LIKE \"%s\" AND framenumber >= %d " +
+            "HAVING "+
+                "bitdist < %d " +
+            "ORDER BY bitdist ASC, framedist DESC "+
+            "LIMIT 1", 
+            hashes[0], hashes[1], hashes[2], hashes[3], 
+            currentFrame,
+            table, 
+            currentPerformance,
+            currentFrame,
+            (int)(random(0,18))
+        );
+
+        if ( db.next () )
+        {
+            currentPerformance = db.getString( "performance" );
+            currentFrame = db.getInt( "framenumber" );
+        }
         
-        currentFrame += 10;
+        currentFrame++;
 
         //saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
     }
     else
     {
-        println( "Nothing to do .. bye!" );
+        println( "After so many frames, "+currentFrame+", nothing more left to do .. bye!" );
         exit();
     }
 }
