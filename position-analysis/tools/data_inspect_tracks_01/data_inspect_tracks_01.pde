@@ -14,12 +14,10 @@
  
  MultiSlider mSlider;
  
- float[][] trackData;
- float[] trackSpeed;
+ Track3D[] tracks;
  int trackStart = 0, trackEnd = 0;
- float[] trackMin, trackMax;
- float trackSpeedMean, trackSpeedHigh, trackSpeedLow, trackSpeedThresh;
  int trackPlayhead = 0;
+ int longestTrackLength = Integer.MIN_VALUE;
  
  int centerFold;
  
@@ -65,7 +63,7 @@
  {
      background( 255 );
      
-     if ( trackData == null )
+     if ( tracks == null || tracks.length <= 0 )
      {
          fill( 0 );
          text( "Loading", width/2, height/2 );
@@ -87,106 +85,124 @@
          
          noFill();
          stroke( 255 );
-         
-         int iStep = 1;
-         if ( (trackEnd - trackStart) > centerFold-40 )
-         {
-             iStep = int( round( (trackEnd - trackStart) / (centerFold-40) ) );
-         }
 
          boolean isOutlier = false, wasOutlier = false;
          int c1 = color(255, 80, 80), c2 = color(80, 130, 200);
          
-         for ( int d = 0; d < 3; d++ )
+         for ( Track3D t : tracks )
          {
-             float vx = 20 + map( trackPlayhead, trackStart, trackEnd, 0, centerFold-40 );
-             float vy = 0;
+             int iStep = 1;
+             isOutlier = false;
+             wasOutlier = false;
              
-             stroke( 220 );
-             strokeWeight( 1 );
-             line( vx, 20 + (d*h) + (d*10), vx, (d*h) + (d*10) + h );
-             
-             beginShape();
-             stroke( c2 );
-             for ( int i = trackStart; i < trackEnd; i+=iStep )
+             if ( (trackEnd - trackStart) > centerFold-40 )
              {
-                 vx = 20 + map( i, trackStart, trackEnd, 0, centerFold-40 );
-                 vy = 20 + (d*h) + (d*10) + map( trackData[i][d], trackMin[d], trackMax[d], h-20, 0 );
-                 
-                 isOutlier = trackSpeed[i] > trackSpeedThresh;
-                 
-                 if ( isOutlier != wasOutlier ) {
-                     vertex( vx, vy );
-                     endShape();
-                     stroke( isOutlier ? c1 : c2 );
-                     strokeWeight( isOutlier ? 2 : 1 );
-                     beginShape();
-                     wasOutlier = isOutlier;
-                 }
-                 
-                 vertex( vx, vy );
+                 iStep = int( round( (trackEnd - trackStart) / (centerFold-40) ) );
              }
-             endShape();
+             
+             for ( int d = 0; d < 3; d++ )
+             {
+                 float vx = 20 + map( trackPlayhead, trackStart, trackEnd, 0, centerFold-40 );
+                 float vy = 0;
+                 
+                 stroke( 220 );
+                 strokeWeight( 1 );
+                 line( vx, 20 + (d*h) + (d*10), vx, (d*h) + (d*10) + h );
+                 
+                 beginShape();
+                 stroke( c2 );
+                 for ( int i = trackStart; i < trackEnd; i+=iStep )
+                 {
+                     vx = 20 + map( i, trackStart, trackEnd, 0, centerFold-40 );
+                     vy = 20 + (d*h) + (d*10) + map( t.trackData[i][d], t.trackMin[d], t.trackMax[d], h-20, 0 );
+                     
+                     isOutlier = t.trackSpeed[i] > t.trackSpeedThresh;
+                     
+                     if ( isOutlier != wasOutlier ) {
+                         vertex( vx, vy );
+                         endShape();
+                         stroke( isOutlier ? c1 : c2 );
+                         strokeWeight( isOutlier ? 2 : 1 );
+                         beginShape();
+                         wasOutlier = isOutlier;
+                     }
+                     
+                     vertex( vx, vy );
+                 }
+                 endShape();
+             }
          }
 
          scene3D.beginDraw();
-         scene3D.pushMatrix();
          scene3D.background( col1 );
+         scene3D.pushMatrix();
          scene3DSpinner.apply();
+         
          float vx, vy, vz;
          float s = scene3D.width / 12.0 + scene3DScale;
-         vx = trackData[trackPlayhead][0] - 6; 
-         vy = -trackData[trackPlayhead][1] + 6;
-         vz = trackData[trackPlayhead][2];
-         scene3D.translate( scene3D.width/2 - vx*s, scene3D.height/2 - vy*s, -scene3D.height/2 - vz*s );
-         scene3D.scale( s );
          
-         scene3D.pushMatrix();
-         scene3D.stroke( 0 );
-         scene3D.strokeWeight( 1 );
-         scene3D.translate( vx, vy, vz );
-         scene3D.beginShape();
-         scene3D.vertex( 0, 0, 0 );
-         scene3D.vertex( 0.1, 0, 0 );
-         scene3D.endShape();
-         scene3D.beginShape();
-         scene3D.vertex( 0, 0, 0 );
-         scene3D.vertex( 0, 0.1, 0 );
-         scene3D.endShape();
-         scene3D.beginShape();
-         scene3D.vertex( 0, 0, 0 );
-         scene3D.vertex( 0, 0, 0.1 );
-         scene3D.endShape();
-         scene3D.popMatrix();
-         
-         scene3D.noFill();
-         scene3D.stroke( 190 );
-         scene3D.strokeWeight( 1 );
-         scene3D.rect( -6, -6, 12, 12 );
-         scene3D.rect( -6.05, 5.95, 0.1, 0.1 );
-         
-         scene3D.noFill();
-         scene3D.beginShape();
-         isOutlier = false;
-         wasOutlier = false;
-         scene3D.stroke( c2 );
-         for ( int i = trackStart; i < trackEnd; i++ )
+         for ( Track3D t : tracks )
          {
-             vx = trackData[i][0] - 6; 
-             vy = -trackData[i][1] + 6;
-             vz = trackData[i][2];
-             isOutlier = trackSpeed[i] > trackSpeedThresh;
-             if ( isOutlier != wasOutlier ) {
+             isOutlier = false;
+             wasOutlier = false;
+             
+             scene3D.pushMatrix();
+             
+             vx = t.trackData[trackPlayhead][0] - 6; 
+             vy = -t.trackData[trackPlayhead][1] + 6;
+             vz = t.trackData[trackPlayhead][2];
+             scene3D.translate( scene3D.width/2 - vx*s, scene3D.height/2 - vy*s, -scene3D.height/2 - vz*s );
+             scene3D.scale( s );
+             
+             scene3D.pushMatrix();
+             scene3D.stroke( 0 );
+             scene3D.strokeWeight( 1 );
+             scene3D.translate( vx, vy, vz );
+             scene3D.beginShape();
+             scene3D.vertex( 0, 0, 0 );
+             scene3D.vertex( 0.1, 0, 0 );
+             scene3D.endShape();
+             scene3D.beginShape();
+             scene3D.vertex( 0, 0, 0 );
+             scene3D.vertex( 0, 0.1, 0 );
+             scene3D.endShape();
+             scene3D.beginShape();
+             scene3D.vertex( 0, 0, 0 );
+             scene3D.vertex( 0, 0, 0.1 );
+             scene3D.endShape();
+             scene3D.popMatrix();
+             
+             scene3D.noFill();
+             scene3D.stroke( 190 );
+             scene3D.strokeWeight( 1 );
+             scene3D.rect( -6, -6, 12, 12 );
+             scene3D.rect( -6.05, 5.95, 0.1, 0.1 );
+             
+             scene3D.noFill();
+             scene3D.beginShape();
+             isOutlier = false;
+             wasOutlier = false;
+             scene3D.stroke( c2 );
+             for ( int i = trackStart; i < trackEnd; i++ )
+             {
+                 vx = t.trackData[i][0] - 6; 
+                 vy = -t.trackData[i][1] + 6;
+                 vz = t.trackData[i][2];
+                 isOutlier = t.trackSpeed[i] > t.trackSpeedThresh;
+                 if ( isOutlier != wasOutlier ) {
+                     scene3D.vertex( vx, vy, vz );
+                     scene3D.endShape();
+                     scene3D.stroke( isOutlier ? c1 : c2 );
+                     scene3D.strokeWeight( isOutlier ? 2 : 1 );
+                     scene3D.beginShape();
+                     wasOutlier = isOutlier;
+                 }
                  scene3D.vertex( vx, vy, vz );
-                 scene3D.endShape();
-                 scene3D.stroke( isOutlier ? c1 : c2 );
-                 scene3D.strokeWeight( isOutlier ? 2 : 1 );
-                 scene3D.beginShape();
-                 wasOutlier = isOutlier;
              }
-             scene3D.vertex( vx, vy, vz );
+             scene3D.endShape();
+             
+             scene3D.popMatrix();
          }
-         scene3D.endShape();
              
          scene3D.popMatrix();
          scene3D.endDraw();
@@ -196,33 +212,40 @@
  
  void setData ( float[][] d )
  {
-     trackData = fixZeroPoints( d );
-     trackSpeedMean = 0;
-     trackSpeedHigh = -10000;
-     trackSpeedLow = 10000;
-     trackSpeed = new float[trackData.length];
-     trackMin = new float[]{ 10000, 10000, 10000};
-     trackMax = new float[]{-10000,-10000,-10000};
-     for ( int i = 0, k = trackData.length-1; i < k; i++ ) 
-     {
-         trackMin[0] = min(trackMin[0], trackData[i][0]);
-         trackMax[0] = max(trackMax[0], trackData[i][0]);
-         trackMin[1] = min(trackMin[1], trackData[i][1]);
-         trackMax[1] = max(trackMax[1], trackData[i][1]);
-         trackMin[2] = min(trackMin[2], trackData[i][2]);
-         trackMax[2] = max(trackMax[2], trackData[i][2]);
+     Track3D t = new Track3D();
      
-         trackSpeed[i] = dist( trackData[i][0],   trackData[i][1],   trackData[i][2],
-                               trackData[i+1][0], trackData[i+1][1], trackData[i+1][2] );
+     t.trackData = fixZeroPoints( d );
+     t.trackSpeedMean = 0;
+     t.trackSpeedHigh = -10000;
+     t.trackSpeedLow = 10000;
+     t.trackSpeed = new float[t.trackData.length];
+     t.trackMin = new float[]{ 10000, 10000, 10000};
+     t.trackMax = new float[]{-10000,-10000,-10000};
+     for ( int i = 0, k = t.trackData.length-1; i < k; i++ ) 
+     {
+         t.trackMin[0] = min(t.trackMin[0], t.trackData[i][0]);
+         t.trackMax[0] = max(t.trackMax[0], t.trackData[i][0]);
+         t.trackMin[1] = min(t.trackMin[1], t.trackData[i][1]);
+         t.trackMax[1] = max(t.trackMax[1], t.trackData[i][1]);
+         t.trackMin[2] = min(t.trackMin[2], t.trackData[i][2]);
+         t.trackMax[2] = max(t.trackMax[2], t.trackData[i][2]);
+     
+         t.trackSpeed[i] = dist( t.trackData[i][0],   t.trackData[i][1],   t.trackData[i][2],
+                               t.trackData[i+1][0], t.trackData[i+1][1], t.trackData[i+1][2] );
             
-         trackSpeedMean += trackSpeed[i];
-         trackSpeedHigh = max( trackSpeedHigh, trackSpeed[i] );
-         trackSpeedLow = min( trackSpeedLow,  trackSpeed[i] );
+         t.trackSpeedMean += t.trackSpeed[i];
+         t.trackSpeedHigh = max( t.trackSpeedHigh, t.trackSpeed[i] );
+         t.trackSpeedLow = min( t.trackSpeedLow,  t.trackSpeed[i] );
      }
-     trackSpeedMean = trackSpeedMean / trackData.length;
-     trackSpeedThresh = 6 * trackSpeedMean;
+     t.trackSpeedMean = t.trackSpeedMean / t.trackData.length;
+     t.trackSpeedThresh = 6 * t.trackSpeedMean;
      
      //console.log( trackSpeedLow, trackSpeedMean, trackSpeedHigh );
+     
+     if ( tracks == null ) tracks = new Track3D[0];
+     tracks = (Track3D[])append( tracks, t );
+     
+     longestTrackLength = (int)max(longestTrackLength,t.trackData.length);
      
      Interactive.setActive( mSlider, true );
      mSlider.set(0,0.1);
@@ -236,15 +259,15 @@
  
  void leftChanged ( float v )
  {
-     trackStart = int(( map( v, 0, 1, 0, trackData.length ) ) / 2) * 2;
+     trackStart = int(( map( v, 0, 1, 0, longestTrackLength ) ) / 2) * 2;
  }
  
  void rightChanged ( float v )
  {
-     trackEnd = int(( map( v, 0, 1, 0, trackData.length ) ) / 2) * 2;
+     trackEnd = int(( map( v, 0, 1, 0, longestTrackLength ) ) / 2) * 2;
  }
  
- void movePlayhead ( float v )
+ void movePlayhead ( float v, float vv )
  {
      v = constrain( v, 0, centerFold-40 );
      trackPlayhead = int( map( v, 0, centerFold-40, trackStart, trackEnd ) / 2 ) * 2;
