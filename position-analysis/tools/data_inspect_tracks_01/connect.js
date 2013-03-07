@@ -34,19 +34,19 @@ var App = (function () {
         pm.loadPieces(app.piecesLoaded);
     }
     App.prototype = {
-        piecesLoaded : function ( t, data ) {
+        piecesLoaded : function ( data ) {
             if ( data.total == 1 ) {
                 piece = data.pieces[0];
                 pm.loadVideosForPiece( piece.id, app.videosLoaded );
             }
         },
-//        pieceLoaded : function ( t, p ) {
+//        pieceLoaded : function ( p ) {
 //            if ( p ) {
 //                piece = p;
 //                pm.loadVideosForPiece( piece.id, app.videosLoaded );
 //            }
 //        },
-        videosLoaded : function ( t, data ) {
+        videosLoaded : function ( data ) {
             if ( data && data.total && data.total > 0 ) {
                 videos = data.videos;
                 var sel = document.createElement('select');
@@ -65,11 +65,12 @@ var App = (function () {
             }
             pm.loadVideo( 232, app.videoLoaded );
         },
-        videoLoaded : function ( t, v ) {
+        videoLoaded : function ( v ) {
+            console.log( v );
             video = v;
             pm.loadEventsForVideo( video.id, app.eventsLoaded );
         },
-        eventsLoaded : function ( t, data ) {
+        eventsLoaded : function ( data ) {
             if ( data.total > 0 ) {
                 var eventsRaw = data.events;
                 var dataEvent = null;
