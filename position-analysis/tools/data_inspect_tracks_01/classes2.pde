@@ -1,8 +1,9 @@
 class Track3D
 {
-     float[][] trackData;
-     float[] trackSpeed;
+    color trackColor;
+    
+    float[][] trackData;
+    float[] trackSpeed;
      
-     float[] trackMin, trackMax;
-     float trackSpeedMean, trackSpeedHigh, trackSpeedLow, trackSpeedThresh;
+    float trackSpeedMean, trackSpeedHigh, trackSpeedLow, trackSpeedThresh;
 }

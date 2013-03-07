@@ -40,7 +40,7 @@ public class App
     {
         // TODO: make video selectable
         
-        api.loadVideo( 232, api.createCallback( this, "videoLoaded" ) );
+        api.loadVideo( 80, api.createCallback( this, "videoLoaded" ) );
     }
     
     public void videoLoaded ( Video video )
@@ -70,7 +70,9 @@ public class App
                 if ( a.indexOf( "file:" ) != -1 )
                 {
                     String file = a.substring( a.indexOf("file:")+5 ).replace("\"","");
-                    loadEventData( dataEvent, file );
+                    loadEventData( dataEvent, file.replace(".txt","_25fps.txt") );
+                    loadEventData( dataEvent, file.replace(".txt","_alt.txt") );
+                    loadEventData( dataEvent, file.replace(".txt","_left_wrist.txt") );
                     break;
                 }
             }
@@ -79,7 +81,7 @@ public class App
     
     private void loadEventData ( Event dataEvent, String file )
     {
-        String[] lines = papplet.loadStrings( "http://lab.motionbank.org/dhay/data/"+file );
+        String[] lines = papplet.loadStrings( "http://moba-lab.local/dhay/data/"+file );
         float[][] trackData = new float[lines.length][3];
         
         for ( int l = 0; l < lines.length; l++ )

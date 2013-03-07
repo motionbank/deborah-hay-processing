@@ -14,8 +14,6 @@ var App = (function () {
     
     var App = function ( s ) {
         
-        console.log( s );
-        
         app = this;
         sketch = s;
         onLocalhost = window.location.href.match(/^http:\/\/127\.0\.0\.1.*/) || 
@@ -58,10 +56,9 @@ var App = (function () {
                 var selBlock = jQuery( '#video-selection' ).get(0);
                 selBlock.appendChild( sel );
             }
-            pm.loadVideo( 232, app.videoLoaded );
+            pm.loadVideo( 80, app.videoLoaded );
         },
         videoLoaded : function ( v ) {
-            console.log( v );
             video = v;
             pm.loadEventsForVideo( video.id, app.eventsLoaded );
         },
@@ -78,17 +75,22 @@ var App = (function () {
                 if ( dataEvent ) {
                     dataEvent.happened_at = new Date( dataEvent.happened_at_float );
                     dataEvent.data = eval( '(' + dataEvent.description + ')' );
-                    jQuery.ajax({
-                        url: (onLocalhost ? 'http://moba-lab.local/' : 'http://lab.motionbank.org/') + 'dhay/data/' + dataEvent.data.file,
-                        success: function ( resp ) {
-                            app.eventDataLoaded( dataEvent, resp );
-                        },
-                        error: function () {
-                            console.log( arguments );
-                        }
-                    });
+                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_25fps.txt' ) );
+                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_alt.txt' ) );
+                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_left_wrist.txt' ) );
                 }
             }
+        },
+        loadDataEvent : function ( dataEvent, dataFile ) {
+            jQuery.ajax({
+                url: (onLocalhost ? 'http://moba-lab.local/' : 'http://lab.motionbank.org/') + 'dhay/data/' + dataFile,
+                success: function ( resp ) {
+                    app.eventDataLoaded( dataEvent, resp );
+                },
+                error: function () {
+                    console.log( arguments );
+                }
+            });
         },
         eventDataLoaded : function ( event, data ) {
             var trackData = [];
