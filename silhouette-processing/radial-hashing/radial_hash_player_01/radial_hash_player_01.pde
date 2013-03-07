@@ -81,7 +81,7 @@ void draw ()
             "WHERE NOT id = %d "+
                 "AND performance NOT LIKE \"%s\" " +
             "HAVING "+
-                "bitdist < 64 " + 
+                "bitdist < 30 " + 
             "ORDER BY bitdist ASC, framedist DESC "+
             "LIMIT 1", 
             hashes[0], hashes[1], hashes[2], hashes[3], 
@@ -121,7 +121,7 @@ void draw ()
             }
         }
 
-        saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
+        //saveFrame( "output" + "/" + nf(currentId, 7) + ".png" );
         //currentId += 2;
 
         tsi++;
