@@ -1,11 +1,3 @@
-window.onload = function () {
-    var lookForSketch = function () {
-        var sketch = Processing.getInstanceById( getProcessingSketchId() );
-        if ( !sketch ) return setTimeout( lookForSketch, 100 );
-        var app = new App( sketch );
-    }
-    lookForSketch();
-}
 
 var App = (function () {
     
@@ -21,6 +13,9 @@ var App = (function () {
      L + + + + + + + + + + + + */
     
     var App = function ( s ) {
+        
+        console.log( s );
+        
         app = this;
         sketch = s;
         onLocalhost = window.location.href.match(/^http:\/\/127\.0\.0\.1.*/) || 
@@ -96,7 +91,6 @@ var App = (function () {
             }
         },
         eventDataLoaded : function ( event, data ) {
-            sketch.setApp( app );
             var trackData = [];
             data = data.split("\n");
             for ( var i = 0, k = data.length; i < k; i++ ) {

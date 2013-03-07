@@ -7,12 +7,13 @@
  *    changed: fjenett 20130307 
  */
 
+ import processing.opengl.*;
+
  import de.bezier.guido.*;
  import org.piecemaker.api.*;
  
  MultiSlider mSlider;
  
- App app;
  float[][] trackData;
  float[] trackSpeed;
  int trackStart = 0, trackEnd = 0;
@@ -33,7 +34,9 @@
  
  void setup ()
  {
-     size( 1200, 700 );
+     size( 1200, 700, P3D );
+     
+     new App( this );
      
      Interactive.make(this);
      
@@ -189,11 +192,6 @@
          scene3D.endDraw();
          image( scene3D, centerFold, 10 );
      }
- }
- 
- void setApp ( App a )
- {
-     app = app;
  }
  
  void setData ( float[][] d )

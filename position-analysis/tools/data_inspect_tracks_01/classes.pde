@@ -93,7 +93,7 @@ public class ArcBall
     public void apply ()
     {
         graphics.translate(center_x, center_y, center_z);
-        q_now = Quat.mul(q_drag, q_down);
+        q_now = q_drag.mul(q_down);
         applyQuat2Matrix(q_now);
         graphics.translate(-center_x, -center_y, -center_z);
     }
@@ -205,13 +205,13 @@ class Quat
         z = q.z;
     }
 
-    static Quat mul ( Quat q1, Quat q2 ) 
+    Quat mul ( Quat q2 ) 
     {
         Quat res = new Quat();
-        res.w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
-        res.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
-        res.y = q1.w * q2.y + q1.y * q2.w + q1.z * q2.x - q1.x * q2.z;
-        res.z = q1.w * q2.z + q1.z * q2.w + q1.x * q2.y - q1.y * q2.x;
+        res.w = w * q2.w - x * q2.x - y * q2.y - z * q2.z;
+        res.x = w * q2.x + x * q2.w + y * q2.z - z * q2.y;
+        res.y = w * q2.y + y * q2.w + z * q2.x - x * q2.z;
+        res.z = w * q2.z + z * q2.w + x * q2.y - y * q2.x;
         return res;
     }
 
