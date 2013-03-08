@@ -2,12 +2,30 @@
  *    Motion Bank research, http://motionbank.org/
  *
  *    TODO: - sketch description
- *          - first frame = data event happenedAt      
+ *          - first frame = data event happenedAt
+ *          - simplified position: add end and start marker
  *    
  *    P-2.0
  *    created: mbaer 20121228
  *    
  *    TODO: add word pluralization
+ */
+ 
+ 
+ /*
+ 
+ VideoObjectList
+ - VideoObject[]
+ --- VideoData            // whole video: data
+ ----- MovementData
+ ----- PositionData
+ ----- SpeedData
+ --- VideoSegmentList
+ -----VideoSegment[]      // segments: data
+ ------- MovementData
+ ------- PositionData
+ ------- SpeedData
+ 
  */
 
 import org.piecemaker.collections.*;
@@ -30,7 +48,8 @@ String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionban
 //String TITLE = "average position on stage across all performances.\ngreen = first performace. blue = last performance. line = order of performances";
 //String TITLE = "distance tranveled per segment across all performances";
 //String TITLE = "average position on stage per performance\ngreen = first segment. blue = last segment. line = order of segments";
-String TITLE = "simplified movement on stage";
+//String TITLE = "simplified movement on stage";
+String TITLE = "travel speed variance\n(average travel speed per segment) - (average travel speed in each performance) ";
 
 XML srcXML;
 String nttf;
@@ -46,7 +65,7 @@ PerformerVideosList performers = new PerformerVideosList();
 int idx = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = true;
+boolean saveAllFrames = false;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
@@ -105,9 +124,9 @@ void draw ()
 
     background( 255 );
 
-    //drawPerformerSegments();
+    drawPerformerSegments();
     //drawPerformerPerformances();
-    drawSegmentStages();
+    //drawSegmentStages();
     
     // cycles through all videos in videoIDs
     if (saveAllFrames) {
