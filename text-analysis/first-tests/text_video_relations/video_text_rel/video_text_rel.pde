@@ -2,12 +2,30 @@
  *    Motion Bank research, http://motionbank.org/
  *
  *    TODO: - sketch description
- *          - first frame = data event happenedAt      
+ *          - first frame = data event happenedAt
+ *          - simplified position: add end and start marker
  *    
  *    P-2.0
  *    created: mbaer 20121228
  *    
  *    TODO: add word pluralization
+ */
+ 
+ 
+ /*
+ 
+ VideoObjectList
+ - VideoObject[]
+ --- VideoData            // whole video: data
+ ----- MovementData
+ ----- PositionData
+ ----- SpeedData
+ --- VideoSegmentList
+ -----VideoSegment[]      // segments: data
+ ------- MovementData
+ ------- PositionData
+ ------- SpeedData
+ 
  */
 
 import org.piecemaker.collections.*;
@@ -30,7 +48,9 @@ String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionban
 //String TITLE = "average position on stage across all performances.\ngreen = first performace. blue = last performance. line = order of performances";
 //String TITLE = "distance tranveled per segment across all performances";
 //String TITLE = "average position on stage per performance\ngreen = first segment. blue = last segment. line = order of segments";
-String TITLE = "simplified movement on stage";
+//String TITLE = "simplified movement on stage";
+//String TITLE = "travel speed variance\n(average travel speed per segment) - (average travel speed in each performance) ";
+String TITLE = "";
 
 XML srcXML;
 String nttf;
@@ -112,7 +132,7 @@ void draw ()
     // cycles through all videos in videoIDs
     if (saveAllFrames) {
      
-      saveFrame("simplified_position4_" + videos.get(idx).data.file.title + ".png");
+      saveFrame("img_diff2" + videos.get(idx).data.file.title + ".png");
       drawFrame = true;
       idx++;
       if (idx == videoIDs.length) exit(); 
