@@ -4,18 +4,23 @@ void drawPerformerSegments () {
   float graphX = 100;
   float y = 0;
   float x = 0;
-  float gx = 0;
-  float gy = 0;
+  
   float graphWidth = floor(width-200);
   float graphHeight = floor(height-200);
   float maxH = 1600;
   float gap = 30;
   float size = 140;
   
+  float gx = 0;
+  float gy = 0;
+  
   float num = textSegments.length()+1;
+  
+  float valueAvg = 0.0;
   
   
   PerformerVideos pv = performers.get(performerIndex);
+  println( "============== " + pv.name );
   
   pushStyle();
   fill(0);
@@ -23,15 +28,66 @@ void drawPerformerSegments () {
   textSize(30);
   text(pv.name, 48, 40 );
   textSize(10);
-  text(TITLE,48,60);
+  fill(0,0,255);
+  //text("absolute traveled distance variance",48,60);
+  text("relative travel speed variance",48,60);
+  //text("relative travel speed variance. average for each segment.",48,60);
+  fill(0);
+  //text("\n(average travel speed per segment) - (average travel speed in each performance)",48,60);
+  //text("\ntotal distance traveled per segment minus the difference of the average across all performances",48,60);
+  
+  
+  String st = "\n\ndistance traveled per performance:  ";
+  for (int i=0; i<pv.length(); i++) {
+    VideoObject v = pv.get(i);
+    st += (i+1) +  ": " + floor(v.data.positions.total) + "m,  ";
+  }
+  
+  
+  
+  
   popStyle();
   
   
   
   pushMatrix();
   
-  translate(100,120);
+  translate(120,120);
   
+  // explanation element
+  
+  stroke(150);
+  strokeWeight(1);
+  line(0,(size-30)/2 + 30,size,(size-30)/2 + 30);
+  
+  for (int j=0; j<pv.length(); j++) {
+    VideoObject v = pv.get(j);
+    valueAvg += v.data.positions.total;
+    //valueAvg += v.segments.getSpeedTotalAverage();
+    println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& " + v.segments.getSpeedTotalAverage());
+    
+    x = j*(size/pv.length());
+    stroke(200);
+    strokeWeight(1);
+    line(x,30,x,size);
+    //line(x,0,x,size);
+    stroke(255,0,0,50);
+    line(x,(size-30)/2 + 30,-30,size-20);
+    
+    fill(255,0,0);
+    textAlign(CENTER);
+    text(j+1,x,(size-30)/2 + 30 -2);
+  }
+  
+  valueAvg /= pv.length();
+  println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& valueAvg " + valueAvg);
+  
+  fill(255,0,0);
+  textAlign(RIGHT);
+  text("average travel\nspeed of\nperformance 1-7\nas x-axis",-15,size-5);
+  //text("average distance\ntraveled of\nperformance 1-7\nas x-axis",-15,size-5);
+  
+  gx = size + gap;
   
   for (int i=0; i<26; i++) {
     
@@ -41,28 +97,28 @@ void drawPerformerSegments () {
     
     fill(0);
     textAlign(LEFT);
-    //text(textSegments.get(i).marker,0,20);
-    text(textSegments.get(i).marker,0,-5);
+    text((i+1) + ": " + textSegments.get(i).marker,0,20);
+    //text(textSegments.get(i).marker,0,-5);
     
     noFill();
     
     stroke(200);
     strokeWeight(1);
     
-    /*
+    
     // grid
     for (int j=0; j<pv.length(); j++) {
       x = j*(size/pv.length());
-      //line(x,30,x,size);
-      line(x,0,x,size);
+      line(x,30,x,size);
+      //line(x,0,x,size);
     }
-    */
+    
     
     
     stroke(0);
     strokeWeight(1);
     
-    beginShape();
+    //beginShape();
     
     /*
     for (int j=0; j<pv.length(); j++) {
@@ -89,34 +145,50 @@ void drawPerformerSegments () {
     }
     */
     
-    /*
-    // AVERAGE MIDDLE LINE
-    stroke(200);
-    line(0,(size-30)/2 + 30,size,(size-30)/2 + 30);
-    stroke(0);
-    */
     
-    /*
+    // AVERAGE MIDDLE LINE
+    stroke(150);
+    line(0,(size-30)/2 + 30,size,(size-30)/2 + 30);
+    stroke(0,0,255);
+    strokeWeight(3);
+    
+    
+    beginShape();
+    
+    //println( "----- " + i );
+    
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
+      
       float m0 = s.speeds.getAverage();
       float m1 = v.segments.getSpeedTotalAverage();
-      if(i==25) println("++++++++ " + textSegments.get(i).marker + m0 + " " + m1);
-      y = map( m0-m1, 0, 1, 0, -size*10) + (size-30)/2 + 30;
-      //y = map( m0, 0, 1, 0, -size*10) + (size-30)/2 + 30;
+      //if(i<3 ) println("++++++++ " + i + " " + textSegments.get(i).marker + m0 + " " + m1);
+      y = map( m0-m1-valueAvg, 0, 1, 0, size*10) + (size-30)/2 + 30;
+      println("§§§§§§ " + (m0-m1));
+      //y = map( m0 / v.segments.getSpeedTotalAverage(), 0, 1, 0, -size) + (size-30)/2 + 30;
       x = j*(size/pv.length());
       vertex(x,y);
+      
+      //println("seg: " + m0 + "  vid: " + (m1-valueAvg));
     }
-    */
+    endShape();
+    
     
     /*
+    beginShape();
+    
+    println( "----- " + i );
+    
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
+      //float m0 = (s.positions.total - (v.data.positions.total - valueAvg)) / v.data.positions.total;
       float m0 = s.positions.total;
-      float m1 = v.data.positions.total;
-      y = map( m0/m1, 0, 1, 0, -size*3) + size;
+      float m1 = v.data.positions.total / v.segments.length();
+      //println("seg: " + s.positions.total + "  vid: " + (v.data.positions.total - valueAvg));
+      //y = map( m0, 0, 1, 0, size) + (size-30)/2 + 30;
+      y = map( (m0-m1) / v.data.positions.total, 0, 1, 0, -size*2) + (size-30)/2 + 30;
       //y = map( m0, 0, 1, 0, -size*10) + (size-30)/2 + 30;
       x = j*(size/pv.length());
       vertex(x,y);
@@ -152,6 +224,7 @@ void drawPerformerSegments () {
     rect(0,0,size,size);
     */
     
+    /*
     // ----------------------------------------------------
     // CONVEX HULLS
     pushStyle();
@@ -178,7 +251,7 @@ void drawPerformerSegments () {
     popStyle();
     
     rect(0,0,size,size);
-    
+    */
     
     popMatrix();
     
@@ -190,4 +263,11 @@ void drawPerformerSegments () {
   }
   
   popMatrix();
+  
+  
+  st += "average: " + valueAvg + "m";
+  
+  fill(100);
+  //text(st,48,60);
+  
 }

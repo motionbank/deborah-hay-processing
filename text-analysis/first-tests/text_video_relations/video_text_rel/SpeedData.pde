@@ -35,5 +35,11 @@ class SpeedData {
     return data.size();
   }
   
+  void checkEmpty(){
+    if (data.size() < 50) {
+      data = new ArrayList<Float>();
+      data.add(0.0);
+    }
+  }
   
 }

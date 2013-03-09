@@ -46,7 +46,7 @@ class VideoSegmentList {
      
     PositionData ps = _vd.positions;
     MovementData ms = _vd.movements;
-    SpeedData ss = _vd.speeds;
+    SpeedData    ss = _vd.speeds;
     int[] la = ms.lengthAll();
     println("mov data " + la[0] + " " + la[1] + " " + la[2] + " / pos data " + ps.length() );
     
@@ -70,6 +70,8 @@ class VideoSegmentList {
       num += s.positions.length();
       
       i0 = i1 + 1;
+      
+      s.speeds.checkEmpty();
     }
   }
   
