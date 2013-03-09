@@ -32,7 +32,7 @@ void drawSegmentStages() {
   
   float steps = 11;
   int oc = 0;
-  
+  /*
   for( int i=0; i<vid.segments.length(); i++) {
     VideoSegment vSeg = vid.segments.get(i);
     
@@ -107,6 +107,34 @@ void drawSegmentStages() {
       x = 0;
     }
   }
+  */
+  
+  for( int i=0; i<vid.segments.length(); i++) {
+    VideoSegment vSeg = vid.segments.get(i);
+    
+    pushMatrix();
+    translate(x,y);
+    
+    pushStyle();
+    fill(255,0,0,20);
+    noStroke();
+    
+    for( int j=0; j<vSeg.positions.length(); j+=1) {
+      //float m = vSeg.movements.getHighestFromRange(i,steps);
+      float m = vSeg.movements.getAverage(j);
+      PVector v = vSeg.positions.get(j);
+      if (v.mag() != 0) ellipse(v.x/12*s,v.y/12*s,m*sf,m*sf);
+    }
+    popStyle();
+    popMatrix();
+    
+    x += s+gap;
+    if (x+s > width-100) {
+      y += s+gap;
+      x = 0;
+    }
+  }
+  
   popStyle();
   
   println(oc + " occupied");
@@ -117,7 +145,7 @@ void drawSegmentStages() {
   
   // POSITION PATH
   
-  /*
+  
   for( int i=0; i<vid.segments.length(); i++) {
     VideoSegment vSeg = vid.segments.get(i);
     TextSegment tSeg = textSegments.get(i);
@@ -134,7 +162,7 @@ void drawSegmentStages() {
     strokeWeight(1);
     rect(0,0,s,s);
     
-    stroke(0,0,255);
+    stroke(0);
     strokeWeight(1);
     noFill();
     beginShape();
@@ -152,7 +180,7 @@ void drawSegmentStages() {
       x = 0;
     }
   }
-  */
+  
   
   
   popMatrix();

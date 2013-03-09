@@ -4,7 +4,8 @@ void keyPressed()
     {
         switch ( key ) {
             case 's':
-                saveFrame("convex_hulls1_" + performers.get(performerIndex).name + ".png");
+                saveFrame("abs_travel_speed3_" + performers.get(performerIndex).name + ".png");
+                //saveFrame(timestamp() + ".png");
                 break;
             case 'f':
                 drawFill = !drawFill;
@@ -40,3 +41,6 @@ void keyPressed()
     }
 }
 
+String timestamp() {
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", Calendar.getInstance());
+}
