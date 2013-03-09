@@ -38,7 +38,7 @@
  
  void setup ()
  {
-     size( 1200, 700, P3D );
+     size( 1200, 700 , P3D );
      
      new App( this );
      
@@ -284,3 +284,7 @@
      trackPlayhead = int( map( v, 0, centerFold-40, trackStart, trackEnd ) / 2 ) * 2;
  }
 
+ public void mouseWheelMoved ( java.awt.event.MouseWheelEvent e ) 
+ {
+     Interactive.get().mouseWheelMoved(e);
+ }
