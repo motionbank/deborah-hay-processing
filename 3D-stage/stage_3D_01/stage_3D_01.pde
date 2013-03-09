@@ -1,8 +1,17 @@
+/**
+ *    Motion Bank research, http://motionbank.org/
+ *
+ *    Old sketch testing a 3D stage to perform on ..
+ *
+ *    Processing 2.0
+ *    created: fjenett, 2011??
+ */
+
 import de.bezier.guido.*;
 import processing.opengl.*;
 import javax.media.opengl.*;
 // http://code.google.com/p/proscene/
-import peasy.*; // http://mrfeinberg.com/peasycam/
+//import peasy.*; // http://mrfeinberg.com/peasycam/
 
 String posLoc = "/Volumes/Elements/2011_FIGD_April_Results/";
 String posBase = posLoc + "Ros_D01T03_withBackgroundAdjustment_Corrected/";
@@ -11,7 +20,7 @@ float[][] ps3D;
 float[][] ps2DC;
 float[][] bx2DC;
 
-PeasyCam cam;
+//PeasyCam cam;
 Slider slider;
 
 PGraphicsOpenGL pgl;
@@ -32,9 +41,9 @@ void setup()
     floorTex = loadImage("wood5.png");
     stageTex = loadImage("warm.png");
     
-    cam = new PeasyCam(this, 500);
-    cam.setMinimumDistance(50);
-    cam.setMaximumDistance(5000);
+//    cam = new PeasyCam(this, 500);
+//    cam.setMinimumDistance(50);
+//    cam.setMaximumDistance(5000);
     
     String[] lns = loadStrings( posBase + "/" + "Tracked3DPosition.txt" );
     int i = 0;
@@ -86,7 +95,7 @@ void setup()
 
 void mouseMoved ()
 {
-    cam.setActive( mouseY > 50 );
+//    cam.setActive( mouseY > 50 );
 }
 
 void draw() 
@@ -97,27 +106,29 @@ void draw()
     currentFrame += (int)max(1, 50.0/frameRate);
     slider.setValue( (float)currentFrame / ps3D[0].length );
 
-        //java.util.Arrays.fill( tex.pixels, 0, tex.pixels.length, 0x00FFFFFF );
-        silh = loadImage( silBase + nf(i, 6) + ".png" );
-        int l = tex.width * (int)bx2DC[i][1] + (int)bx2DC[i][0];
-        int px = -1;
-        for ( int k = 0; k < silh.height; k++ )
-            for ( int kk = 0; kk < silh.width; kk++ )
+    //java.util.Arrays.fill( tex.pixels, 0, tex.pixels.length, 0x00FFFFFF );
+    silh = loadImage( silBase + nf(i, 6) + ".png" );
+    int l = tex.width * (int)bx2DC[i][1] + (int)bx2DC[i][0];
+    int px = -1;
+    for ( int k = 0; k < silh.height; k++ )
+    {
+        for ( int kk = 0; kk < silh.width; kk++ )
+        {
+            px = silh.pixels[k * silh.width + kk];
+            if ( px == 0xFF00FFFF )
             {
-                px = silh.pixels[k * silh.width + kk];
-                if ( px == 0xFF00FFFF )
-                {
-                    silh.pixels[k * silh.width + kk] = 0x00FFFFFF;
-                    tex.pixels[l + k*tex.width + kk] = 0x00FFFFFF;
-                }
-                else
-                {
-                    tex.pixels[l + k*tex.width + kk] = silh.pixels[k * silh.width + kk];
-                }
+                silh.pixels[k * silh.width + kk] = 0x00FFFFFF;
+                tex.pixels[l + k*tex.width + kk] = 0x00FFFFFF;
             }
+            else
+            {
+                tex.pixels[l + k*tex.width + kk] = silh.pixels[k * silh.width + kk];
+            }
+        }
+    }
 
-        tex.updatePixels();
-        silh.updatePixels();
+    tex.updatePixels();
+    silh.updatePixels();
     
     pushMatrix();
     
@@ -261,13 +272,13 @@ void draw()
     
     popMatrix();
     
-    cam.beginHUD();
-    //image( silh, 100, 0, 50, 50 );
-    textAlign( LEFT );
-    text( currentFrame + " @ " + frameRate , 10, height-10 );
-    
-    //for ( GuiItem item : gui ) item.draw( true );
-    slider.drawSlider();
-    
-    cam.endHUD();
+//    cam.beginHUD();
+//    //image( silh, 100, 0, 50, 50 );
+//    textAlign( LEFT );
+//    text( currentFrame + " @ " + frameRate , 10, height-10 );
+//    
+//    //for ( GuiItem item : gui ) item.draw( true );
+//    slider.drawSlider();
+//    
+//    cam.endHUD();
 }
