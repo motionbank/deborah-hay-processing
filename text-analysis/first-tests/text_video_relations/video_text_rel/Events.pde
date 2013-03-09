@@ -4,7 +4,7 @@ void keyPressed()
     {
         switch ( key ) {
             case 's':
-                saveFrame("avg_distance_traveled3_" + performers.get(performerIndex).name + ".png");
+                saveFrame("abs_travel_speed3_" + performers.get(performerIndex).name + ".png");
                 //saveFrame(timestamp() + ".png");
                 break;
             case 'f':

@@ -29,11 +29,13 @@ void drawPerformerSegments () {
   text(pv.name, 48, 40 );
   textSize(10);
   fill(0,0,255);
-  //text("travel speed variance",48,60);
-  text("traveled distance variance",48,60);
+  //text("absolute traveled distance variance",48,60);
+  text("relative travel speed variance",48,60);
+  //text("relative travel speed variance. average for each segment.",48,60);
   fill(0);
   //text("\n(average travel speed per segment) - (average travel speed in each performance)",48,60);
-  text("\ntotal distance traveled per segment minus the difference of the average across all performances",48,60);
+  //text("\ntotal distance traveled per segment minus the difference of the average across all performances",48,60);
+  
   
   String st = "\n\ndistance traveled per performance:  ";
   for (int i=0; i<pv.length(); i++) {
@@ -82,8 +84,8 @@ void drawPerformerSegments () {
   
   fill(255,0,0);
   textAlign(RIGHT);
-  //text("average speed of\nperformance 1-7\nas x-axis",-15,size-5);
-  text("average distance\ntraveled of\nperformance 1-7\nas x-axis",-15,size-5);
+  text("average travel\nspeed of\nperformance 1-7\nas x-axis",-15,size-5);
+  //text("average distance\ntraveled of\nperformance 1-7\nas x-axis",-15,size-5);
   
   gx = size + gap;
   
@@ -150,7 +152,7 @@ void drawPerformerSegments () {
     stroke(0,0,255);
     strokeWeight(3);
     
-    /*
+    
     beginShape();
     
     //println( "----- " + i );
@@ -162,17 +164,18 @@ void drawPerformerSegments () {
       float m0 = s.speeds.getAverage();
       float m1 = v.segments.getSpeedTotalAverage();
       //if(i<3 ) println("++++++++ " + i + " " + textSegments.get(i).marker + m0 + " " + m1);
-      //y = map( m0-(m1-valueAvg), 0, 1, 0, size*10) + (size-30)/2 + 30;
-      y = map( m0-m1, 0, 1, 0, -size*10) + (size-30)/2 + 30;
+      y = map( m0-m1-valueAvg, 0, 1, 0, size*10) + (size-30)/2 + 30;
+      println("§§§§§§ " + (m0-m1));
+      //y = map( m0 / v.segments.getSpeedTotalAverage(), 0, 1, 0, -size) + (size-30)/2 + 30;
       x = j*(size/pv.length());
       vertex(x,y);
       
       //println("seg: " + m0 + "  vid: " + (m1-valueAvg));
     }
     endShape();
-    */
     
     
+    /*
     beginShape();
     
     println( "----- " + i );
@@ -180,17 +183,19 @@ void drawPerformerSegments () {
     for (int j=0; j<pv.length(); j++) {
       VideoObject v = pv.get(j);
       VideoSegment s = v.segments.get(i);
-      float m0 = (s.positions.total - (v.data.positions.total - valueAvg)) / v.data.positions.total;
-      //float m1 = v.data.positions.total / v.segments.length();
-      println("seg: " + s.positions.total + "  vid: " + (v.data.positions.total - valueAvg));
-      y = map( m0, 0, 1, 0, size) + (size-30)/2 + 30;
+      //float m0 = (s.positions.total - (v.data.positions.total - valueAvg)) / v.data.positions.total;
+      float m0 = s.positions.total;
+      float m1 = v.data.positions.total / v.segments.length();
+      //println("seg: " + s.positions.total + "  vid: " + (v.data.positions.total - valueAvg));
+      //y = map( m0, 0, 1, 0, size) + (size-30)/2 + 30;
+      y = map( (m0-m1) / v.data.positions.total, 0, 1, 0, -size*2) + (size-30)/2 + 30;
       //y = map( m0, 0, 1, 0, -size*10) + (size-30)/2 + 30;
       x = j*(size/pv.length());
       vertex(x,y);
     }
     
     endShape();
-    
+    */
     
     
     // ----------------------------------------------------
@@ -259,8 +264,10 @@ void drawPerformerSegments () {
   
   popMatrix();
   
+  
   st += "average: " + valueAvg + "m";
   
   fill(100);
-  text(st,48,60);
+  //text(st,48,60);
+  
 }
