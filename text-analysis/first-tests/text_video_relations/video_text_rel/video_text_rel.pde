@@ -127,12 +127,13 @@ void draw ()
 
     //drawPerformerSegments();
     //drawPerformerPerformances();
-    drawSegmentStages();
+    //drawSegmentStages();
+    drawConvexSingles();
     
     // cycles through all videos in videoIDs
     if (saveAllFrames) {
      
-      saveFrame("img_diff2" + videos.get(idx).data.file.title + ".png");
+      saveFrame("convex_hulls2" + videos.get(idx).data.file.title + ".png");
       drawFrame = true;
       idx++;
       if (idx == videoIDs.length) exit(); 
