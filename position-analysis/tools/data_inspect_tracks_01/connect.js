@@ -75,9 +75,11 @@ var App = (function () {
                 if ( dataEvent ) {
                     dataEvent.happened_at = new Date( dataEvent.happened_at_float );
                     dataEvent.data = eval( '(' + dataEvent.description + ')' );
-                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_25fps.txt' ) );
-                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_alt.txt' ) );
-                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_left_wrist.txt' ) );
+//                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_25fps.txt' ) );
+//                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_alt.txt' ) );
+//                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_left_wrist.txt' ) );
+                    app.loadDataEvent( dataEvent, dataEvent.data.file );
+                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_com.txt' ) );
                 }
             }
         },
