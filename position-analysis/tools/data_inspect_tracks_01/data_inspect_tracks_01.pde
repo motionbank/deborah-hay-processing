@@ -38,7 +38,7 @@
  
  void setup ()
  {
-     size( 1200, 700 );
+     size( 1200, 700, P3D );
      
      new App( this );
      
