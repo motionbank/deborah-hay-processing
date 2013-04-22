@@ -39,11 +39,12 @@ void loadMarkers ()
     
     db.query(
         "SELECT * FROM videos AS v JOIN video_recordings AS r ON r.video_id = v.id AND r.piece_id IN (%s) "+
-        "WHERE NOT v.vid_type LIKE %s "+
+        "WHERE ( NOT v.vid_type LIKE '%s' ) AND ( v.title LIKE '%s' OR v.title LIKE '%s' ) "+
             "AND recorded_at > UNIX_TIMESTAMP('2011-03-01 0:0:0') AND recorded_at < UNIX_TIMESTAMP('2011-05-01 0:0:0')"+
         "ORDER BY v.recorded_at",
         piece.getId(),
-        "\"%other%\""
+        "%other%",
+        "%Center%", "%AJA%"
     );
     while ( db.next() )
     {
@@ -79,9 +80,6 @@ void loadMarkers ()
         }
     }
     
-    //println( clusters.size() + " clusters" );
-    //println( clusters );
-    
     tracks3D = new ArrayList();
     sceneNames = new ArrayList();
     clusters = new ArrayList();
@@ -91,14 +89,15 @@ void loadMarkers ()
         String sql = String.format(
             "SELECT * FROM events "+
                   // ( dur IS NULL OR ADDTIME(happened_at,SEC_TO_TIME(dur)) < %s )
-                  "WHERE happened_at > %d AND happened_at < %d AND created_by LIKE %s AND ( event_type LIKE %s OR event_type LIKE %s ) "+
+                  "WHERE happened_at >= %d AND happened_at <= %d AND ( event_type LIKE '%s' OR event_type LIKE '%s' ) "+
                   "ORDER BY happened_at", 
                   c.from.getTime() / 1000L,
                   c.to.getTime() / 1000L,
-                  "'FlorianJenett2'",
-                  "'scene'", "'data'"
+                  "scene", "data"
         );
         db.query( sql );
+        
+        String prevSceneName = null;
                   
         while ( db.next() )
         {
@@ -113,14 +112,13 @@ void loadMarkers ()
             }
             else if ( !sceneNames.contains( e.title ) )
             {
-                sceneNames.add( e.title );
+                if ( prevSceneName != null && sceneNames.contains(prevSceneName) )
+                    sceneNames.add( sceneNames.indexOf(prevSceneName)+1, e.title );
+                else 
+                    sceneNames.add( e.title );
             }
-        }
-        
-        for ( String sn : sceneNames )
-        {
-            list1.addItem( sn );
-            list2.addItem( sn );
+            
+            prevSceneName = e.title;
         }
         
         println( c.events.size() + " events added" );
@@ -129,6 +127,15 @@ void loadMarkers ()
         else if ( timeMin.compareTo( c.from ) > 0 ) timeMin = c.from;
         if ( timeMax == null ) timeMax = c.to;
         else if ( timeMax.compareTo( c.to ) < 0 ) timeMax = c.to;
+    }
+    
+    println( clusters.size() + " clusters" );
+    //println( clusters );
+    
+    for ( String sn : sceneNames )
+    {
+        list1.addItem( sn );
+        list2.addItem( sn );
     }
     
     println( mysqlDateFormat.format(timeMin) + " - " + mysqlDateFormat.format(timeMax) );

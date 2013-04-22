@@ -23,7 +23,7 @@ class ThreeDPositionTrack
         fps = Integer.parseInt( getEventData( "fps", e.description ) );
         //println( fps );
         file = getEventData( "file", e.description );
-        file = file.replace( "Tracked3DPosition.txt", FILE_3D_POS );
+        file = file.replace( ".txt", "_com.txt" );
         //println( file );
         
         String[] lines = loadStrings( POS_3D_ROOT + file );
@@ -100,36 +100,19 @@ class ThreeDPositionTrack
     }
     
     void drawFromTo ( int from, int len )
-    {
-        float[] xFiltered = lowPassFilter( x, dt, rc );
-        float[] yFiltered = lowPassFilter( y, dt, rc );
-        
+    {   
         beginShape();
-        for ( int i = from, k = from+len; i < k; i++ )
+        for ( int i = from, k = from+len; i < k; i+=2 )
         {
-            vertex( xFiltered[i] * scaling, -yFiltered[i] * scaling );
+            vertex( x[i] * scaling, -y[i] * scaling );
         }
         endShape();
-        
-        //rect( xMin * scaling, -yMin * scaling, (xMax-xMin) * scaling, -(yMax-yMin) * scaling );
-        //ellipse( 0,0, 5,5 );
-    }
-    
-    float getDistance( int from, int len )
-    {
-        float[] xFiltered = lowPassFilter( x, dt, rc );
-        float[] yFiltered = lowPassFilter( y, dt, rc );
-        
-        return dist( xFiltered[from] * scaling,     -yFiltered[from] * scaling, 
-                     xFiltered[from+len] * scaling, -yFiltered[from+len] * scaling );
     }
     
     float[] getPositionAt ( int at )
     {
-        float[] xFiltered = lowPassFilter( x, dt, rc );
-        float[] yFiltered = lowPassFilter( y, dt, rc );
         
-        return new float[]{ xFiltered[at] * scaling, -yFiltered[at] * scaling };
+        return new float[]{ x[at] * scaling, -y[at] * scaling };
     }
 }
 

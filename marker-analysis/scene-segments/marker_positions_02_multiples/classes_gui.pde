@@ -20,6 +20,7 @@ public class Listbox
         width = ww; height = hh;
         
         Interactive.add( this );
+        if ( interfaceFont == null ) interfaceFont = createFont( "Open Sans", 11 );
     }
     
     public void addItem ( String item )
@@ -86,33 +87,43 @@ public class Listbox
     {
         noStroke();
         
-        fill( 100 );
+        int colBack = 190;
+        int colSel = 210;
+        int colHigh = 230;
+        
+        fill( colBack );
         rect( x,y,this.width,this.height );
         
         if ( items != null )
         {
             for ( int i = 0; i < int(height/itemHeight) && i < items.size(); i++ )
             {
-                stroke( 80 );
+                stroke( colBack );
                 
-                fill( (i+listStartAt) == hoverItem || (i+listStartAt) == lastItemClicked ? 200 : 120 );
+                fill( (i+listStartAt) == hoverItem || (i+listStartAt) == lastItemClicked ? colSel : colHigh );
                 rect( x, y + (i*itemHeight), this.width-1, itemHeight );
                 
                 noStroke();
                 fill( 0 );
+                textFont( interfaceFont );
+                textAlign( LEFT );
                 text( items.get(i+listStartAt).toString(), x+5, y+(i+1)*itemHeight-5 );
             }
         }
         
         if ( hasSlider )
         {
+            
             noStroke();
             
-            fill( 100 );
+            fill( colBack );
             rect( x+width-20, y, 20, height );
                
-            fill( 120 );
-            rect( x+width-20, valueY, 20, 20 );
+            stroke( colBack );
+            fill( colHigh );
+            rect( x+width-20, valueY, 19, 19 );
+            
+            line( x+width-20, y, x+width-20, y+height );
         }
     }
 }
