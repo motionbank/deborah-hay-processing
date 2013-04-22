@@ -3,7 +3,12 @@
   
   <node>
     <marker>fred &amp; ginger / read space</marker>
-    <text>I appear at the edge of the stage as the last few audience members take their seats. My behavior is matter-of-fact. I have a lot of choices to make in advance of my entrance. I decide on my entrance site and the direction I will travel in relation to the audience, plus where that path will end. Then the light fades. The moment the light returns I step onto the stage, walking in a stride and style not mine, as foreign as a foreign accent, recognizable but odd. The path is a singular broad curve that ends in a slightly accelerated little curl, leaving me facing the portal through which I stepped onto the stage.</text>
+    <text>I appear at the edge of the stage as the last few audience members take their seats. My behavior is matter-of-fact. I have a lot of choices to make in advance of my entrance. I decide on my entrance site and the direction I will travel in relation to the audience, plus where that path will end. Then the light fades.</text>
+  </node>
+
+  <node>
+    <marker>curved path</marker>
+    <text>The moment the light returns I step onto the stage, walking in a stride and style not mine, as foreign as a foreign accent, recognizable but odd. The path is a singular broad curve that ends in a slightly accelerated little curl, leaving me facing the portal through which I stepped onto the stage.</text>
   </node>
   
   <node>
@@ -24,11 +29,6 @@
   <node>
     <marker>joy &amp; sorrow #1</marker>
     <text>My body is still while joy and sorrow wash across my face like a stream of instances. When not streaming, my face may briefly return to normalcy, or it may sustain a single reflection of joy/sorrow for longer moments.</text>
-  </node>
-  
-  <node>
-    <marker>wordless song</marker>
-    <text>I sing a wordless song that arises from and combines joy and sorrow into a single melody that resonates through my bones. Barely suppressing a sense of personal history, my face reflects the transience of joy and sorrow.</text>
   </node>
   
   <node>

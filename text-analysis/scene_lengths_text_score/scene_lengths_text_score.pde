@@ -18,10 +18,12 @@
      
      int totalLength = 0;
      nodeLengths = new float[nodes.length];
+     String[] nodeNames = new String[nodes.length];
      
      for ( int i = 0; i < nodes.length; i++ )
      {
          XML node = nodes[i];
+         nodeNames[i] = node.getChild( "marker" ).getContent();
          String text = node.getChild( "text" ).getContent();
          nodeLengths[i] = text.trim().length();
          totalLength += nodeLengths[i];
@@ -34,6 +36,15 @@
      }
      
      saveStrings( "output/values.txt",  str(nodeLengths) );
+     
+     String json = "[\n";
+     for ( int i = 0; i < nodeLengths.length; i++ )
+     {
+         json += "{ \"marker\" : \""+nodeNames[i]+"\" , \"length\" : \""+nodeLengths[i]+"\" },\n";
+     }
+     json += "]";
+     
+     saveStrings( "output/values.json",  json.split("\n") );
  }
  
  void draw ()

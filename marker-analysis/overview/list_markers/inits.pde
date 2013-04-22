@@ -46,8 +46,10 @@ void loadData ()
     
     videos = new ArrayList();
     db.query(
-        "SELECT * FROM videos AS v JOIN video_recordings AS r ON r.video_id = v.id AND r.piece_id IN (%s) WHERE NOT v.title LIKE %s ORDER BY v.recorded_at",
+        "SELECT * FROM videos AS v JOIN video_recordings AS r ON r.video_id = v.id AND r.piece_id IN (%s) WHERE v.title LIKE %s OR v.title LIKE %s AND NOT v.title LIKE %s ORDER BY v.recorded_at",
         pieceIds,
+        "\"%AJA%\"",
+        "\"%Center%\"",
         "\"%discussion%\""
     );
     while ( db.next() )
@@ -84,8 +86,8 @@ void loadData ()
     
     eventsFiltered = new ArrayList();
     db.query( 
-        "SELECT * FROM events AS e WHERE piece_id IN (%s) AND created_by = %s AND ( event_type = %s ) AND ( %s ) ORDER BY e.happened_at", 
-        pieceIds, "\"FlorianJenett2\"", "\"scene\"",
+        "SELECT * FROM events AS e WHERE piece_id IN (%s) AND ( event_type = %s ) AND ( %s ) ORDER BY e.happened_at", 
+        pieceIds, "\"scene\"",
         join( videoDates.toArray(new String[0]), " OR " )
     );
     while ( db.next() )

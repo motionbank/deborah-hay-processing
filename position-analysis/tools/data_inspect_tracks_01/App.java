@@ -19,7 +19,7 @@ public class App
     {
         papplet = sketch;
 
-        api = new PieceMakerApi( sketch, "aoisduaosiduasoidu", "http://localhost:3000" );
+        api = new PieceMakerApi( sketch, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://localhost:3000" );
         api.loadPieces( api.createCallback( this, "piecesLoaded" ) );
     }
 
@@ -40,7 +40,7 @@ public class App
     {
         // TODO: make video selectable
 
-        int videoId = 80;
+        int videoId = 100;
 
         api.loadVideo( videoId, api.createCallback( this, "videoLoaded" ) );
     }
@@ -72,7 +72,7 @@ public class App
                 if ( a.indexOf( "file:" ) != -1 )
                 {
                     String file = a.substring( a.indexOf("file:")+5 ).replace("\"", "");
-                    loadEventData( dataEvent, file );
+                    //loadEventData( dataEvent, file );
                     //                    loadEventData( dataEvent, file.replace(".txt","_alt.txt") );
                     //                    loadEventData( dataEvent, file.replace(".txt","_left_wrist.txt") );
                     loadEventData( dataEvent, file.replace(".txt", "_com.txt") );
