@@ -10,6 +10,8 @@ void keyPressed ()
     
     if ( key == 'm' ) movers = new ArrayList();
     if ( key == 'v' ) addMoverGrid();
+    
+    if ( key == 'p' ) savePDF = true;
  }
 
 void mousePressed ()

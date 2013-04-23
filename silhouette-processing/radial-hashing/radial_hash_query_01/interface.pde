@@ -71,49 +71,59 @@ void buttonPressed ()
                               circumCircle.x, circumCircle.y, 
                               circumCircle.radius*2, circumCircle.radius*2 );
     
-    int[] hashBits = new int[hash.length * 8];
-    for ( int i = 0; i < hash.length; i++ )
-    {
-        int aByte = hash[i] & 0xFF;
-        for ( int ii = 0; ii < 8; ii++ )
-        {
-            hashBits[i*8 + ii] = (aByte >> (7-ii)) & 0x1;
-        }
-    }
-    FastHash fullHash = new FastHash( hashBits );
+//    int[] hashBits = new int[hash.length * 8];
+//    for ( int i = 0; i < hash.length; i++ )
+//    {
+//        int aByte = hash[i] & 0xFF;
+//        for ( int ii = 0; ii < 8; ii++ )
+//        {
+//            hashBits[i*8 + ii] = (aByte >> (7-ii)) & 0x1;
+//        }
+//    }
+//    FastHash fullHash = new FastHash( hashBits );
+//    
+//    int[] hashFast = new int[64];
+//    float k = ceil(hash.length / (float)hashFast.length);
+//    for ( int i = 0, ii = 0; i < hash.length; i++ )
+//    {
+//        ii = (int)round(i / k);
+//        if ( ii < hashFast.length )
+//            hashFast[ii] += (hash[i] & 0xFF) > 127 ? 1 : 0;
+//    }
+//    for ( int i = 0; i < hashFast.length; i++ )
+//    {
+//        hashFast[i] /= k;
+//    }
+//    FastHash fastHash = new FastHash( hashFast );
+
+    String[] hashes = new String[4];
     
-    int[] hashFast = new int[64];
-    float k = ceil(hash.length / (float)hashFast.length);
-    for ( int i = 0, ii = 0; i < hash.length; i++ )
+    for ( int h = 0; h < hashes.length; h++ )
     {
-        ii = (int)round(i / k);
-        if ( ii < hashFast.length )
-            hashFast[ii] += (hash[i] & 0xFF) > 127 ? 1 : 0;
+        int[] hashBlock = new int[64];
+        
+        for ( int i = 0, k = h*64; i < 64; i++ )
+        {
+            hashBlock[i] = (hash[k+i] & 0xFF) > 127 ? 1 : 0;
+        }
+        FastHash hashBlockObj = new FastHash( hashBlock );
+        hashes[h] = hashBlockObj.toHexString();
     }
-    for ( int i = 0; i < hashFast.length; i++ )
-    {
-        hashFast[i] /= k;
-    }
-    FastHash fastHash = new FastHash( hashFast );
     
     PImage[] imgs = null;
     if ( db != null )
     {
         imgs = new PImage[0];
 
-        db.query( "SELECT id, "+
-                         "file, "+
-                         "bit_dist( %d, fasthash ) AS bdist, "+
-                         "hex_dist( X'%s', hash ) AS dist, "+
-                         "performance "+
+        db.query( "SELECT *, "+
+                         "BIT_COUNT( X'%s' ^ hash64 ) + "+
+                            "BIT_COUNT( X'%s' ^ hash128 ) + "+
+                            "BIT_COUNT( X'%s' ^ hash192 ) + "+
+                            "BIT_COUNT( X'%s' ^ hash256 ) AS bitdist "+
                       "FROM silhouettes "+
-                      "WHERE "+
-                            "bdist <= 2 AND "+
-                            "dist < ((length(hash) * 255) / 10) "+
-                      "ORDER BY dist ASC "+
+                      "ORDER BY bitdist ASC "+
                       "LIMIT 20",
-                      fastHash.toLong64(),
-                      fullHash.toHexString()
+                      hashes[0], hashes[1], hashes[2], hashes[3]
                  );
         
         String basePath = "/Volumes/Verytim/2011_FIGD_April_Results";
@@ -125,7 +135,9 @@ void buttonPressed ()
         while ( db.next() )
         {
             String filename = db.getString( "file" );
-            PImage ii = loadImage( basePath + "/" + filename );
+            String fileFolder = filename.split("_")[0];
+            if ( fileFolder.equals("Janine") ) fileFolder = "Jeanine";
+            PImage ii = loadImage( basePath + "/" + fileFolder + "/" + filename );
             if ( ii != null )
             {
                 imgs = (PImage[])append( imgs, ii );

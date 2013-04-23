@@ -111,7 +111,7 @@ void draw ()
             ThreeDPositionTrack track3D = null;
             
             evFrom = c.events.get(0);
-            evTo = c.events.get(c.events.size()-1);
+            evTo = c.events.get(1);
             
             for ( org.piecemaker.models.Event e : c.events ) 
             {
@@ -128,18 +128,34 @@ void draw ()
                     }
                     track3D.setScale( s );
                 }
-                else if ( e.title.equals( sceneFrom ) )
+                else 
                 {
-                    evFrom = e;
-                }
-                else if ( e.title.equals( sceneTo ) )
-                {
-                    evTo = e;
+                    if ( e.title.equals( sceneFrom ) )
+                    {
+                        evFrom = e;
+                    }
+                    
+                    if ( e.title.equals( sceneTo ) )
+                    {
+                        evTo = e;
+                    }
                 }
             }
             
             if ( evData != null && evFrom != null && evTo != null )
             {
+                int iEvFrom = c.events.indexOf( evFrom );
+                int iEvTo = c.events.indexOf( evTo );
+                
+                if ( iEvFrom < c.events.size()-1 && iEvFrom >= iEvTo )
+                {
+                    evTo = c.events.get( iEvFrom+1 );
+                    list2.select( evTo.title );
+                }
+                
+                sceneFrom = evFrom.title;
+                sceneTo = evTo.title;
+                
                 int fStart = (int)( evFrom.getHappenedAt().getTime() -
                                     evData.getHappenedAt().getTime() );
                     fStart = int( (fStart / 1000.0) * track3D.fps );
@@ -153,7 +169,7 @@ void draw ()
                 noFill();
                 
                 pushMatrix();
-                translate( 10, height-10 );
+                translate( s, height-s );
                 
                 track3D.drawFromTo( fStart, fLen );
                 
@@ -195,6 +211,7 @@ void keyPressed ()
 {
     if ( key == CODED )
     {
+        int ito, ifrom;
         switch ( keyCode )
         {
             case RIGHT:
@@ -204,6 +221,26 @@ void keyPressed ()
             case LEFT:
                 currClusterIndex--;
                 if ( currClusterIndex < 0 ) currClusterIndex = 0;
+                break;
+            case UP:
+                ifrom = sceneNames.indexOf( sceneFrom );
+                if ( ifrom > 0 ) ifrom--;
+                ito = sceneNames.indexOf( sceneTo );
+                if ( ito > ifrom+1 ) ito--;
+                sceneFrom = sceneNames.get( ifrom );
+                list1.select( sceneFrom );
+                sceneTo = sceneNames.get( ito );
+                list2.select( sceneTo );
+                break;
+            case DOWN:
+                ito = sceneNames.indexOf( sceneTo );
+                if ( ito < sceneNames.size()-1 ) ito++;
+                ifrom = sceneNames.indexOf( sceneFrom );
+                if ( ifrom < ito-1 ) ifrom++;
+                sceneFrom = sceneNames.get( ifrom );
+                list1.select( sceneFrom );
+                sceneTo = sceneNames.get( ito );
+                list2.select( sceneTo );
                 break;
         }
         

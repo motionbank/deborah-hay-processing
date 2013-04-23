@@ -100,7 +100,10 @@ class ThreeDPositionTrack
     }
     
     void drawFromTo ( int from, int len )
-    {   
+    {
+        if ( from < 0 ) from = 0;
+        if ( from+len >= x.length ) len = (x.length-1)-from;
+        
         beginShape();
         for ( int i = from, k = from+len; i < k; i+=2 )
         {

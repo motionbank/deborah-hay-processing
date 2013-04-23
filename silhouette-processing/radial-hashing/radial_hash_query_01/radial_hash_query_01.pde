@@ -12,7 +12,7 @@
  PImage mugshot;
  PImage[] results;
  
- SQLite db;
+ MySQL db;
  String dbPath = "../db";
  String dbFile = "dbV4Test.sqlite";
  

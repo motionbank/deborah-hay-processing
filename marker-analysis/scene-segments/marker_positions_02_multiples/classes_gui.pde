@@ -31,6 +31,21 @@ public class Listbox
         hasSlider = items.size() * itemHeight > height;
     }
     
+    public void select ( String itemTitle )
+    {
+        if ( items != null )
+        {
+            for ( int i = 0; i < items.size(); i++ )
+            {
+                if ( items.get(i).equals( itemTitle ) )
+                {
+                    lastItemClicked = i;
+                    return;
+                }
+            }
+        }
+    }
+    
     public void mouseMoved ( float mx, float my )
     {
         if ( mx < x || mx > (x+width-20) ) return;

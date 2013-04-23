@@ -89,6 +89,8 @@ void eventsLoaded ( Events evts, VideoTimeCluster c )
                 if ( trackFiles == null ) trackFiles = new ArrayList();
                 String tf = obj.getString("file");
                 
+                tf = tf.replace(".txt", "_com.txt");
+                
 //                trackFiles.add( tf );
 //                if ( tracks == null ) tracks = new ArrayList();
 //                tracks.add( new ClusterTrack( c, tf ) );
