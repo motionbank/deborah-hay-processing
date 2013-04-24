@@ -14,11 +14,17 @@ void videosLoaded ( Videos vids, int piece_id )
         
         for ( Video v : videos ) 
         {
-            if ( !(v.getTitle().indexOf("_Center") != -1 || v.getTitle().indexOf("_AJA") != -1) ) continue;
+            if ( !(
+                    v.getTitle().indexOf("_Center") != -1 
+                    || v.getTitle().indexOf("_AJA") != -1
+                    //|| v.getTitle().indexOf("AHSG") != -1
+                  ) 
+                 || 
+                    v.getTitle().indexOf("Trio") != -1 ) continue;
             
             // http://notimetofly.herokuapp.com/api/events/between/1298934000/1304200800.js
-            if ( v.getFinishedAt().getTime() < recordingsFrom || 
-                 v.getHappenedAt().getTime() > recordingsTo ) continue;
+            if ( v.getFinishedAt().getTime() <= recordingsFrom || 
+                 v.getHappenedAt().getTime() >= recordingsTo ) continue;
             
             boolean hasCluster = false;
             for ( VideoTimeCluster c : clustersTemp )
@@ -42,6 +48,7 @@ void videosLoaded ( Videos vids, int piece_id )
         {
             api.loadEventsBetween( c.from, c.to, api.createCallback( "eventsLoaded", c ) );
             clustersExpected++;
+            delay( 200 );
         }
         
         clustersTemp = null;
@@ -65,7 +72,10 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
     
     for ( org.piecemaker.models.Event e : events )
     {
-        if ( e.getEventType().equals("scene") ) cluster.addEvent( e );
+        if ( e.getEventType().equals("scene") ) 
+        {
+            cluster.addEvent( e );
+        }
     }
     
     clusters.add( cluster );
@@ -106,6 +116,7 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
                 System.err.println( "ORIGIN or END event missing!" );
                 println( "Origin " + originEvent );
                 println( "End " + endEvent );
+                println( cluster.toString() );
                 exit();
                 return;
             }

@@ -19,7 +19,7 @@ boolean showAll = false;
 boolean savePDF = false;
 
 VideoTimeCluster currCluster = null;
-int currClusterIndex = 0;
+int currClusterIndex = 0, exportClusterIndex = 0;
 
 ArrayList<ThreeDPositionTrack> tracks3D;
 
@@ -27,10 +27,11 @@ Listbox list1, list2;
 PFont interfaceFont, stageFont;
 
 Date timeMin, timeMax;
-String sceneFrom = "wordless song", sceneTo = "1 minute turn";
+String sceneFrom = "fred + ginger", sceneTo = "the beginning";
+String outputBase = "";
 ArrayList<String> sceneNames;
 
-boolean showInterface = false, loading = true;
+boolean showInterface = false, loading = true, exporting = false;
 float leftOffset = 0;
 
 void setup () 
@@ -54,6 +55,8 @@ void setup ()
     }.start();
     
     stageFont = createFont( "Open Sans", 11 );
+    outputBase = "output/"+year()+"-"+month()+"-"+day()+"_"+
+                              hour()+"-"+minute()+"-"+second();
 }
 
 String pdfName = "";
@@ -66,9 +69,10 @@ void draw ()
     {
         if ( savePDF )
         {
-          pdfName = year()+"-"+month()+"-"+day()+"/"+
-                              hour()+"-"+minute()+"-"+second()+"-"+
-                              currCluster.videos.get(1).title;
+            pdfName = outputBase + "/" + 
+                      ( showAll ? "ALL" : currCluster.videos.get(1).title ) + "_" + 
+                      nf(sceneNames.indexOf(sceneFrom),2) + "-" + sceneFrom.replaceAll("[^-A-Za-z0-9]+","-") + "_" + 
+                      nf(sceneNames.indexOf(sceneTo),2) + "-" + sceneTo.replaceAll("[^-A-Za-z0-9]+","-");
             beginRecord( PDF, pdfName+".pdf" );
         }
         
@@ -110,9 +114,6 @@ void draw ()
             org.piecemaker.models.Event evData = null, evFrom = null, evTo = null;
             ThreeDPositionTrack track3D = null;
             
-            evFrom = c.events.get(0);
-            evTo = c.events.get(1);
-            
             for ( org.piecemaker.models.Event e : c.events ) 
             {
                 if ( e.getEventType().equals("data") )
@@ -153,9 +154,6 @@ void draw ()
                     list2.select( evTo.title );
                 }
                 
-                sceneFrom = evFrom.title;
-                sceneTo = evTo.title;
-                
                 int fStart = (int)( evFrom.getHappenedAt().getTime() -
                                     evData.getHappenedAt().getTime() );
                     fStart = int( (fStart / 1000.0) * track3D.fps );
@@ -174,17 +172,18 @@ void draw ()
                 track3D.drawFromTo( fStart, fLen );
                 
                 popMatrix();
-            }
             
-            String performer = evFrom.performers != null && evFrom.performers.length > 0 ? evFrom.performers[0] : null;
-            if ( performer == null ) performer = evTo.performers != null && evTo.performers.length > 0 ? evTo.performers[0] : null;
-            if ( performer == null ) performer = c.videos.get(0).title;
-            if ( performer != null )
-            {
-                fill( 210 );
-                textAlign( CENTER );
-                textSize( 11 );
-                text( performer, s+(12*s)/2, height-(s/2)+14 );
+                String performer = evFrom.performers != null && evFrom.performers.length > 0 ? evFrom.performers[0] : null;
+                if ( performer == null ) performer = evTo.performers != null && evTo.performers.length > 0 ? evTo.performers[0] : null;
+                if ( performer == null ) performer = c.videos.get(0).title;
+                if ( performer != null )
+                {
+                    fill( 210 );
+                    textAlign( CENTER );
+                    textSize( 11 );
+                    text( performer, s+(12*s)/2, height-(s/2)+14 );
+                }
+            
             }
         }
         
@@ -196,6 +195,22 @@ void draw ()
         }
         
         popMatrix();
+        
+        if ( sceneTo.equals("end") ) exporting = false;
+        if ( exporting ) 
+        {
+            savePDF = true;
+            if ( !showAll ) 
+            {
+                nextPerformance();
+                if ( currClusterIndex == 0 ) 
+                {
+                    nextScene();
+                }
+            } else {
+                nextScene();
+            }
+        }
     }
     else // loading
     {
@@ -215,12 +230,11 @@ void keyPressed ()
         switch ( keyCode )
         {
             case RIGHT:
-                currClusterIndex++;
-                currClusterIndex %= clusters.size();
+                nextPerformance();
                 break;
             case LEFT:
                 currClusterIndex--;
-                if ( currClusterIndex < 0 ) currClusterIndex = 0;
+                if ( currClusterIndex < 0 ) currClusterIndex = clusters.size()-1;
                 break;
             case UP:
                 ifrom = sceneNames.indexOf( sceneFrom );
@@ -233,14 +247,7 @@ void keyPressed ()
                 list2.select( sceneTo );
                 break;
             case DOWN:
-                ito = sceneNames.indexOf( sceneTo );
-                if ( ito < sceneNames.size()-1 ) ito++;
-                ifrom = sceneNames.indexOf( sceneFrom );
-                if ( ifrom < ito-1 ) ifrom++;
-                sceneFrom = sceneNames.get( ifrom );
-                list1.select( sceneFrom );
-                sceneTo = sceneNames.get( ito );
-                list2.select( sceneTo );
+                nextScene();
                 break;
         }
         
@@ -256,6 +263,9 @@ void keyPressed ()
             case 'p':
                 savePDF = true;
                 break;
+            case 'e':
+                exportAll();
+                break;
             case ' ':
                 showInterface = !showInterface;
                 if ( !showInterface ) {
@@ -264,6 +274,46 @@ void keyPressed ()
                 break;
         }
     }
+}
+
+void exportAll ()
+{
+    sceneFrom = "fred + ginger";
+    sceneTo = "the beginning";
+    
+    currClusterIndex = 0;
+    exportClusterIndex = 0;
+    
+    currCluster = clusters.get(currClusterIndex);
+    
+    exporting = true;
+}
+
+void nextScene ()
+{
+    int ito, ifrom;
+    
+    ito = sceneNames.indexOf( sceneTo );
+    if ( ito < sceneNames.size()-1 ) ito++;
+    
+    ifrom = sceneNames.indexOf( sceneFrom );
+    if ( ifrom < ito-1 ) ifrom++;
+    
+    sceneFrom = sceneNames.get( ifrom );
+    list1.select( sceneFrom );
+    
+    sceneTo = sceneNames.get( ito );
+    list2.select( sceneTo );
+    
+    println( sceneFrom + " -> " + sceneTo );
+}
+
+void nextPerformance ()
+{
+    currClusterIndex++;
+    currClusterIndex %= clusters.size();
+    
+    currCluster = clusters.get(currClusterIndex);
 }
 
 public void itemClicked ( Listbox lBox, int i, Object item )
