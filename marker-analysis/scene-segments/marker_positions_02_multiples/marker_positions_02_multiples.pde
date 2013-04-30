@@ -5,6 +5,10 @@ import de.bezier.data.sql.*;
 import de.bezier.guido.*;
 import org.piecemaker.models.*;
 
+import org.piecemaker.api.*;
+import org.piecemaker.models.*;
+import org.piecemaker.collections.*;
+
 import java.util.*;
 
 final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker";
@@ -12,11 +16,14 @@ final int PIECE_ID = 3;
 final String POS_3D_ROOT = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
 
 MySQL db;
+PieceMakerApi api;
 Piece piece;
 ArrayList<VideoTimeCluster> clusters;
+int clustersToLoad = 0;
 
 boolean showAll = false;
 boolean savePDF = false;
+boolean loadFromDb = false; // false == load from API
 
 VideoTimeCluster currCluster = null;
 int currClusterIndex = 0, exportClusterIndex = 0;
@@ -47,14 +54,19 @@ void setup ()
     
     Interactive.setActive( false );
     
-    new Thread(){
-        public void run () {
-            initDatabase();
-            loadMarkers();
-            currCluster = clusters.get(0);
-            loading = false;
-        }
-    }.start();
+    if ( loadFromDb ) {
+        new Thread(){
+            public void run () {
+                initDatabase();
+                loadMarkers();
+                currCluster = clusters.get(0);
+                loading = false;
+            }
+        }.start();
+    } else {
+        api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", true ? "http://localhost:3000/" : "http://notimetofly.herokuapp.com/" );
+        api.loadVideosForPiece( 3, api.createCallback( "videosLoaded" ) );
+    }
     
     stageFont = createFont( "Open Sans", 11 );
     outputBase = "output/"+year()+"-"+month()+"-"+day()+"_"+
