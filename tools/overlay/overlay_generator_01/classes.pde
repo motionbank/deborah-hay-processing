@@ -194,6 +194,8 @@ public class Performance {
    
    void loadFrame ()
    {
+       if ( imgPath == null ) return;
+       
        img = loadImage( imgPath );
        
        if ( img != null ) 

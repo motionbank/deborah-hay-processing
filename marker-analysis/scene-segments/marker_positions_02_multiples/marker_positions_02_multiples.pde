@@ -31,8 +31,10 @@ String sceneFrom = "fred + ginger", sceneTo = "the beginning";
 String outputBase = "";
 ArrayList<String> sceneNames;
 
-boolean showInterface = false, loading = true, exporting = false;
+boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 float leftOffset = 0;
+
+String selPerformer = "roswarby";
 
 void setup () 
 {
@@ -71,6 +73,7 @@ void draw ()
         {
             pdfName = outputBase + "/" + 
                       ( showAll ? "ALL" : currCluster.videos.get(1).title ) + "_" + 
+                      ( asConvexHull ? "hull" : "path" ) + "_" +
                       nf(sceneNames.indexOf(sceneFrom),2) + "-" + sceneFrom.replaceAll("[^-A-Za-z0-9]+","-") + "_" + 
                       nf(sceneNames.indexOf(sceneTo),2) + "-" + sceneTo.replaceAll("[^-A-Za-z0-9]+","-");
             beginRecord( PDF, pdfName+".pdf" );
@@ -162,15 +165,29 @@ void draw ()
                                 evFrom.getHappenedAt().getTime() );
                     fLen = int( (fLen / 1000.0) * track3D.fps );
                 
-                
-                stroke( 0 );
-                noFill();
+                if ( asConvexHull )
+                {
+                    if ( showAll )
+                        noStroke();
+                    else
+                        stroke( 255, 0, 0 );
+                        
+                    fill( 255, 0, 0, 40 );
+                }
+                else
+                {
+                    stroke( 0 );
+                    noFill();
+                }
                 
                 pushMatrix();
                 translate( s, height-s );
                 
-                track3D.drawFromTo( fStart, fLen );
-                
+                if ( !asConvexHull )
+                    track3D.drawFromTo( fStart, fLen );
+                else
+                    track3D.drawHullFromTo( fStart, fLen );
+                                
                 popMatrix();
             
                 String performer = evFrom.performers != null && evFrom.performers.length > 0 ? evFrom.performers[0] : null;
@@ -266,6 +283,9 @@ void keyPressed ()
             case 'e':
                 exportAll();
                 break;
+            case 'c':
+                asConvexHull = !asConvexHull;
+                break;
             case ' ':
                 showInterface = !showInterface;
                 if ( !showInterface ) {
@@ -278,8 +298,8 @@ void keyPressed ()
 
 void exportAll ()
 {
-    sceneFrom = "fred + ginger";
-    sceneTo = "the beginning";
+    sceneFrom = sceneNames.get(0);
+    sceneTo = sceneNames.get(1);
     
     currClusterIndex = 0;
     exportClusterIndex = 0;
@@ -287,6 +307,7 @@ void exportAll ()
     currCluster = clusters.get(currClusterIndex);
     
     exporting = true;
+    savePDF = true;
 }
 
 void nextScene ()
@@ -305,7 +326,7 @@ void nextScene ()
     sceneTo = sceneNames.get( ito );
     list2.select( sceneTo );
     
-    println( sceneFrom + " -> " + sceneTo );
+    //println( sceneFrom + " -> " + sceneTo );
 }
 
 void nextPerformance ()

@@ -28,12 +28,14 @@
  int toLoadNum = 0, totalPerformances = 0;
  
  String[] performers;
- PGraphics pg;
+ PGraphics pg, pgAll;
  
  void setup () 
  {
      size( 1920/4, 1080/4, JAVA2D );
+     
      pg = createGraphics( 1920, 1080, JAVA2D );
+     pgAll = createGraphics( 1920, 1080, JAVA2D );
      
      scenesByName = new String[0];
      
@@ -47,10 +49,10 @@
                               "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", 
                               true ? "http://localhost:3000" : "http://notimetofly.herokuapp.com" );
     
-     int[][] performanceIds = new int[][] {
-         new int[]{ 76,77,79,81,82,83,80 }, // Ros
-         new int[]{ 84,87,88,89,90,91,86 }, // Jeanine
-         new int[]{ 95,96,97,98,99,85,100 } // Juliette
+     int[][] performanceIds = {
+         { 76,77,79,81,82,83,80 }, // Ros
+         { 84,87,88,89,90,91,86 }, // Jeanine
+         { 95,96,97,98,99,85,100 } // Juliette
      };
      
      performers = new String[] {
@@ -104,14 +106,15 @@
          
          if ( !changeScene )
          {
+             String path = overlayResultsPath + "/" + nf(currentScene,2) + "_" + scenesByName[currentScene] + "/";
+             
              for ( int i = 0; i < performers.length; i++ )
              {
                  if ( performerHasMore[i] )
                  {
                      String pn = performers[i];
                      
-                     String path = overlayResultsPath + "/" + nf(currentScene,2) + "_" + scenesByName[currentScene] + "/" + pn;
-                     File oDir = new File( path );
+                     File oDir = new File( path + pn );
                      
                      String pngFilePath = oDir.getAbsolutePath() + "/" + nf(currentFrame,6) + ".png";
                      
@@ -125,7 +128,6 @@
                      
                      pg.beginDraw();
                      pg.background( 0x00FFFFFF );
-                     
                      for ( int ii = 0; ii < performancesPerPerformer[i].length; ii++ )
                      {
                          Performance p = performancesPerPerformer[i][ii];
@@ -133,12 +135,29 @@
                      }
                      pg.endDraw();
                      pg.save( pngFilePath );
-                 
-                     background( 255 );
-                     image( pg, 0,0, width, height );
+                     
                      removeCache( pg );
                  }
              }
+             
+             File allFile = new File( path + "all" + "/" + nf(currentFrame,6) + ".png" );
+             
+             if ( !allFile.exists() )
+             {
+                 pgAll.beginDraw();
+                 pgAll.background( 0x00FFFFFF );
+                 for ( int i = 0; i < performances.length; i++ )
+                 {
+                     performances[i].draw( pgAll );
+                 }
+                 pgAll.endDraw();
+                 pgAll.save( allFile.getAbsolutePath() );
+                 
+                 background( 255 );
+                 image( pgAll, 0,0, width, height );
+                 removeCache( pgAll );
+             }
+             
              currentFrame++;
          }
          
