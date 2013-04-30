@@ -112,6 +112,30 @@ class ThreeDPositionTrack
         endShape();
     }
     
+    void drawHullFromTo ( int from, int len )
+    {
+        
+        if ( from < 0 ) from = 0;
+        if ( from+len >= x.length ) len = (x.length-1)-from;
+        
+        Point2D in[] = new Point2D[len/2];
+        Point2D hull[] = new Point2D[in.length];
+        
+        for ( int n = 0, i = from, k = from+len; i < k && n < in.length; n++, i+=2 )
+        {
+            in[n] = new Point2D( x[i], y[i] );
+        }
+        
+        int total = nearHull2D( in, hull );
+        
+        beginShape();
+        for ( int i = 0; i < total; i++ )
+        {
+            vertex( hull[i].x * scaling, -hull[i].y * scaling );
+        }
+        endShape();
+    }
+    
     float[] getPositionAt ( int at )
     {
         

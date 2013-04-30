@@ -103,12 +103,17 @@ void loadMarkers ()
         {
             org.piecemaker.models.Event e = new org.piecemaker.models.Event();
             db.setFromRow( e );
+            
+            String p = db.getString( "performers" ).replaceAll("[^a-z]+","");
+            e.performers = new String[]{p};
+            
+            //if ( e.getEventType().equals("scene") && !p.equals(selPerformer) ) continue;
+            
             c.addEvent( e );
             
             if ( e.getEventType().equals("data") ) 
             {
                 tracks3D.add( new ThreeDPositionTrack( e ) );
-                clusters.add( c );
             }
             else if ( !sceneNames.contains( e.title ) )
             {
@@ -122,6 +127,10 @@ void loadMarkers ()
         }
         
         println( c.events.size() + " events added" );
+        if ( c.events.size() > 20 )
+        {
+            clusters.add( c );
+        }
         
         if ( timeMin == null ) timeMin = c.from;
         else if ( timeMin.compareTo( c.from ) > 0 ) timeMin = c.from;
