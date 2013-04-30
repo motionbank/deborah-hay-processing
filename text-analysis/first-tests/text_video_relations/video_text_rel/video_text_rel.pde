@@ -32,6 +32,8 @@ import org.piecemaker.collections.*;
 import org.piecemaker.models.*;
 import org.piecemaker.api.*;
 
+import processing.pdf.*;
+
 import cue.lang.*;
 import java.util.Map.Entry;
 
@@ -122,13 +124,19 @@ void draw ()
 
   else if (setupFinished && drawFrame) {
     drawFrame = false;
-
+    
+    
+    if (saveAllFrames) beginRecord(PDF, "path2" + videos.get(idx).data.file.title + ".pdf");
+    
     background( 255 );
-
+    
     //drawPerformerSegments();
     //drawPerformerPerformances();
-    //drawSegmentStages();
-    drawConvexSingles();
+    drawSegmentStages();
+    //drawConvexSingles();
+    
+    if (saveAllFrames) endRecord();
+    
     
     // cycles through all videos in videoIDs
     if (saveAllFrames) {

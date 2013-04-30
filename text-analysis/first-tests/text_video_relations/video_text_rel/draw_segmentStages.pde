@@ -109,6 +109,10 @@ void drawSegmentStages() {
   }
   */
   
+  /*
+  
+  //   RED ELLIPSES
+  
   for( int i=0; i<vid.segments.length(); i++) {
     VideoSegment vSeg = vid.segments.get(i);
     
@@ -134,6 +138,7 @@ void drawSegmentStages() {
       x = 0;
     }
   }
+  */
   
   popStyle();
   
