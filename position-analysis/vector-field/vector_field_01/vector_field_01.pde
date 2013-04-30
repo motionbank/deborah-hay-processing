@@ -15,6 +15,8 @@ import org.piecemaker.collections.*;
 import org.piecemaker.models.*;
 import org.piecemaker.api.*;
 
+import processing.pdf.*;
+
 import java.util.Date;
 
 // SETTINGS
@@ -33,7 +35,7 @@ ArrayList<String> trackFiles;
 
 static String tracksBaseUrl = "http://lab.motionbank.org/dhay/data/"; // http://moba-lab.local/dhay/data/
 static {
-    tracksBaseUrl = "/Users/fjenett/Desktop/MOBA/IGD_Positions/";
+    tracksBaseUrl = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
 }
 
 int fieldGrid = 10;
@@ -44,7 +46,7 @@ int fieldWidth, fieldHeight;
 float fieldMax = 0, fieldMean = 0, fieldMin = Float.MAX_VALUE;
 float fieldCountsMax = 0, fieldCountsMin = Float.MAX_VALUE;
 
-boolean loading = true;
+boolean loading = true, savePDF = false;
 String loadingMessage = "Loading pieces ...";
 
 boolean showBackground = false, showField = true;
@@ -82,7 +84,7 @@ void setup ()
     //cal.setTimeZone( java.util.TimeZone.getTimeZone("UTC") );
     cal.set(2011,3,18,0,0,0); // 3 == April
     recordingsFrom = cal.getTimeInMillis();
-    cal.set(2011,3,19,0,0,0);
+    cal.set(2011,3,30,0,0,0);
     recordingsTo = cal.getTimeInMillis();
     
     api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" );
@@ -97,6 +99,10 @@ void draw ()
     }
     else
     {
+        if ( savePDF ) {
+            beginRecord( PDF, "output/"+nf(year(),2)+nf(month(),2)+nf(day(),2)+"-"+nf(hour(),2)+nf(minute(),2)+nf(second(),2)+".pdf" );
+        }
+        
         background( 255 );
         textAlign( LEFT );
         
@@ -212,6 +218,11 @@ void draw ()
                     m.draw();
                 }
                 break;
+        }
+        if ( savePDF )
+        {
+            savePDF = false;
+            endRecord();
         }
     }
 }

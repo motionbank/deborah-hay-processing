@@ -66,7 +66,10 @@ void draw ()
 //            valQuery += (i > 0 ? " + " : " " ) + " ABS( val"+nf(i, 3)+" - "+vals[i]+" )";
 //        }
 
-        sil = loadImage( silhouetteFolder + "/" + file );
+            String fileFolder = file.split("_")[0];
+            if ( fileFolder.equals("Janine") ) fileFolder = "Jeanine";
+
+        sil = loadImage( silhouetteFolder + "/" + fileFolder + "/" + file );
         drawSilhouette( sil, 0, 0, 250, 250 );
 
         long ts1 = System.currentTimeMillis();
@@ -102,7 +105,13 @@ void draw ()
         while ( db.next () )
         {
             //currentId = db.getInt( "id" );
-            PImage img = loadImage( silhouetteFolder + "/" + db.getString( "file" ) );
+            
+            String filename = db.getString( "file" );
+            String fileFolder2 = filename.split("_")[0];
+            if ( fileFolder.equals("Janine") ) fileFolder = "Jeanine";
+            
+            PImage img = loadImage( silhouetteFolder + "/" + fileFolder2 + "/" + filename );
+            if ( img == null ) continue;
             //int dist = db.getInt( "dist" );
             int bitDist = db.getInt( "bitdist" );
             String perf = db.getString( "performance" ) + "_" + db.getInt( "framenumber" );

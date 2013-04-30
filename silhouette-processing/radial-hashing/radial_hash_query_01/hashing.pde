@@ -29,7 +29,7 @@ int[] computeHash ( PImage img,
 
     // generate hash values
 
-    int[] hash = RadialHashGenerator.generateHashAdaptive( sil64.pixels, tileSize, 5 );
+    int[] hash = RadialHashGenerator.generateHashAdaptive( sil64.pixels, tileSize, -1, new int[]{1,14,24,30,32,42,53,60} );
     
     HashingUtilities.normalizeValues( hash );
     

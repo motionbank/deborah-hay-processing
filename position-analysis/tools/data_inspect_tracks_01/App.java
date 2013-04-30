@@ -19,7 +19,7 @@ public class App
     {
         papplet = sketch;
 
-        api = new PieceMakerApi( sketch, "aoisduaosiduasoidu", "http://localhost:3000" );
+        api = new PieceMakerApi( sketch, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://localhost:3000" );
         api.loadPieces( api.createCallback( this, "piecesLoaded" ) );
     }
 
@@ -35,7 +35,7 @@ public class App
             }
         }
     }
-
+    
     public void videosLoaded ( Videos videos )
     {
         // TODO: make video selectable
@@ -72,10 +72,10 @@ public class App
                 if ( a.indexOf( "file:" ) != -1 )
                 {
                     String file = a.substring( a.indexOf("file:")+5 ).replace("\"", "");
-                    loadEventData( dataEvent, file.replace(".txt", "_25fps.txt") );
+                    //loadEventData( dataEvent, file );
                     //                    loadEventData( dataEvent, file.replace(".txt","_alt.txt") );
                     //                    loadEventData( dataEvent, file.replace(".txt","_left_wrist.txt") );
-                    loadEventData( dataEvent, file.replace(".txt", "_CofM.txt") );
+                    loadEventData( dataEvent, file.replace(".txt", "_com.txt") );
                     break;
                 }
             }
@@ -84,6 +84,8 @@ public class App
 
     private void loadEventData ( Event dataEvent, String file )
     {
+        System.out.println( file );
+        
         String[] lines = papplet.loadStrings( "http://moba-lab.local/dhay/data/"+file );
         float[][] trackData = new float[lines.length][3];
 

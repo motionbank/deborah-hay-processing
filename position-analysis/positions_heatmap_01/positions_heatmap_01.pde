@@ -34,7 +34,7 @@ void setup ()
     
     groups = new VideoEventGroup[0];
 
-    api = new PieceMakerApi(this, "fake-api-key-ignore", isLocal ? "http://localhost:3000" : "http://notimetofly.herokuapp.com" );
+    api = new PieceMakerApi(this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", isLocal ? "http://localhost:3000" : "http://notimetofly.herokuapp.com" );
     loadingMessage = "Loading videos for piece";
     api.loadVideosForPiece( PIECE_ID, api.createCallback("videosLoaded") );
 }

@@ -28,12 +28,16 @@
      db.query(
          "SELECT id, file, performance "+
          "FROM %s "+
-         "ORDER BY CONCAT( LPAD(HEX(hash64),16,'F'), LPAD(HEX(hash128),16,'F'), LPAD(HEX(hash192),16,'F'), LPAD(HEX(hash256),16,'F') ), framenumber",
+         "ORDER BY CONCAT( LPAD(HEX(hash64),16,'F'), LPAD(HEX(hash128),16,'F'), LPAD(HEX(hash192),16,'F'), LPAD(HEX(hash256),16,'F') ), "+
+         "framenumber "+
+         "LIMIT 10000",
          dbTableName
      );
      println( (System.currentTimeMillis() - ts) / 1000.0 );
      
      // Ros only (780000 entries) took 5508 secs to complete ... that's 1.5 hours!
+     
+     frameRate( 10 );
  }
  
  void draw ()
@@ -42,10 +46,15 @@
      
      if ( db.next() )
      {
-         if ( new File(sketchPath("output2/" + nf(frameCount, 15) + ".png")).exists() ) return;
+         //if ( new File(sketchPath("output2/" + nf(frameCount, 15) + ".png")).exists() ) return;
          
          String f = db.getString( "file" );
+         String folder = f.split("_")[0];
+         if ( folder.equals("Janine") ) folder = "Jeanine";
+         f = folder + "/" + f;
          PImage img = loadImage( silhouettesBase + "/" + f );
+         if ( img == null ) return;
+         if ( img.width < 50 || img.height < 50 ) return;
          removeTurquoise( img );
          //image( img, 0, 0, img.width * (height/img.height), height );
          int[] binPixels = toBinaryPixels( img.pixels );
@@ -77,7 +86,7 @@
      else
          exit();
      
-     saveFrame( "output2/" + nf(frameCount, 15) + ".png" );
+     //saveFrame( "output2/" + nf(frameCount, 15) + ".png" );
  }
  
  int[] toBinaryPixels ( int[] pixels )

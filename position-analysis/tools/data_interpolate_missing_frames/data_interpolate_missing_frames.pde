@@ -5,17 +5,63 @@
  *    created: fjenett 20130314
  */
  
+ import java.awt.dnd.*; 
+ import java.awt.datatransfer.*; 
+
  void setup ()
  {
      size( 200, 200 );
      
-     File d = new File("/Volumes/MB_03/2011-10_Alphas/SOLOS/");
-     String[] files = d.list();
-     for ( String s : files )
-     {
-         if ( !s.toLowerCase().endsWith( ".txt" ) || s.toLowerCase().indexOf("_fixed") != -1 || s.toLowerCase().indexOf("_concat") != -1 ) continue;
-         interpolateValues( d.getAbsolutePath() + "/" + s );
-     }
+     DropTarget dt = new DropTarget( this, new DropTargetListener() { 
+        public void dragEnter(DropTargetDragEvent event) { 
+            event.acceptDrag(DnDConstants.ACTION_COPY); 
+        } 
+    
+        public void dragExit(DropTargetEvent event) { 
+        } 
+    
+        public void dragOver(DropTargetDragEvent event) { 
+            event.acceptDrag(DnDConstants.ACTION_COPY); 
+        } 
+    
+        public void dropActionChanged(DropTargetDragEvent event) { 
+        } 
+    
+        public void drop(DropTargetDropEvent event) { 
+            event.acceptDrop(DnDConstants.ACTION_COPY); 
+    
+            Transferable transferable = event.getTransferable(); 
+            DataFlavor flavors[] = transferable.getTransferDataFlavors(); 
+            int successful = 0; 
+    
+            for (int i = 0; i < flavors.length; i++) 
+            { 
+                try { 
+                    Object stuff = transferable.getTransferData(flavors[i]); 
+                    if (!(stuff instanceof java.util.List)) continue; 
+                    java.util.List list = (java.util.List) stuff; 
+    
+                    for (int j = 0; j < list.size(); j++) { 
+                        Object item = list.get(j); 
+                        if (item instanceof File) { 
+                            File file = (File) item; 
+                            
+                            String fileName = file.getName();
+                            if ( fileName.endsWith( ".txt" ) )
+                            {
+                                println( "Processing: " + fileName );
+                                interpolateValues( file.getAbsolutePath() );
+                            }
+                        } 
+                    } 
+    
+                }  
+                catch (Exception e) { 
+                    e.printStackTrace(); 
+                } 
+            } 
+        } 
+     });
  }
  
  void interpolateValues ( String file )
@@ -77,3 +123,13 @@
      linesOut = expand( linesOut, lineNum-1 );
      saveStrings( file.replace(".txt","_FIXED.txt"), linesOut );
  }
+ 
+ /*
+ File d = new File("/Volumes/Verytim/2011_FIGD_April_Results/Ros/Ros_D01T01_withBackgroundAdjustment_Corrected/");
+     String[] files = d.list();
+     for ( String s : files )
+     {
+         if ( !s.toLowerCase().endsWith( ".txt" ) || s.toLowerCase().indexOf("_fixed") != -1 || s.toLowerCase().indexOf("_concat") != -1 ) continue;
+         interpolateValues( d.getAbsolutePath() + "/" + s );
+     }
+ */

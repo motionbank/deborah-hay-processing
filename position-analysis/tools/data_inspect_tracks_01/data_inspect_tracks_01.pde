@@ -7,6 +7,8 @@
  *    changed: fjenett 20130307 
  */
 
+ /* @pjs transparent="true"; */
+
  import processing.opengl.*;
 
  import de.bezier.guido.*;
@@ -38,7 +40,7 @@
  
  void setup ()
  {
-     size( 1200, 700 , P3D );
+     size( 1200, 700, P3D );
      
      new App( this );
      
@@ -67,7 +69,7 @@
  
  void draw ()
  {
-     background( 255 );
+     background( 255, 0 );
      
      if ( tracks == null || tracks.length <= 0 )
      {
