@@ -29,7 +29,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     org.piecemaker.models.Event dataEvent = events.events[0];
     
     long dataEventStart = dataEvent.getHappenedAt().getTime();
-    int msPerFrame = 1000 / 25;
+    int msPerFrame = 1000 / 50;
     
     // it's JSON but we just grab what we need and skip the full parsing
     String track3DFile = dataEvent.getDescription();
@@ -37,7 +37,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     track3DFile = track3DFile.substring( 0, track3DFile.indexOf("\"") );
     
     // using the 25 fps version
-    track3DFile = track3DFile.replace( ".txt", "_25fps.txt" );
+    track3DFile = track3DFile.replace( ".txt", "_com.txt" );
     
     String[] lines = loadStrings( TRACK_3D_ROOT + "/" + track3DFile );
     org.piecemaker.models.Event e1 = null;
@@ -68,7 +68,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
             };
         }
         
-        SceneHeatMap map = new SceneHeatMap( e1 );
+        SceneHeatMap map = new SceneHeatMap( heatMapGrid, e1 );
         map.generate( points, new float[]{-1,-1}, new float[]{13,13} );
         group.addHeatMap( map );
         

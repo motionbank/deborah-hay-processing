@@ -107,7 +107,7 @@ void loadMarkers ()
             String p = db.getString( "performers" ).replaceAll("[^a-z]+","");
             e.performers = new String[]{p};
             
-            //if ( e.getEventType().equals("scene") && !p.equals(selPerformer) ) continue;
+            if ( e.getEventType().equals("scene") && (selPerformer != null && !p.equals(selPerformer)) ) continue;
             
             c.addEvent( e );
             

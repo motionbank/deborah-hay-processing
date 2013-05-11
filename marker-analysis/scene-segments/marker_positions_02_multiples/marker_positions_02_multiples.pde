@@ -23,7 +23,7 @@ int clustersToLoad = 0;
 
 boolean showAll = false;
 boolean savePDF = false;
-boolean loadFromDb = false; // false == load from API
+boolean loadFromDb = true; // false == load from API
 
 VideoTimeCluster currCluster = null;
 int currClusterIndex = 0, exportClusterIndex = 0;
@@ -41,7 +41,7 @@ ArrayList<String> sceneNames;
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 float leftOffset = 0;
 
-String selPerformer = "roswarby";
+String selPerformer = null;//"juliettemapp";
 
 void setup () 
 {
@@ -84,10 +84,13 @@ void draw ()
         if ( savePDF )
         {
             pdfName = outputBase + "/" + 
-                      ( showAll ? "ALL" : currCluster.videos.get(1).title ) + "_" + 
                       ( asConvexHull ? "hull" : "path" ) + "_" +
-                      nf(sceneNames.indexOf(sceneFrom),2) + "-" + sceneFrom.replaceAll("[^-A-Za-z0-9]+","-") + "_" + 
-                      nf(sceneNames.indexOf(sceneTo),2) + "-" + sceneTo.replaceAll("[^-A-Za-z0-9]+","-");
+                      ( showAll ? "all-takes" : currCluster.videos.get(1).title.split("_")[0] ) + "_" + 
+                      ( selPerformer != null ? selPerformer + "_" : "" ) +
+                      //nf(sceneNames.indexOf(sceneFrom),2) + "-" + 
+                      sceneFrom.replaceAll("[^-A-Za-z0-9]+","-"); 
+                      //"_" + 
+                      //nf(sceneNames.indexOf(sceneTo),2) + "-" + sceneTo.replaceAll("[^-A-Za-z0-9]+","-");
             beginRecord( PDF, pdfName+".pdf" );
         }
         
