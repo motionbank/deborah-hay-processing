@@ -36,7 +36,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     track3DFile = track3DFile.substring( track3DFile.indexOf("\"")+1 );
     track3DFile = track3DFile.substring( 0, track3DFile.indexOf("\"") );
     
-    // using the 25 fps version
+    // using the 50 fps version
     track3DFile = track3DFile.replace( ".txt", "_com.txt" );
     
     String[] lines = loadStrings( TRACK_3D_ROOT + "/" + track3DFile );
