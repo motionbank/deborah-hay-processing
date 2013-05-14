@@ -29,7 +29,7 @@ class VideoEventGroup
 
 class SceneHeatMap
 {
-    int res = 14;
+    int resolution = 14;
     
     float[] values;
     int originalValuesTotal = -1;
@@ -38,10 +38,11 @@ class SceneHeatMap
     
     org.piecemaker.models.Event scene;
     
-    SceneHeatMap ( org.piecemaker.models.Event s )
+    SceneHeatMap ( int res, org.piecemaker.models.Event s )
     {
+        resolution = res;
         scene = s;
-        values = new float[res*res];
+        values = new float[resolution*resolution];
     }
     
     void generate ( float[][] points )
@@ -72,13 +73,13 @@ class SceneHeatMap
     void generate ( float[][] points, float[] pMins, float[] pMaxs )
     {
         // count hits per cell
-        int[] cells = new int[res*res];
+        int[] cells = new int[resolution*resolution];
         
         for ( int i = 0; i < points.length; i++ )
         {
-            int xi = (int)map( points[i][0], pMins[0], pMaxs[0], 0, res-1 );
-            int yi = (int)map( points[i][1], pMins[1], pMaxs[1], 0, res-1 );
-            cells[xi + yi*res]++;
+            int xi = (int)map( points[i][0], pMins[0], pMaxs[0], 0, resolution-1 );
+            int yi = (int)map( points[i][1], pMins[1], pMaxs[1], 0, resolution-1 );
+            cells[xi + yi*resolution]++;
         }
         
         for ( int i = 0, l = points.length; i < cells.length; i++ )
@@ -86,8 +87,8 @@ class SceneHeatMap
             values[i] = cells[i] / (float)l;
             if ( valueMax < values[i] )
             {
-                valueMaxX = i % res;
-                valueMaxY = i / res;
+                valueMaxX = i % resolution;
+                valueMaxY = i / resolution;
                 valueMax = values[i];
             }
         }
@@ -97,15 +98,15 @@ class SceneHeatMap
     
     void draw ( int xx, int yy, int ww, int hh )
     {
-        float cellWidth  = ww / (float)res;
-        float cellHeight = hh / (float)res;
+        float cellWidth  = ww / (float)resolution;
+        float cellHeight = hh / (float)resolution;
         float val;
         
-        for ( int ix = 0; ix < res; ix++ )
+        for ( int ix = 0; ix < resolution; ix++ )
         {
-            for ( int iy = 0; iy < res; iy++ )
+            for ( int iy = 0; iy < resolution; iy++ )
             {
-                val = values[ix + iy*res];
+                val = values[ix + iy*resolution];
                 
                 fill( 255 - ((val / valueMax) * 255) );
                 if ( val == 0 )
