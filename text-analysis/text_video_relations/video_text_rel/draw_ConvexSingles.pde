@@ -101,7 +101,7 @@ void drawConvexSingles() {
       Point2D[] hull = new Point2D[vSeg.positions.length()+1];
       int number = nearHull2D( vSeg.positions.getPoint2D(), hull );
       
-      fill(255,0,0,50);
+      fill(255,0,0);
       noStroke();
       
       beginShape();
