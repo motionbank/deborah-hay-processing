@@ -7,7 +7,8 @@ void videosLoaded ( Videos videos )
 {
     for ( Video v : videos.videos )
     {
-        if ( v.getTitle().indexOf( "_Center_Small" ) != -1 )
+        if ( v.getTitle().indexOf( "Center_Small" ) != -1 
+        && v.getTitle().indexOf( performer ) != -1)
         {
             api.loadEventsByTypeForVideo( v.id, "scene", api.createCallback( "eventsLoaded", v ) );
             loadingMessage = "Loading scene events for videos";
@@ -95,7 +96,6 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
             };
         }
     
-    
     group.videoHeatMap = new SceneHeatMap( group.video.getTitle() );
     group.videoHeatMap.generate( points, new float[]{-1,-1}, new float[]{13,13} );
     
@@ -113,6 +113,29 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
                 return ((VideoEventGroup)a).video.getHappenedAt().compareTo(((VideoEventGroup)b).video.getHappenedAt());
             }
         });
+        
+        multMaps = new SceneHeatMap[groups[0].heatMaps.length];
+        
+        // 25
+        for (int i=0; i<multMaps.length; i++) {
+
+            multMaps[i] = new SceneHeatMap(groups[0].events[i].getTitle());
+            multMaps[i].values = new float[groups[0].heatMaps[0].values.length];
+            
+            // 7 - 1
+            for (int j=0; j<groups.length; j++) 
+            {
+               SceneHeatMap hm = groups[j].heatMaps[i];
+               
+               // res * res
+               for (int k=0; k<hm.values.length; k++) 
+               {
+                  multMaps[i].values[k] += hm.values[k] / (float)groups.length;
+               }
+            }
+        }
+        
         loaded = true;
+        //redraw();
     }
 }
