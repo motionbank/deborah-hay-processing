@@ -30,11 +30,13 @@ VideoEventGroup[] groups;
 int currentGroup = 0;
 int currentHeatMap;
 
+boolean saveAll = true;
+
 Date timeMin, timeMax;
 
 void setup () 
 {
-  size( 1200, 900 );
+  size( 640, 420 );
     smooth();
   groups = new VideoEventGroup[0];
 
@@ -55,7 +57,15 @@ void draw ()
       //text( groups[currentGroup].video.getTitle(), 5, 15 );
 
       //groups[currentGroup].heatMaps[currentHeatMap].draw( 250, 25, 200, 200 );
-      groups[currentGroup].videoHeatMap.draw( 5, 25, 200, 200 );
+      int w = 360;
+      groups[currentGroup].videoHeatMap.draw( floor((width-w)/2.0), floor((height-w)/2.0), w, w );
+    }
+    
+    if (saveAll) {
+      String t = groups[currentGroup].video.getTitle();
+      saveFrame("saves2/" + t.substring(0,t.indexOf("_"))  + ".png");
+      currentGroup++;
+      if ( currentGroup >= groups.length ) exit();
     }
   }
   else

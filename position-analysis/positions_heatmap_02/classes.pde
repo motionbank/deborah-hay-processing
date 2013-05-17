@@ -136,16 +136,13 @@ class SceneHeatMap
         }
         
         
-        filter(BLUR, 6);
+        filter(BLUR, 15);
         filter(POSTERIZE, 10);
-        filter(BLUR, 1);
         
-        
-        stroke(0);
-        noFill();
+        fill( 0, 15 );
         rect(xx,yy,ww,hh);
         
-        fill( 0 );
-        text( title, xx+2, yy+hh+14 );
+        //fill( 0 );
+        //text( title, xx+2, yy+hh+14 );
     }
 }
