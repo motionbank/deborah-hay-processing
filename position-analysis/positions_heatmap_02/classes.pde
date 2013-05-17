@@ -31,9 +31,10 @@ class VideoEventGroup
 
 class SceneHeatMap
 {
-    int res = 50;
+    int res = 20;
     
     float[] values;
+    ArrayList colors = new ArrayList();
     int originalValuesTotal = -1;
     float valueMax = -1;
     int valueMaxX = -1, valueMaxY = -1;
@@ -87,13 +88,19 @@ class SceneHeatMap
         for ( int i = 0, l = points.length; i < cells.length; i++ )
         {
             values[i] = cells[i] / (float)l;
+            
+            if (colors.indexOf(values[i]) == -1) colors.add(values[i]);
+            
             if ( valueMax < values[i] )
             {
                 valueMaxX = i % res;
                 valueMaxY = i / res;
                 valueMax = values[i];
             }
+            
+            java.util.Collections.sort(colors);
         }
+        
         
         originalValuesTotal = points.length;
     }
@@ -110,6 +117,7 @@ class SceneHeatMap
             {
                 val = values[ix + iy*res];
                 
+                /*
                 fill( 255 - ((val / valueMax) * 255) );
                 if ( val == 0 )
                     stroke( 0 );
@@ -118,8 +126,24 @@ class SceneHeatMap
                 if ( ix == valueMaxX && iy == valueMaxY )
                     stroke( 255, 0, 0 );
                 rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
+                */
+                
+                float c = colors.indexOf(val);
+                noStroke();
+                fill( 255 - ((c / colors.size()) * 255) );
+                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
             }
         }
+        
+        
+        filter(BLUR, 6);
+        filter(POSTERIZE, 10);
+        filter(BLUR, 1);
+        
+        
+        stroke(0);
+        noFill();
+        rect(xx,yy,ww,hh);
         
         fill( 0 );
         text( title, xx+2, yy+hh+14 );

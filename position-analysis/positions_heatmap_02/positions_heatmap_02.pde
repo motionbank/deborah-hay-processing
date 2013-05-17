@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 
 final int PIECE_ID = 3;
 final boolean isLocal = true;
-final boolean mbLocal = false;
+final boolean mbLocal = true;
 final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
 String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionbank/_data/";
 String POSITION_DATA_DIR = "paths/";
@@ -35,7 +35,7 @@ Date timeMin, timeMax;
 void setup () 
 {
   size( 1200, 900 );
-
+    smooth();
   groups = new VideoEventGroup[0];
 
   api = new PieceMakerApi(this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com" );
@@ -51,10 +51,10 @@ void draw ()
   {
     if ( groups[currentGroup] != null )
     {
-      fill( 0 );
-      text( groups[currentGroup].video.getTitle(), 5, 15 );
+      //fill( 0 );
+      //text( groups[currentGroup].video.getTitle(), 5, 15 );
 
-      groups[currentGroup].heatMaps[currentHeatMap].draw( 250, 25, 200, 200 );
+      //groups[currentGroup].heatMaps[currentHeatMap].draw( 250, 25, 200, 200 );
       groups[currentGroup].videoHeatMap.draw( 5, 25, 200, 200 );
     }
   }
