@@ -7,9 +7,14 @@ void videosLoaded ( Videos videos )
         tracks3D = new ArrayList();
         sceneNames = new ArrayList();
         clusters = new ArrayList();
+        
+        println( selTimeFrom + " " + selTimeTo );
     
         for ( Video v : videos.videos )
         {
+            if ( v.getFinishedAt().getTime() < selTimeFrom.getTime() || 
+                 v.getHappenedAt().getTime() > selTimeTo.getTime() ) continue;
+                 
             if ( v.title.indexOf("_sync_") != -1 )
             {
                 boolean hasCluster = false;

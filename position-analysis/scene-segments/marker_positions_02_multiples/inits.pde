@@ -36,16 +36,18 @@ void loadMarkers ()
     ArrayList<Video> videos = new ArrayList();
     
     java.text.SimpleDateFormat mysqlDateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    
-    db.query(
+    String sql2 = String.format(
         "SELECT * FROM videos AS v JOIN video_recordings AS r ON r.video_id = v.id AND r.piece_id IN (%s) "+
         "WHERE ( NOT v.vid_type LIKE '%s' ) AND ( v.title LIKE '%s' OR v.title LIKE '%s' ) "+
-            "AND recorded_at > UNIX_TIMESTAMP('2011-03-01 0:0:0') AND recorded_at < UNIX_TIMESTAMP('2011-05-01 0:0:0')"+
+            "AND recorded_at > %d AND recorded_at < %d "+
         "ORDER BY v.recorded_at",
         piece.getId(),
         "%other%",
-        "%Center%", "%AJA%"
-    );
+        "%Center%", "%AJA%",
+        selTimeFrom.getTime() / 1000L, 
+        selTimeTo.getTime() / 1000L );
+    println( sql2 );
+    db.query( sql2 );
     while ( db.next() )
     {
         Video v = new Video();

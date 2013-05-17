@@ -23,7 +23,7 @@ int clustersToLoad = 0;
 
 boolean showAll = false;
 boolean savePDF = false;
-boolean loadFromDb = true; // false == load from API
+boolean loadFromDb = false; // false == load from API
 
 VideoTimeCluster currCluster = null;
 int currClusterIndex = 0, exportClusterIndex = 0;
@@ -41,7 +41,8 @@ ArrayList<String> sceneNames;
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 float leftOffset = 0;
 
-String selPerformer = null;//"juliettemapp";
+String selPerformer = "jeaninedurning";
+Date selTimeFrom, selTimeTo;
 
 void setup () 
 {
@@ -54,6 +55,11 @@ void setup ()
     
     Interactive.setActive( false );
     
+    Calendar cal = Calendar.getInstance(); cal.set(2011,3,22,9,0);
+    selTimeFrom = cal.getTime();
+    cal.set(2011,3,22,11,0);
+    selTimeTo = cal.getTime();
+    
     if ( loadFromDb ) {
         new Thread(){
             public void run () {
@@ -64,7 +70,8 @@ void setup ()
             }
         }.start();
     } else {
-        api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", true ? "http://localhost:3000/" : "http://notimetofly.herokuapp.com/" );
+        api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", 
+                                 true ? "http://localhost:3000/" : "http://notimetofly.herokuapp.com/" );
         api.loadVideosForPiece( 3, api.createCallback( "videosLoaded" ) );
     }
     
