@@ -3,6 +3,7 @@ class VideoEventGroup
     Video video;
     org.piecemaker.models.Event[] events;
     SceneHeatMap[] heatMaps;
+    SceneHeatMap groupHeatMap;
     
     VideoEventGroup ( Video v, org.piecemaker.models.Event[] es )
     {
@@ -24,6 +25,21 @@ class VideoEventGroup
                 return ((org.piecemaker.models.Event)a).getHappenedAt().compareTo( ((org.piecemaker.models.Event)a).getHappenedAt() );
             }
         });
+    }
+    
+    void generateGroupHeatMap () 
+    {
+        groupHeatMap = new SceneHeatMap( heatMapGrid, null );
+        groupHeatMap.valueMax = -1;
+        for ( SceneHeatMap h : heatMaps )
+        {
+           for ( int i = 0; i < h.values.length; i++ )
+           {
+               float v = h.values[i] / heatMaps.length;
+               groupHeatMap.values[i] += v;
+               groupHeatMap.valueMax = max(groupHeatMap.valueMax, v);
+           } 
+        }
     }
 }
 

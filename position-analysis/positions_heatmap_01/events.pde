@@ -38,12 +38,17 @@ void keyPressed ()
             {
                 showAll = !showAll;
             }
+            else if ( key == 'g' )
+            {
+                showGrouped = !showGrouped;
+            }
         }
     }
 }
 
 void nextHeatMap () {
     currentHeatMap++;
+    if ( showAll && showGrouped ) currentHeatMap = groups[currentGroup].heatMaps.length;
     if ( currentHeatMap >= groups[currentGroup].heatMaps.length )
     {
         currentGroup++;
@@ -55,7 +60,7 @@ void nextHeatMap () {
             }
         }
         currentHeatMap = 0;
-        if ( showAll && exportAll ) {
+        if ( showAll && !showGrouped && exportAll ) {
             exportAll = false;
         }
     }

@@ -16,10 +16,10 @@ import java.text.SimpleDateFormat;
 final int PIECE_ID = 3;
 final boolean isLocal = true;
 final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
-final String performer = null; // "Ros"
+final String performer = null; // "Ros" or null for all
 
 PieceMakerApi api;
-boolean loaded = false, doAverage = true, exportAll = false, showAll = true;
+boolean loaded = false, doAverage = true, exportAll = false, showAll = true, showGrouped = false;
 String loadingMessage = "Loading piece";
 int groupsLoading = 0, colorMode = 1;
 
@@ -34,7 +34,8 @@ Date timeMin, timeMax;
 
 void setup () 
 {
-    size( 640, 640 );
+    size( 1000, 700 );
+    heatMapSize = (int)((height / 14.0) * 12);
     
     groups = new VideoEventGroup[0];
 
@@ -54,32 +55,44 @@ void draw ()
         {
             if ( showAll ) 
             {
-                float[] values = new float[heatMapGrid*heatMapGrid];
-                int groupsTotal = 0;
-                for ( VideoEventGroup g : groups )
+                // across one scene in all groups
+                if ( !showGrouped )
                 {
-                    if ( currentHeatMap < g.heatMaps.length && g.heatMaps[currentHeatMap] != null )
+                    float[] values = new float[heatMapGrid*heatMapGrid];
+                    int groupsTotal = 0;
+                    for ( VideoEventGroup g : groups )
                     {
-                        for ( int i = 0; i < values.length; i++ )
+                        if ( currentHeatMap < g.heatMaps.length && g.heatMaps[currentHeatMap] != null )
                         {
-                            values[i] += g.heatMaps[currentHeatMap].values[i];
+                            for ( int i = 0; i < values.length; i++ )
+                            {
+                                values[i] += g.heatMaps[currentHeatMap].values[i];
+                            }
+                            groupsTotal++;
                         }
-                        groupsTotal++;
                     }
+                    float valueMax = -1;
+                    for ( int i = 0; groupsTotal > 0 && i < values.length; i++ )
+                    {
+                        values[i] /= groupsTotal;
+                        valueMax = max( valueMax, values[i] );
+                    }
+                    drawHeatMap(
+                        values, valueMax, heatMapGrid,
+                        width/2-(heatMapSize/2), 
+                        height/2-(heatMapSize/2), 
+                        heatMapSize, 
+                        heatMapSize 
+                    );
+                } else {
+                    groups[currentGroup].groupHeatMap.draw(
+                        width/2-(heatMapSize/2), 
+                        height/2-(heatMapSize/2), 
+                        heatMapSize, 
+                        heatMapSize
+                    );
                 }
-                float valueMax = -1;
-                for ( int i = 0; groupsTotal > 0 && i < values.length; i++ )
-                {
-                    values[i] /= groupsTotal;
-                    valueMax = max( valueMax, values[i] );
-                }
-                drawHeatMap(
-                    values, valueMax, heatMapGrid,
-                    width/2-(heatMapSize/2), 
-                    height/2-(heatMapSize/2), 
-                    heatMapSize, 
-                    heatMapSize 
-                );
+                
                 if ( !exportAll )
                 {
                     fill( 0 );
@@ -112,12 +125,15 @@ void draw ()
             if ( exportAll ) 
             {
                 String t = groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle();
+                t = t.replaceAll("[^-a-zA-Z0-9]+", "-");
+                
                 String recording = "";
-                if ( !showAll )
+                if ( !showAll || showGrouped )
                 {
                     recording = groups[currentGroup].video.getTitle().split("_")[0];
                 }
-                saveFrame( "output/" + (showAll ? (performer == null ? "all" : performer) : recording) + "_" + t.replaceAll("[^-a-zA-Z0-9]+", "-")  + ".png" );
+                String name = "output/" + (showAll && !showGrouped ? (performer == null ? "all" : performer) : recording) + (showGrouped ? "" : "_" + t) + ".png";
+                saveFrame( name );
                 nextHeatMap();
             }
         }
@@ -161,22 +177,14 @@ void drawHeatMap ( float[] values, float valueMax, int resolution, int xx, int y
                 c = 255 - (int)((colors.indexOf(val) / (float)colors.size()) * 255);
             }
             fill( c );
-            
-//            if ( val == 0 )
-//                stroke( 200 );
-//            else
-//                stroke( 0, 150, 255 );
                 
-//            if ( ix == valueMaxX && iy == valueMaxY )
-//                stroke( 255, 0, 0 );
-                
-            rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
+            rect( xx + ix*cellWidth, yy + (hh - cellHeight - iy*cellHeight), cellWidth, cellHeight );
         }
     }
     
     if ( doAverage ) {
-        filter( BLUR, 10 );
-        filter( POSTERIZE, 10 );
+        filter( BLUR, 15 );
+        filter( POSTERIZE, 7 );
     }
     
     fill( 0, 15 );

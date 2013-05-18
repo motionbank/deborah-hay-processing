@@ -77,6 +77,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     }
     
     group.sortEvents();
+    group.generateGroupHeatMap();
     
     groups = (VideoEventGroup[])append( groups, group );
     groupsLoading--;
