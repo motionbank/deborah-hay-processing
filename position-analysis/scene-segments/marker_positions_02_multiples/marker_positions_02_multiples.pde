@@ -41,7 +41,7 @@ ArrayList<String> sceneNames;
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 float leftOffset = 0;
 
-String selPerformer = null; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
+String selPerformer = "juliettemapp"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
 Date selTimeFrom, selTimeTo;
 
 void setup () 
@@ -260,7 +260,7 @@ void draw ()
         textFont( stageFont );
         textSize( 22 );
         textAlign( CENTER );
-        text( "Loading", width/2, height/2 );
+        text( "Loading ("+clustersToLoad+")", width/2, height/2 );
     }
 }
 

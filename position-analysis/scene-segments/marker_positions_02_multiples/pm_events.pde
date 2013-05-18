@@ -47,8 +47,34 @@ void eventsLoaded ( Events events, VideoTimeCluster c )
 {
     String prevSceneName = null;
     
+    if ( selPerformer != null )
+    {
+        for ( org.piecemaker.models.Event e : events.events )
+        {
+            if ( e.getEventType().equals("scene") ) 
+            {
+                if ( e.performers == null || e.performers.length == 0 || !e.performers[0].equals(selPerformer) ) 
+                { 
+                    clustersToLoad--;
+                    if ( clustersToLoad == 0 )
+                    {
+                        loading = false;
+                        currCluster = clusters.get(0);
+                    }
+                    return;
+                }
+            }
+        }
+    }
+    
     for ( org.piecemaker.models.Event e : events.events )
     {
+        if ( e.getEventType().equals("scene") && selPerformer != null ) 
+        {
+            if ( e.performers == null || e.performers.length == 0 || e.performers[0].equals(selPerformer) ) 
+                return;
+        }
+        
         c.addEvent( e );
         
         if ( e.getEventType().equals("data") ) 
