@@ -23,7 +23,7 @@ int clustersToLoad = 0;
 
 boolean showAll = false;
 boolean savePDF = false;
-boolean loadFromDb = false; // false == load from API
+boolean loadFromDb = true; // false == load from API
 
 VideoTimeCluster currCluster = null;
 int currClusterIndex = 0, exportClusterIndex = 0;
@@ -41,7 +41,7 @@ ArrayList<String> sceneNames;
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 float leftOffset = 0;
 
-String selPerformer = "jeaninedurning";
+String selPerformer = null; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
 Date selTimeFrom, selTimeTo;
 
 void setup () 
@@ -55,9 +55,9 @@ void setup ()
     
     Interactive.setActive( false );
     
-    Calendar cal = Calendar.getInstance(); cal.set(2011,3,22,9,0);
+    Calendar cal = Calendar.getInstance(); cal.set(2011,3,17,9,0);
     selTimeFrom = cal.getTime();
-    cal.set(2011,3,22,11,0);
+    cal.set(2011,3,26,11,0);
     selTimeTo = cal.getTime();
     
     if ( loadFromDb ) {
@@ -127,10 +127,13 @@ void draw ()
         fill( 240 );
         rect( s, height-s, (12*s), -(12*s) );
         
-        fill( 210 );
-        textAlign( CENTER );
-        textSize( 11 );
-        text( sceneFrom + " - " + sceneTo, s+(12*s)/2, height-(s/2) );
+        if ( !exporting )
+        {
+            fill( 210 );
+            textAlign( CENTER );
+            textSize( 11 );
+            text( sceneFrom + " - " + sceneTo, s+(12*s)/2, height-(s/2) );
+        }
         
         for ( VideoTimeCluster c : clusters ) 
         {
@@ -215,7 +218,7 @@ void draw ()
                 String performer = evFrom.performers != null && evFrom.performers.length > 0 ? evFrom.performers[0] : null;
                 if ( performer == null ) performer = evTo.performers != null && evTo.performers.length > 0 ? evTo.performers[0] : null;
                 if ( performer == null ) performer = c.videos.get(0).title;
-                if ( performer != null )
+                if ( performer != null && !exporting )
                 {
                     fill( 210 );
                     textAlign( CENTER );

@@ -117,6 +117,7 @@ class ThreeDPositionTrack
         
         if ( from < 0 ) from = 0;
         if ( from+len >= x.length ) len = (x.length-1)-from;
+        if ( len <= 0 ) return;
         
         Point2D in[] = new Point2D[len/2];
         Point2D hull[] = new Point2D[in.length];
