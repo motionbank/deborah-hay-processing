@@ -16,11 +16,12 @@ import java.text.SimpleDateFormat;
 final int PIECE_ID = 3;
 final boolean isLocal = true;
 final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
+final String performer = null; // "Ros"
 
 PieceMakerApi api;
-boolean loaded = false;
+boolean loaded = false, doAverage = true, exportAll = false, showAll = true;
 String loadingMessage = "Loading piece";
-int groupsLoading = 0;
+int groupsLoading = 0, colorMode = 1;
 
 VideoEventGroup[] groups;
 int currentGroup = 0;
@@ -33,7 +34,7 @@ Date timeMin, timeMax;
 
 void setup () 
 {
-    size( 1200, 900 );
+    size( 640, 640 );
     
     groups = new VideoEventGroup[0];
 
@@ -51,10 +52,7 @@ void draw ()
     {
         if ( groups[currentGroup] != null )
         {
-            fill( 0 );
-            text( groups[currentGroup].video.getTitle(), 5, 15 );
-            
-            if ( true ) 
+            if ( showAll ) 
             {
                 float[] values = new float[heatMapGrid*heatMapGrid];
                 int groupsTotal = 0;
@@ -82,11 +80,14 @@ void draw ()
                     heatMapSize, 
                     heatMapSize 
                 );
-                fill( 0 );
-                text( groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle(), 
-                      width/2-(heatMapSize/2)-2, 
-                      height/2-(heatMapSize/2)+heatMapSize+14
-                );
+                if ( !exportAll )
+                {
+                    fill( 0 );
+                    text( groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle(), 
+                          width/2-(heatMapSize/2)-2, 
+                          height/2-(heatMapSize/2)+heatMapSize+14
+                    );
+                }
             }
             else
             {
@@ -96,6 +97,28 @@ void draw ()
                     heatMapSize, 
                     heatMapSize 
                 );
+                
+                if ( !exportAll )
+                {
+                    fill( 0 );
+                    text( groups[currentGroup].video.getTitle(), 5, 15 );
+                    text( groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle(), 
+                          width/2-(heatMapSize/2)-2, 
+                          height/2-(heatMapSize/2)+heatMapSize+14
+                    );
+                }
+            }
+            
+            if ( exportAll ) 
+            {
+                String t = groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle();
+                String recording = "";
+                if ( !showAll )
+                {
+                    recording = groups[currentGroup].video.getTitle().split("_")[0];
+                }
+                saveFrame( "output/" + (showAll ? (performer == null ? "all" : performer) : recording) + "_" + t.replaceAll("[^-a-zA-Z0-9]+", "-")  + ".png" );
+                nextHeatMap();
             }
         }
     }
@@ -108,9 +131,23 @@ void draw ()
 
 void drawHeatMap ( float[] values, float valueMax, int resolution, int xx, int yy, int ww, int hh )
 {
+    ArrayList colors = null;
+    if ( colorMode == 1 )
+    {
+        colors = new ArrayList();
+        for ( int i = 0; i < values.length; i++ )
+        {
+            if (colors.indexOf(values[i]) == -1) colors.add(values[i]);
+        }
+        java.util.Collections.sort(colors);
+    }
+    
+    
     float cellWidth  = ww / (float)resolution;
     float cellHeight = hh / (float)resolution;
     float val;
+    
+    noStroke();
     
     for ( int ix = 0; ix < resolution; ix++ )
     {
@@ -118,12 +155,17 @@ void drawHeatMap ( float[] values, float valueMax, int resolution, int xx, int y
         {
             val = values[ix + iy*resolution];
             
-            fill( 255 - ((val / valueMax) * 255) );
+            int c = 255 - (int)((val / valueMax) * 255);
+            if ( colorMode == 1 )
+            {
+                c = 255 - (int)((colors.indexOf(val) / (float)colors.size()) * 255);
+            }
+            fill( c );
             
-            if ( val == 0 )
-                stroke( 200 );
-            else
-                stroke( 0, 150, 255 );
+//            if ( val == 0 )
+//                stroke( 200 );
+//            else
+//                stroke( 0, 150, 255 );
                 
 //            if ( ix == valueMaxX && iy == valueMaxY )
 //                stroke( 255, 0, 0 );
@@ -131,4 +173,12 @@ void drawHeatMap ( float[] values, float valueMax, int resolution, int xx, int y
             rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
         }
     }
+    
+    if ( doAverage ) {
+        filter( BLUR, 10 );
+        filter( POSTERIZE, 10 );
+    }
+    
+    fill( 0, 15 );
+    rect( xx+cellWidth, yy+cellHeight, ww-2*cellWidth, hh-2*cellHeight );
 }

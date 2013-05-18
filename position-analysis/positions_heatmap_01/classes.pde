@@ -98,28 +98,37 @@ class SceneHeatMap
     
     void draw ( int xx, int yy, int ww, int hh )
     {
-        float cellWidth  = ww / (float)resolution;
-        float cellHeight = hh / (float)resolution;
-        float val;
+        drawHeatMap( values, valueMax, resolution, xx, yy, ww, hh );
         
-        for ( int ix = 0; ix < resolution; ix++ )
-        {
-            for ( int iy = 0; iy < resolution; iy++ )
-            {
-                val = values[ix + iy*resolution];
-                
-                fill( 255 - ((val / valueMax) * 255) );
-                if ( val == 0 )
-                    stroke( 0 );
-                else
-                    stroke( 0, 150, 255 );
-                if ( ix == valueMaxX && iy == valueMaxY )
-                    stroke( 255, 0, 0 );
-                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
-            }
-        }
-        
-        fill( 0 );
-        text( scene.getTitle(), xx+2, yy+hh+14 );
+//        float cellWidth  = ww / (float)resolution;
+//        float cellHeight = hh / (float)resolution;
+//        float val;
+//        
+//        noStroke();
+//        
+//        for ( int ix = 0; ix < resolution; ix++ )
+//        {
+//            for ( int iy = 0; iy < resolution; iy++ )
+//            {
+//                val = values[ix + iy*resolution];
+//                
+//                fill( 255 - ((val / valueMax) * 255) );
+//                
+////                if ( val == 0 )
+////                    stroke( 0 );
+////                else
+////                    stroke( 0, 150, 255 );
+////                if ( ix == valueMaxX && iy == valueMaxY )
+////                    stroke( 255, 0, 0 );
+//                    
+//                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
+//            }
+//        }
+//        
+//        filter( BLUR, 15 );
+//        filter( POSTERIZE, 10 );
+//        
+//        fill( 0 );
+//        text( scene.getTitle(), xx+2, yy+hh+14 );
     }
 }

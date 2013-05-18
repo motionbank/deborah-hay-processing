@@ -7,7 +7,8 @@ void videosLoaded ( Videos videos )
 {
     for ( Video v : videos.videos )
     {
-        if ( v.getTitle().indexOf( "_Center_Small" ) != -1 )
+        if ( v.getTitle().indexOf( "_Center_Small" ) != -1 && 
+             (performer == null || v.getTitle().indexOf( performer ) != -1) )
         {
             api.loadEventsByTypeForVideo( v.id, "scene", api.createCallback( "eventsLoaded", v ) );
             loadingMessage = "Loading scene events for videos";
@@ -82,7 +83,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     
     loadingMessage = "Loading data ... still " + groupsLoading + " more coming";
     
-    if ( groupsLoading == 0 )
+    if ( groupsLoading == 0 && groups.length >= 7 )
     {
         java.util.Arrays.sort(groups, new java.util.Comparator(){
             public int compare ( Object a, Object b ) {

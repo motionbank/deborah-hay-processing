@@ -107,7 +107,7 @@ class SceneHeatMap
     
     void draw ( int xx, int yy, int ww, int hh )
     {
-        if (colors.size() == 0) {
+        if ( colors.size() == 0 ) {
             for ( int i = 0; i < values.length; i++ )
             {
                 if (colors.indexOf(values[i]) == -1) colors.add(values[i]);
@@ -119,36 +119,26 @@ class SceneHeatMap
         float cellHeight = hh / (float)res;
         float val;
         
+        noStroke();
+        
         for ( int ix = 0; ix < res; ix++ )
         {
             for ( int iy = 0; iy < res; iy++ )
             {
                 val = values[ix + iy*res];
                 
-                /*
-                fill( 255 - ((val / valueMax) * 255) );
-                if ( val == 0 )
-                    stroke( 0 );
-                else
-                    stroke( 0, 150, 255 );
-                if ( ix == valueMaxX && iy == valueMaxY )
-                    stroke( 255, 0, 0 );
-                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
-                */
-                
                 float c = colors.indexOf(val);
-                noStroke();
-                fill( 240 - ((c / colors.size()) * 240) );
+                fill( 255 - ((c / colors.size()) * 255) );
                 rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
             }
         }
         
         
-        filter(BLUR, 15);
-        filter(POSTERIZE, 10);
+//        filter(BLUR, 15);
+//        filter(POSTERIZE, 10);
         
-        fill( 0, 15 );
-        rect(xx,yy,ww,hh);
+        //fill( 0, 15 );
+        //rect( xx+cellWidth, yy+cellWidth, ww-2*cellWidth, hh-2*cellWidth );
         
         //fill( 0 );
         //text( title, xx+2, yy+hh+14 );
