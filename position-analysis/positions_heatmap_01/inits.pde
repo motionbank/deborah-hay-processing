@@ -8,7 +8,7 @@ void videosLoaded ( Videos videos )
     for ( Video v : videos.videos )
     {
         if ( v.getTitle().indexOf( "_Center_Small" ) != -1 && 
-             (performer != null && v.getTitle().indexOf( performer ) != -1 ) )
+             (performer == null || v.getTitle().indexOf( performer ) != -1) )
         {
             api.loadEventsByTypeForVideo( v.id, "scene", api.createCallback( "eventsLoaded", v ) );
             loadingMessage = "Loading scene events for videos";

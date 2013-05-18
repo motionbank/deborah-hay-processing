@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 final int PIECE_ID = 3;
 final boolean isLocal = true;
 final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
-final String performer = "Juliette";
+final String performer = null; // "Ros"
 
 PieceMakerApi api;
 boolean loaded = false, doAverage = true, exportAll = false, showAll = true;
@@ -117,7 +117,7 @@ void draw ()
                 {
                     recording = groups[currentGroup].video.getTitle().split("_")[0];
                 }
-                saveFrame( "output/" + (showAll ? performer : recording) + "_" + t.replaceAll("[^-a-zA-Z0-9]+", "-")  + ".png" );
+                saveFrame( "output/" + (showAll ? (performer == null ? "all" : performer) : recording) + "_" + t.replaceAll("[^-a-zA-Z0-9]+", "-")  + ".png" );
                 nextHeatMap();
             }
         }
