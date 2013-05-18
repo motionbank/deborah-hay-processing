@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 
 final int PIECE_ID = 3;
 final boolean isLocal = true;
-final boolean mbLocal = true;
+final boolean mbLocal = false;
 final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
 String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionbank/_data/";
 String POSITION_DATA_DIR = "paths/";
@@ -35,7 +35,7 @@ String performer = "Ros";
 
 SceneHeatMap[] multMaps;
 
-boolean saveAll = true;
+boolean saveAll = false;
 
 Date timeMin, timeMax;
 
