@@ -66,25 +66,25 @@ void draw ()
 
       //groups[currentGroup].heatMaps[currentHeatMap].draw( 250, 25, 200, 200 );
       int w = 360;
-      //groups[currentGroup].videoHeatMap.draw( floor((width-w)/2.0), floor((height-w)/2.0), w, w );
-      multMaps[currentSeg].draw( floor((width-w)/2.0), floor((height-w)/2.0), w, w );
+      groups[currentGroup].videoHeatMap.draw( floor((width-w)/2.0), floor((height-w)/2.0), w, w );
+      //multMaps[currentSeg].draw( floor((width-w)/2.0), floor((height-w)/2.0), w, w );
     }
-    
-    if (saveAll) {
-      String t = multMaps[currentSeg].title;
-      saveFrame("saves4_c/" + performer + "_" + t.replaceAll("[^-a-zA-Z0-9]+","-")  + ".png");
-      currentSeg++;
-      if ( currentSeg >= multMaps.length ) exit();
-      //redraw();
-    }
-    
     
 //    if (saveAll) {
-//      String t = groups[currentGroup].video.getTitle();
-//      saveFrame("saves5/" + t.substring(0,t.indexOf("_"))  + ".png");
-//      currentGroup++;
-//      if ( currentGroup >= groups.length ) exit();
+//      String t = multMaps[currentSeg].title;
+//      saveFrame("saves4_c/" + performer + "_" + t.replaceAll("[^-a-zA-Z0-9]+","-")  + ".png");
+//      currentSeg++;
+//      if ( currentSeg >= multMaps.length ) exit();
+//      //redraw();
 //    }
+    
+    
+    if (saveAll) {
+      String t = groups[currentGroup].video.getTitle();
+      saveFrame("saves5/" + t.substring(0,t.indexOf("_"))  + ".png");
+      currentGroup++;
+      if ( currentGroup >= groups.length ) exit();
+    }
   }
   else
   {
