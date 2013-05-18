@@ -39,6 +39,7 @@ class SceneHeatMap
     float valueMax = -1;
     int valueMaxX = -1, valueMaxY = -1;
     
+    
     String title;
     
     SceneHeatMap ( String t )
@@ -48,8 +49,8 @@ class SceneHeatMap
     }
     
     void generate ( float[][] points )
-    {
-        // find extremata
+    {    
+        
         println(points[0].length);
         float[] pMins = new float[points[0].length];
         float[] pMaxs = new float[pMins.length];
@@ -75,7 +76,6 @@ class SceneHeatMap
     void generate ( float[][] points, float[] pMins, float[] pMaxs )
     {
         // count hits per cell
-        println(points[0].length);
         int[] cells = new int[res*res];
         
         for ( int i = 0; i < points.length; i++ )
@@ -107,6 +107,14 @@ class SceneHeatMap
     
     void draw ( int xx, int yy, int ww, int hh )
     {
+        if (colors.size() == 0) {
+            for ( int i = 0; i < values.length; i++ )
+            {
+                if (colors.indexOf(values[i]) == -1) colors.add(values[i]);
+            }
+            java.util.Collections.sort(colors);
+        }
+        
         float cellWidth  = ww / (float)res;
         float cellHeight = hh / (float)res;
         float val;
@@ -130,7 +138,7 @@ class SceneHeatMap
                 
                 float c = colors.indexOf(val);
                 noStroke();
-                fill( 255 - ((c / colors.size()) * 255) );
+                fill( 240 - ((c / colors.size()) * 240) );
                 rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
             }
         }
