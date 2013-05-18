@@ -117,8 +117,8 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
         multMaps = new SceneHeatMap[groups[0].heatMaps.length];
         
         // 25
-        for (int i=0; i<multMaps.length; i++) {
-
+        for (int i=0; i<multMaps.length; i++) 
+        {
             multMaps[i] = new SceneHeatMap(groups[0].events[i].getTitle());
             multMaps[i].values = new float[groups[0].heatMaps[0].values.length];
             
@@ -128,10 +128,14 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
                SceneHeatMap hm = groups[j].heatMaps[i];
                
                // res * res
+               float vMax = -1;
                for (int k=0; k<hm.values.length; k++) 
                {
-                  multMaps[i].values[k] += hm.values[k] / (float)groups.length;
+                  float v = hm.values[k];
+                  vMax = Math.max( v, vMax );
+                  multMaps[i].values[k] += v;
                }
+               multMaps[i].valueMax = vMax;
             }
         }
         
