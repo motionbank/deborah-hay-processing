@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 
 final int PIECE_ID = 3;
 final boolean isLocal = true;
-final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
+final String TRACK_3D_ROOT = ( isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/" ) + "dhay/data";
 final String performer = null; // "Ros" or null for all
 
 PieceMakerApi api;
@@ -29,6 +29,24 @@ int currentHeatMap;
 
 int heatMapSize = 400;
 int heatMapGrid = 28;
+
+static HashMap<String,Integer> moBaColors, moBaColorsHigh, moBaColorsLow; 
+static {
+    moBaColors     = new HashMap();
+    moBaColorsLow  = new HashMap();
+    
+    moBaColors.put(     "Ros", 0xFF1E8ED4 );       // blue, ros
+    moBaColorsLow.put(  "Ros", 0xFF254966 );
+    
+    moBaColors.put(     "Janine", 0xFFE04646 ); // red, jeanine 
+    moBaColorsLow.put(  "Janine", 0xFF803B3B );
+    
+    moBaColors.put(     "Juliette", 0xFF349C00 );   // green, juliette
+    moBaColorsLow.put(  "Juliette", 0xFF2B6100 );
+    
+    moBaColors.put( null, 0xFFDEDEDE );             // gray, all
+    moBaColors.put( "background", 0xFFEDEDED );     
+}
 
 Date timeMin, timeMax;
 
@@ -45,28 +63,36 @@ void setup ()
     api.loadVideosForPiece( PIECE_ID, api.createCallback("videosLoaded") );
 }
 
+String currentPerformer = null;
+
 void draw ()
 {
-    background( 255 );
+    background( moBaColors.get("background") );
 
     if ( loaded )
     {
+        currentPerformer = performer;
+            
         if ( groups[currentGroup] != null )
         {
             String name = null;
             
+            String t = groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle();
+            t = t.replaceAll("[^-a-zA-Z0-9]+", "-");
+            
+            String recording = "";
+            if ( !showAll || showGrouped )
+            {
+                recording = groups[currentGroup].video.getTitle().split("_")[0];
+                int sub = int( recording.substring(2,3) );
+                if ( sub < 2 ) currentPerformer = "Ros";
+                else if ( sub < 4 ) currentPerformer = "Juliette";
+                else currentPerformer = "Janine";
+            }
+            name = "output/" + (showAll && !showGrouped ? (performer == null ? "all" : performer) : recording) + (showGrouped ? "" : "_" + t);
+            
             if ( exportAll ) 
             {
-                String t = groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle();
-                t = t.replaceAll("[^-a-zA-Z0-9]+", "-");
-                
-                String recording = "";
-                if ( !showAll || showGrouped )
-                {
-                    recording = groups[currentGroup].video.getTitle().split("_")[0];
-                }
-                name = "output/" + (showAll && !showGrouped ? (performer == null ? "all" : performer) : recording) + (showGrouped ? "" : "_" + t);
-                
                 //beginRecord( PDF, name + ".pdf" );
             }
             
@@ -167,12 +193,19 @@ void drawHeatMap ( float[] values, float valueMax, int resolution, int xx, int y
         java.util.Collections.sort(colors);
     }
     
-    
     float cellWidth  = ww / (float)resolution;
     float cellHeight = hh / (float)resolution;
     float val;
     
     noStroke();
+    fill( moBaColors.get(null) );
+    rect( xx+cellWidth, yy+cellHeight, ww-2*cellWidth, hh-2*cellHeight );
+    
+    PGraphics pg = createGraphics( width, height );
+    pg.beginDraw();
+    pg.background( 255 );
+    
+    pg.noStroke();
     
     for ( int ix = 0; ix < resolution; ix++ )
     {
@@ -180,22 +213,46 @@ void drawHeatMap ( float[] values, float valueMax, int resolution, int xx, int y
         {
             val = values[ix + iy*resolution];
             
-            int c = 255 - (int)((val / valueMax) * 255);
+            int c = (int)((val / valueMax) * 255);
+            
             if ( colorMode == 1 )
             {
-                c = 255 - (int)((colors.indexOf(val) / (float)colors.size()) * 255);
+                c = (int)((colors.indexOf(val) / (float)colors.size()) * 255);
             }
-            fill( c );
+            
+            pg.fill( 255 - c );
                 
-            rect( xx + ix*cellWidth, yy + (hh - cellHeight - iy*cellHeight), cellWidth, cellHeight );
+            pg.rect( xx + ix*cellWidth, yy + (hh - cellHeight - iy*cellHeight), cellWidth, cellHeight );
         }
     }
     
     if ( doAverage ) {
-        filter( BLUR, 15 );
-        filter( POSTERIZE, 7 );
+        pg.filter( BLUR, 15 );
+        pg.filter( POSTERIZE, 7 );
     }
     
-    fill( 0, 15 );
-    rect( xx+cellWidth, yy+cellHeight, ww-2*cellWidth, hh-2*cellHeight );
+    pg.endDraw();
+    
+    if ( currentPerformer != null ) 
+    {
+        pg.loadPixels();
+        
+        int col = moBaColors.get(currentPerformer);
+        
+        for ( int i = 0; i < pg.pixels.length; i++ )
+        {
+            if ( pg.pixels[i] != 0xFFFFFFFF ) 
+            {
+                float s = (pg.pixels[i] & 0xFF) / 255.0;
+                pg.pixels[i] = lerpColor( col, 0xFFFFFFFF, s );
+            }
+        }
+        
+        pg.updatePixels();
+    }
+    
+    blendMode( MULTIPLY );
+    image( pg, 0, 0 );
+    
+    blendMode( BLEND );
 }

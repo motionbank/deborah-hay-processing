@@ -39,6 +39,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     
     // using the 50 fps version
     track3DFile = track3DFile.replace( ".txt", "_com.txt" );
+    track3DFile = track3DFile.replace( "_BackgroundSubstracted", "_withBackgroundAdjustment" );
     
     String[] lines = loadStrings( TRACK_3D_ROOT + "/" + track3DFile );
     org.piecemaker.models.Event e1 = null;
