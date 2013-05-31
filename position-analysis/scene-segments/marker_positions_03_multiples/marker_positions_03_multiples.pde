@@ -39,9 +39,33 @@ String outputBase = "";
 ArrayList<String> sceneNames;
 
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
-float leftOffset = 0;
+boolean withHighlight = true;
 
-String selPerformer = "juliettemapp"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
+float leftOffset = 0, padding = 2, leftOffsetMax;
+
+static HashMap<String,Integer> moBaColors, moBaColorsHigh, moBaColorsLow; 
+static {
+    moBaColors = new HashMap();
+    moBaColorsHigh = new HashMap();
+    moBaColorsLow = new HashMap();
+    
+    moBaColors.put(     "roswarby", 0xFFD9BF41 );       // color( 222, 163, 62 ) yellow, ros
+    moBaColorsHigh.put( "roswarby", 0xFFFBFF00 );
+    moBaColorsLow.put(  "roswarby", 0xFF807026 );
+    
+    moBaColors.put(     "jeaninedurning", 0xFFE06767 ); // color( 224, 103, 103 ) red, jeanine 
+    moBaColorsHigh.put( "jeaninedurning", 0xFFFFB8FF );
+    moBaColorsLow.put(  "jeaninedurning", 0xFF803B3B );
+    
+    moBaColors.put(     "juliettemapp", 0xFF4F9CDB );   // color( 79, 156, 219 ) blue, juliette
+    moBaColorsHigh.put( "juliettemapp", 0xFF00FFFF );
+    moBaColorsLow.put(  "juliettemapp", 0xFF254966 );
+    
+    moBaColors.put( null, 0xFF2D2D2D );             // color( 45 ) gray, all
+}
+HashMap<String,PImage> moBaBacks;
+
+String selPerformer = null; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
 Date selTimeFrom, selTimeTo;
 
 void setup () 
@@ -63,6 +87,7 @@ void setup ()
     if ( loadFromDb ) {
         new Thread(){
             public void run () {
+                initBacks();
                 initDatabase();
                 loadMarkers();
                 currCluster = clusters.get(0);
@@ -92,17 +117,23 @@ void draw ()
         {
             pdfName = outputBase + "/" + 
                       ( asConvexHull ? "hull" : "path" ) + "_" +
-                      ( showAll ? "all-takes" : currCluster.videos.get(1).title.split("_")[0] ) + "_" + 
-                      ( selPerformer != null ? selPerformer + "_" : "" ) +
+                      ( (showAll && !withHighlight) && selPerformer != null ? selPerformer + "_" : "" ) +
+                      ( (showAll && withHighlight) ? "high_" : "") +
+                      ( (showAll && !withHighlight) ? "all-takes" : currCluster.videos.get(1).title.split("_")[0] ) + "_" + 
                       //nf(sceneNames.indexOf(sceneFrom),2) + "-" + 
                       sceneFrom.replaceAll("[^-A-Za-z0-9]+","-"); 
                       //"_" + 
                       //nf(sceneNames.indexOf(sceneTo),2) + "-" + sceneTo.replaceAll("[^-A-Za-z0-9]+","-");
-            beginRecord( PDF, pdfName+".pdf" );
+            
+            //beginRecord( PDF, pdfName+".pdf" );
         }
         
-        float s = height / 14.0;
-        float leftOffsetMax = (width/2)-s-((12/2)*s);
+        //background( moBaColors.get(selPerformer) );
+        int perfColor = moBaColors.get(selPerformer);
+        
+        padding = 2;
+        float s = height / (12 + (2 * padding)); // 12x12 meter stage + padding for export
+        leftOffsetMax = (width/2)-(padding*s)-((12/2)*s);
         
         if ( showInterface ) 
         {
@@ -124,8 +155,10 @@ void draw ()
         
         noStroke();
         
-        fill( 240 );
-        rect( s, height-s, (12*s), -(12*s) );
+        fill( perfColor );
+        float rWidth = (12*s);
+        float backWidth = rWidth * 3;
+        image( moBaBacks.get(selPerformer), (padding*s)-rWidth, height-(padding*s)-rWidth - rWidth, backWidth, backWidth );
         
         if ( !exporting )
         {
@@ -201,12 +234,36 @@ void draw ()
                 }
                 else
                 {
-                    stroke( 0 );
+                    if ( !showAll || (showAll && withHighlight && currCluster == c ) )
+                    {
+                        stroke( 255 );
+                    }
+                    else
+                    {
+                        if ( withHighlight && selPerformer != null ) 
+                            stroke( 0 );
+                        else if ( selPerformer == null )
+                            stroke( moBaColorsLow.get( evFrom.performers[0] ) );
+                        else
+                            stroke( 0 );
+                    }
+                    
+                    if ( (withHighlight && showAll && currCluster == c) || !showAll || selPerformer == null )
+                    {
+                        strokeWeight( 5 );
+                    }
+                    else
+                    {
+                        strokeWeight( 2.5 );
+                    }
+                    
                     noFill();
                 }
                 
+                strokeJoin( ROUND );
+                
                 pushMatrix();
-                translate( s, height-s );
+                translate( padding*s, height-(padding*s) );
                 
                 if ( !asConvexHull )
                     track3D.drawFromTo( fStart, fLen );
@@ -232,7 +289,7 @@ void draw ()
         if ( savePDF )
         {
             savePDF = false;
-            endRecord();
+            //endRecord();
             saveFrame( pdfName+".png" );
         }
         
@@ -242,7 +299,7 @@ void draw ()
         if ( exporting ) 
         {
             savePDF = true;
-            if ( !showAll ) 
+            if ( !showAll || withHighlight ) 
             {
                 nextPerformance();
                 if ( currClusterIndex == 0 ) 
@@ -266,6 +323,8 @@ void draw ()
 
 void keyPressed ()
 {
+    if ( loading ) return;
+    
     if ( key == CODED )
     {
         int ito, ifrom;
@@ -308,6 +367,9 @@ void keyPressed ()
             case 'e':
                 exportAll();
                 break;
+            case 'h':
+                withHighlight = !withHighlight;
+                break;
             case 'c':
                 asConvexHull = !asConvexHull;
                 break;
@@ -333,6 +395,10 @@ void exportAll ()
     
     exporting = true;
     savePDF = true;
+    
+    leftOffset = leftOffsetMax;
+    showInterface = false;
+    Interactive.setActive(false);
 }
 
 void nextScene ()

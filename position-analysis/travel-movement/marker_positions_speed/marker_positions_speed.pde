@@ -2,6 +2,8 @@ import org.piecemaker.api.*;
 import org.piecemaker.models.*;
 import org.piecemaker.collections.*;
 
+import processing.pdf.*;
+
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.Map;
 final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker";
 final int PIECE_ID = 3;
 final String FILE_3D_POS = "Tracked3DPosition.txt";
-final String POS_3D_ROOT = "/Users/fjenett/Desktop/MOBA/IGD_Positions/";
+final String POS_3D_ROOT = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
 
 PieceMakerApi api;
 
@@ -22,7 +24,7 @@ Video[] videos;
 ArrayList<String> trackFiles;
 static String tracksBaseUrl = "http://lab.motionbank.org/dhay/data/";
 static {
-    tracksBaseUrl = "/Users/fjenett/Desktop/MOBA/IGD_Positions/";
+    tracksBaseUrl = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
 }
 
 boolean loading = true;
@@ -97,7 +99,8 @@ outer:
                     float[] speeds2 = new float[width];
                     
                     background( 255 );
-                    stroke( 0 );
+                    fill( 0 );
+                    noStroke();
                     
                     float sx = width / (float)speeds.length;
                     float sy = height / (maxSpeed - minSpeed);
@@ -107,26 +110,44 @@ outer:
                         speeds2[(int)(x*sx)] += ll;
                     }
                     
+                    String name = "saves/" + c.videos.get(0).title;
+                    
+                    beginRecord( PDF, name + ".pdf" );
+                    
+                    beginShape();
                     for ( int x = 0; x < speeds2.length; x++ )
                     {
                         speeds2[x] = (speeds2[x]/speeds.length) * 10;
                         
-                        line( x, height - speeds2[x]*1000, x, height );
+                        //line( x, height - speeds2[x]*1000, x, height );
+                        vertex( x, height - speeds2[x]*1000 );
                     }
+                    endShape();
                     
-                    saveFrame( "saves/" + c.videos.get(0).title + ".png" );
+                    endRecord();
+                    
+                    saveFrame( name + ".png" );
+                    
+                    name = name + "_gauss" ;
                     
                     background( 255 );
+                    
+                    beginRecord( PDF, name + ".pdf" );
                     
                     for ( int t = 0; t < 5; t++ )
                         speeds2 = convolve1D( speeds2, gaussKernel );
                     
+                    beginShape();
                     for ( int x = 0; x < speeds2.length; x++ )
                     {
-                        line( x, height - speeds2[x], x, height );
+                        //line( x, height - speeds2[x], x, height );
+                        vertex( x, height - speeds2[x] );
                     }
+                    endShape();
                     
-                    saveFrame( "output/" + c.videos.get(0).title + "_gauss.png" );
+                    endRecord();
+                    
+                    saveFrame( name + ".png" );
                     
                     //break outer;
                 }
