@@ -32,6 +32,8 @@ int currentGroup = 0;
 int currentSeg = 0;
 int currentHeatMap = 0;
 
+String performer = "Ros";
+
 SceneHeatMap[] multMaps;
 
 boolean saveAll = true;

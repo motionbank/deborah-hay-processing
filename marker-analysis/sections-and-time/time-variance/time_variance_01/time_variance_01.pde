@@ -57,7 +57,7 @@ void setup ()
     recordingsTo = cal.getTimeInMillis();
     
     api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", 
-                             true ? "http://localhost:3000" : "http://notimetofly.herokuapp.com/" );
+                             false ? "http://localhost:3000" : "http://notimetofly.herokuapp.com/" );
     api.loadVideosForPiece( 3, api.createCallback( "videosLoaded", 3 ) );
     
     textFont( createFont( "Lato-Regular", 9 ) );
