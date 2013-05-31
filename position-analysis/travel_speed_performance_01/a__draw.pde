@@ -1,4 +1,4 @@
-void onePerfomerAllPerformances () {    
+void __draw () {    
     
     float maxW = 0;
     for (int i=0; i<videos.length();i++) {
@@ -12,26 +12,25 @@ void onePerfomerAllPerformances () {
     translate(mainX,mainY);
 
     PerformerVideos vids = performers.get(performerIndex);
-
+    
+    colorLight = moBaColorsHigh.get(vids.name);
+    colorDark = moBaColorsLow.get(vids.name);
     
     float absMax = 0;
 
-    for (int i=0; i<vids.length(); i++) {
+
         
         
-        int vidIdx = i;
 
-        float off = ( (mainH - 6*distY) /float(vids.length())) * (i+1) + i*distY;
 
-        VideoObject vid = vids.get(vidIdx);
+        float off = (mainH + distY) / 2;
+
+        VideoObject vid = vids.get(idx);
 
 
         SpeedData speeds = vid.data.speeds;
 
-        float minSpeed = 0;
-        float maxSpeed = 25;
-        
-        maxSpeed = (mainH-6*distY)/7;
+
         
         int currentWidth = floor(mainW*(vid.data.speeds.length()/maxW));
 
@@ -88,31 +87,27 @@ void onePerfomerAllPerformances () {
         endShape(CLOSE);
         
         
+        //###################################################### main graph
         beginShape();
 
-        stroke(colorLight, colorLightOpacity);
+        stroke(colorDark);
         strokeWeight(1);
         noFill();
-
-        if (idx == vidIdx) {
-            stroke(colorDark);
-        }
-
 
         for ( int x = 0; x < speeds2.length; x++ )
         {
             vertex( x, off - speeds2[x]* scale );
         }
 
-
         endShape();
         
-        // base line
+        
+        //###################################################### base line
         strokeWeight(1);
         stroke(0);
         line(0,off,mainW,off);
         
-        // middle
+        //###################################################### middle
         float[] speeds3 = new float[speeds2.length];
         arrayCopy(speeds2,speeds3);
         
@@ -126,15 +121,15 @@ void onePerfomerAllPerformances () {
         
         float tMax = max(speeds2);
         absMax = max(tMax, absMax);
-    }
-    
-    // max lines
-    for (int i=0; i<vids.length(); i++) {
 
-        float off = ( (mainH - 6*distY) /float(vids.length())) * (i+1) + i*distY;
+    
+    //###################################################### max lines
+
+
+
         stroke(colorLight,64);
         line(0,off-absMax*scale,mainW,off-absMax*scale);
-    }
+
 
 
 
