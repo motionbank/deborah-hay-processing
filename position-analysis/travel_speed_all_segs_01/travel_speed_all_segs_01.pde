@@ -65,13 +65,13 @@ String API_URL  = "http://notimetofly.herokuapp.com/";
 String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 
 
-String LOCAL_DATA_PATH = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
+String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionbank/_data/";
 
 // LOCAL_DATA_PATH + SPEED_DATA_DIR + [video title] + SPEED_DATA_FILE
-String SPEED_DATA_DIR = "";
+String SPEED_DATA_DIR = "speed/";
 String SPEED_DATA_FILE = "_withBackgroundAdjustment_Corrected/TravelDistances3D_interpolated.txt";
 
-String POSITION_DATA_DIR = "";
+String POSITION_DATA_DIR = "paths/";
 String POSITION_DATA_FILE = "_withBackgroundAdjustment_Corrected/Tracked3DPosition_com.txt";
 
 String SAVE_PATH = "output/0/";
@@ -84,14 +84,19 @@ String SAVE_PATH = "output/0/";
 float mainX = 50;
 float mainY = 50;
 float distY = 20;
+float distX = 40;
+float minSpeed = 0;
 
 // calculated in setup
 float mainW = 0;
 float mainH = 0;
 float scale = 0;
+float maxSpeed = 0;
+float graphWidth = 0;
 
-color colorLight = 0xFF349C00;
-color colorDark = 0xFF2B6100;
+// => color hash
+color colorLight = 0;
+color colorDark = 0;
 color colorBg = 0xFFEDEDED;
 color colorStage = 0xFFDEDEDE;
 
@@ -157,6 +162,23 @@ boolean drawFill = true;
 
 float[] gaussKernel; // = new float[]{0.006,0.061,0.242,0.383,0.242,0.061,0.006};
 
+
+static HashMap<String,Integer> moBaColors, moBaColorsHigh, moBaColorsLow; 
+static {
+    moBaColorsHigh = new HashMap();
+    moBaColorsLow = new HashMap();
+    
+    moBaColorsHigh.put( "Ros", 0xFF1E8ED4 );
+    moBaColorsLow.put(  "Ros", 0xFF254966 );
+    
+    moBaColorsHigh.put( "Janine", 0xFFE04646 );
+    moBaColorsLow.put(  "Janine", 0xFF803B3B );
+    
+    moBaColorsHigh.put( "Juliette", 0xFF349C00 );
+    moBaColorsLow.put(  "Juliette", 0xFF2B6100 );
+}
+
+
 void setup ()
 {
     size( 640, 420 );
@@ -169,7 +191,9 @@ void setup ()
     
     mainW = width - mainX*2;
     mainH = height - mainY*2;
+    maxSpeed = (mainH-6*distY)/7;
     scale = mainH/15.0;
+    graphWidth = (mainW-2*distX) / 3;
 
     gaussKernel = new float[10*2+1];
     for ( int i = 0; i < gaussKernel.length; i++ )
@@ -189,7 +213,7 @@ void draw ()
 
         drawFrame = false;
 
-        onePerfomerAllPerformances();
+        __draw();
 
         // cycles through all videos in videoIDs
         if (saveAllFrames) {
