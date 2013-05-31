@@ -41,7 +41,7 @@ ArrayList<String> sceneNames;
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 boolean withHighlight = true;
 
-float leftOffset = 0, padding = 2, leftOffsetMax;
+float leftOffset = 0, PADDING = 2, leftOffsetMax;
 
 //static {
 //    loadSettings( "/Users/fjenett/Documents/Processing/motionbank/_github/deborah_hay" );
@@ -132,9 +132,8 @@ void draw ()
         //background( moBaColors.get(selPerformer) );
         int perfColor = moBaColors.get(selPerformer);
         
-        padding = 2;
-        float s = height / (12 + (2 * padding)); // 12x12 meter stage + padding for export
-        leftOffsetMax = (width/2)-(padding*s)-((12/2)*s);
+        float s = height / (12 + (2 * PADDING)); // 12x12 meter stage + padding for export
+        leftOffsetMax = (width/2)-(PADDING*s)-((12/2)*s);
         
         if ( showInterface ) 
         {
@@ -163,7 +162,7 @@ void draw ()
         image( 
             //moBaBacks.get(selPerformer), 
             moBaBacks.get("gray"), 
-            (padding*s)-rWidth, height-(padding*s)-rWidth - rWidth, backWidth, backWidth );
+            (PADDING*s)-rWidth, height-(PADDING*s)-rWidth - rWidth, backWidth, backWidth );
         
         if ( !exporting )
         {
@@ -173,110 +172,16 @@ void draw ()
             text( sceneFrom + " - " + sceneTo, s+(12*s)/2, height-(s/2) );
         }
         
-        for ( VideoTimeCluster c : clusters ) 
+        if ( showAll )
         {
-            if ( !showAll && currCluster != c ) continue;
-            
-            org.piecemaker.models.Event evData = null, evFrom = null, evTo = null;
-            ThreeDPositionTrack track3D = null;
-            
-            for ( org.piecemaker.models.Event e : c.events ) 
+            for ( VideoTimeCluster c : clusters ) 
             {
-                if ( e.getEventType().equals("data") )
-                {
-                    evData = e;
-                    for ( ThreeDPositionTrack t : tracks3D )
-                    {
-                        if ( t.event == e )
-                        {
-                            track3D = t;
-                            break;
-                        }
-                    }
-                    track3D.setScale( s );
-                }
-                else 
-                {
-                    if ( e.title.equals( sceneFrom ) )
-                    {
-                        evFrom = e;
-                    }
-                    
-                    if ( e.title.equals( sceneTo ) )
-                    {
-                        evTo = e;
-                    }
-                }
-            }
-            
-            if ( evData != null && evFrom != null && evTo != null )
-            {
-                int iEvFrom = c.events.indexOf( evFrom );
-                int iEvTo = c.events.indexOf( evTo );
-                
-                if ( iEvFrom < c.events.size()-1 && iEvFrom >= iEvTo )
-                {
-                    evTo = c.events.get( iEvFrom+1 );
-                    list2.select( evTo.title );
-                }
-                
-                int fStart = (int)( evFrom.getHappenedAt().getTime() -
-                                    evData.getHappenedAt().getTime() );
-                    fStart = int( (fStart / 1000.0) * track3D.fps );
-                    
-                int fLen = int( evTo.getHappenedAt().getTime() -
-                                evFrom.getHappenedAt().getTime() );
-                    fLen = int( (fLen / 1000.0) * track3D.fps );
-                
-                if ( asConvexHull )
-                {
-                    if ( showAll )
-                        noStroke();
-                    else
-                        stroke( 255, 0, 0 );
-                        
-                    fill( 255, 0, 0, 40 );
-                }
-                else
-                {
-                    if ( (!showAll && withHighlight) || (showAll && withHighlight && currCluster == c ) )
-                    {
-                        strokeWeight( 5 );
-                        stroke( moBaColorsLow.get( evFrom.performers[0] ) );
-                    }
-                    else
-                    {
-                        strokeWeight( 2.5 );
-                        stroke( moBaColors.get( evFrom.performers[0] ) );
-                    }
-                    
-                    noFill();
-                }
-                
-                strokeJoin( ROUND );
-                
-                pushMatrix();
-                translate( padding*s, height-(padding*s) );
-                
-                if ( !asConvexHull )
-                    track3D.drawFromTo( fStart, fLen );
-                else
-                    track3D.drawHullFromTo( fStart, fLen );
-                                
-                popMatrix();
-            
-                String performer = evFrom.performers != null && evFrom.performers.length > 0 ? evFrom.performers[0] : null;
-                if ( performer == null ) performer = evTo.performers != null && evTo.performers.length > 0 ? evTo.performers[0] : null;
-                if ( performer == null ) performer = c.videos.get(0).title;
-                if ( performer != null && !exporting )
-                {
-                    fill( 210 );
-                    textAlign( CENTER );
-                    textSize( 11 );
-                    text( performer, s+(12*s)/2, height-(s/2)+14 );
-                }
+                c.drawFromTo( sceneFrom, sceneTo, s );
             }
         }
+        
+        if ( currCluster != null )
+            currCluster.drawFromTo( sceneFrom, sceneTo, s );
         
         if ( savePDF )
         {
@@ -402,6 +307,12 @@ void nextScene ()
     
     ifrom = sceneNames.indexOf( sceneFrom );
     if ( ifrom < ito-1 ) ifrom++;
+    
+    if ( ifrom < 0 )
+    {
+        ifrom = 0;
+        ito = 1;
+    }
     
     sceneFrom = sceneNames.get( ifrom );
     list1.select( sceneFrom );

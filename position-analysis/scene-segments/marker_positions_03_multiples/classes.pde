@@ -151,10 +151,14 @@ class VideoTimeCluster
     ArrayList<org.piecemaker.models.Event> events;
     
     Date from, to;
+    ArrayList<String> performers;
+    
+    ThreeDPositionTrack track3D;
     
     VideoTimeCluster ( Video v ) 
     {
         videos = new ArrayList();
+        performers = new ArrayList();
         
         videos.add( v );
         from = v.getRecordedAt();
@@ -178,12 +182,127 @@ class VideoTimeCluster
     void addEvent ( org.piecemaker.models.Event e )
     {
         events.add( e );
+        
+        if ( e.performers != null && 
+             e.performers.length > 0 && 
+             !e.performers[0].trim().equals("") && 
+             performers.indexOf( e.performers[0] ) == -1 )
+        {
+            performers.add( e.performers[0] );
+        }
     }
     
     boolean overlapsWith ( BasicEvent v )
     {
         return !( v.getFinishedAt().compareTo(from) < 0 || v.getHappenedAt().compareTo(to) > 0 );
     }
+    
+    void setTrack3DScale ( float s )
+    {
+        if ( track3D != null ) track3D.setScale(s);
+    }
+    
+    void drawFromTo ( String sceneFrom, String sceneTo, float s )
+    {
+        int[] fromTo = getFromTo( sceneFrom, sceneTo );
+        setTrack3DScale( s );
+        
+        if ( fromTo != null )
+        {
+            if ( (!showAll && withHighlight) || (showAll && withHighlight && currCluster == this ) )
+            {
+                strokeWeight( 5 );
+                stroke( moBaColorsLow.get( performers.get(0) ) );
+            }
+            else
+            {
+                strokeWeight( 2.5 );
+                stroke( moBaColors.get( performers.get(0) ) );
+            }
+            
+            if ( asConvexHull )
+            {
+                fill( moBaColors.get( performers.get(0) ), 64 );
+            }
+            else
+            {
+                noFill();
+            }
+            
+            strokeJoin( ROUND );
+            
+            pushMatrix();
+            translate( PADDING*s, height-(PADDING*s) );
+            
+            if ( !asConvexHull )
+                track3D.drawFromTo( fromTo[0], fromTo[1] );
+            else
+                track3D.drawHullFromTo( fromTo[0], fromTo[1] );
+                            
+            popMatrix();
+        }
+    }
+    
+    int[] getFromTo ( String sceneFrom, String sceneTo )
+    {
+        org.piecemaker.models.Event evData = null, evFrom = null, evTo = null;
+        
+        for ( org.piecemaker.models.Event e : events ) 
+        {
+            if ( e.getEventType().equals("data") )
+            {
+                evData = e;
+                if ( track3D == null )
+                { 
+                    for ( ThreeDPositionTrack t : tracks3D )
+                    {
+                        if ( t.event == e )
+                        {
+                            track3D = t;
+                            break;
+                        }
+                    }
+                }
+            }
+            else 
+            {
+                if ( e.title.equals( sceneFrom ) )
+                {
+                    evFrom = e;
+                }
+                
+                if ( e.title.equals( sceneTo ) )
+                {
+                    evTo = e;
+                }
+            }
+        }
+        
+        if ( evData != null && evFrom != null && evTo != null && evFrom != evTo )
+        {
+            int iEvFrom = events.indexOf( evFrom );
+            int iEvTo = events.indexOf( evTo );
+            
+            if ( iEvFrom < events.size()-1 && iEvFrom >= iEvTo )
+            {
+                evTo = events.get( iEvFrom+1 );
+                list2.select( evTo.title );
+            }
+            
+            int fStart = (int)( evFrom.getHappenedAt().getTime() -
+                                evData.getHappenedAt().getTime() );
+                fStart = int( (fStart / 1000.0) * track3D.fps );
+                
+            int fLen = int( evTo.getHappenedAt().getTime() -
+                            evFrom.getHappenedAt().getTime() );
+                fLen = int( (fLen / 1000.0) * track3D.fps );
+        
+            return new int[]{ fStart, fLen };
+        }
+        
+        return null;
+    }
+    
     
     public String toString ()
     {

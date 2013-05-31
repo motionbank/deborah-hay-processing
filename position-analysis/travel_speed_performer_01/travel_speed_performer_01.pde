@@ -126,7 +126,7 @@ int segIdx = 0;
 int performerIndex = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = false;
+boolean saveAllFrames = true;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";

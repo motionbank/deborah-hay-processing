@@ -65,13 +65,13 @@ String API_URL  = "http://notimetofly.herokuapp.com/";
 String DATA_URL = "http://lab.motionbank.org/dhay/data/";
 
 
-String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionbank/_data/";
+String LOCAL_DATA_PATH = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
 
 // LOCAL_DATA_PATH + SPEED_DATA_DIR + [video title] + SPEED_DATA_FILE
-String SPEED_DATA_DIR = "speed/";
+String SPEED_DATA_DIR = "";
 String SPEED_DATA_FILE = "_withBackgroundAdjustment_Corrected/TravelDistances3D_interpolated.txt";
 
-String POSITION_DATA_DIR = "paths/";
+String POSITION_DATA_DIR = "";
 String POSITION_DATA_FILE = "_withBackgroundAdjustment_Corrected/Tracked3DPosition_com.txt";
 
 String SAVE_PATH = "output/0/";
@@ -128,7 +128,7 @@ int segIdx = 0;
 int performerIndex = 0;
 
 // cycle through all videos and save frames
-boolean saveAllFrames = false;
+boolean saveAllFrames = true;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
