@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 
 final int PIECE_ID = 3;
 final boolean isLocal = true;
-final boolean mbLocal = false;
+final boolean mbLocal = true;
 final String TRACK_3D_ROOT = (isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/") + "dhay/data";
 String LOCAL_DATA_PATH = "/Users/mbaer/Documents/_Gestaltung/__Current/motionbank/_data/";
 String POSITION_DATA_DIR = "paths/";
@@ -35,7 +35,7 @@ String performer = "Ros";
 
 SceneHeatMap[] multMaps;
 
-boolean saveAll = false;
+boolean saveAll = true;
 
 Date timeMin, timeMax;
 
@@ -72,7 +72,7 @@ void draw ()
     
     if (saveAll) {
       String t = multMaps[currentSeg].title;
-      saveFrame("saves4_c/" + performer + "_" + t.replaceAll("[^-a-zA-Z0-9]+","-")  + ".png");
+      saveFrame("output/saves4_c/" + performer + "_" + t.replaceAll("[^-a-zA-Z0-9]+","-")  + ".png");
       currentSeg++;
       if ( currentSeg >= multMaps.length ) exit();
       //redraw();

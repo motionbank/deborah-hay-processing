@@ -7,8 +7,8 @@ void videosLoaded ( Videos videos )
 {
     for ( Video v : videos.videos )
     {
-        if ( v.getTitle().indexOf( "Center_Small" ) != -1 
-        && v.getTitle().indexOf( performer ) != -1)
+        if ( v.getTitle().indexOf( "_Center_Small" ) != -1 && 
+             (performer == null || v.getTitle().indexOf( performer ) != -1) )
         {
             api.loadEventsByTypeForVideo( v.id, "scene", api.createCallback( "eventsLoaded", v ) );
             loadingMessage = "Loading scene events for videos";
@@ -30,14 +30,14 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     org.piecemaker.models.Event dataEvent = events.events[0];
     
     long dataEventStart = dataEvent.getHappenedAt().getTime();
-    int msPerFrame = 1000 / 25;
+    int msPerFrame = 1000 / 50;
     
     // it's JSON but we just grab what we need and skip the full parsing
     String track3DFile = dataEvent.getDescription();
     track3DFile = track3DFile.substring( track3DFile.indexOf("\"")+1 );
     track3DFile = track3DFile.substring( 0, track3DFile.indexOf("\"") );
     
-    // using the 25 fps version
+    // using the 50 fps version
     track3DFile = track3DFile.replace( ".txt", "_com.txt" );
     
     String[] lines = new String[0];
@@ -47,6 +47,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
       lines = loadStrings( LOCAL_DATA_PATH + POSITION_DATA_DIR + parts[1] + "_" + parts[0] + POSITION_DATA_FILE);
     }
     else lines = loadStrings( TRACK_3D_ROOT + "/" + track3DFile );
+    
     
     org.piecemaker.models.Event e1 = null;
         
@@ -76,28 +77,12 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
             };
         }
         
-        SceneHeatMap map = new SceneHeatMap( e1.getTitle() );
+        SceneHeatMap map = new SceneHeatMap( heatMapGrid, e1 );
         map.generate( points, new float[]{-1,-1}, new float[]{13,13} );
         group.addHeatMap( map );
         
         e1 = e2;
     }
-    
-    ///////////////////////////////////////////////////////////////////////
-    
-    float[][] points = new float[lines.length][0];
-    for ( int ii = 0; ii < lines.length; ii++ )
-        {
-            String[] pieces = lines[ii].split(" ");
-            
-            points[ii] = new float[]{
-                float(pieces[0]),
-                float(pieces[1])
-            };
-        }
-    
-    group.videoHeatMap = new SceneHeatMap( group.video.getTitle() );
-    group.videoHeatMap.generate( points, new float[]{-1,-1}, new float[]{13,13} );
     
     group.sortEvents();
     
@@ -106,36 +91,13 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     
     loadingMessage = "Loading data ... still " + groupsLoading + " more coming";
     
-    if ( groupsLoading == 0 )
+    if ( groupsLoading == 0 && groups.length >= 7 )
     {
         java.util.Arrays.sort(groups, new java.util.Comparator(){
             public int compare ( Object a, Object b ) {
                 return ((VideoEventGroup)a).video.getHappenedAt().compareTo(((VideoEventGroup)b).video.getHappenedAt());
             }
         });
-        
-        multMaps = new SceneHeatMap[groups[0].heatMaps.length];
-        
-        // 25
-        for (int i=0; i<multMaps.length; i++) {
-
-            multMaps[i] = new SceneHeatMap(groups[0].events[i].getTitle());
-            multMaps[i].values = new float[groups[0].heatMaps[i].values.length];
-            
-            // 7 - 1
-            for (int j=0; j<groups.length; j++) 
-            {
-               SceneHeatMap hm = groups[j].heatMaps[i];
-               
-               // res * res
-               for (int k=0; k<hm.values.length; k++) 
-               {
-                  multMaps[i].values[k] += hm.values[k] / (float)groups.length;
-               }
-            }
-        }
-        
         loaded = true;
-        //redraw();
     }
 }

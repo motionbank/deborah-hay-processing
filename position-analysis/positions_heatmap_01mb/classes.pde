@@ -3,7 +3,6 @@ class VideoEventGroup
     Video video;
     org.piecemaker.models.Event[] events;
     SceneHeatMap[] heatMaps;
-    SceneHeatMap videoHeatMap;
     
     VideoEventGroup ( Video v, org.piecemaker.models.Event[] es )
     {
@@ -28,30 +27,28 @@ class VideoEventGroup
     }
 }
 
-
 class SceneHeatMap
 {
-    int res = 20;
+    int resolution = 14;
     
     float[] values;
-    ArrayList colors = new ArrayList();
     int originalValuesTotal = -1;
     float valueMax = -1;
     int valueMaxX = -1, valueMaxY = -1;
     
+    org.piecemaker.models.Event scene;
     
-    String title;
-    
-    SceneHeatMap ( String t )
+    SceneHeatMap ( int res, org.piecemaker.models.Event s )
     {
-        title = t;
-        values = new float[res*res];
+        resolution = res;
+        scene = s;
+        values = new float[resolution*resolution];
     }
     
     void generate ( float[][] points )
-    {    
+    {
+        // find extremata
         
-        println(points[0].length);
         float[] pMins = new float[points[0].length];
         float[] pMaxs = new float[pMins.length];
         
@@ -76,79 +73,62 @@ class SceneHeatMap
     void generate ( float[][] points, float[] pMins, float[] pMaxs )
     {
         // count hits per cell
-        int[] cells = new int[res*res];
+        int[] cells = new int[resolution*resolution];
         
         for ( int i = 0; i < points.length; i++ )
         {
-            int xi = (int)map( points[i][0], pMins[0], pMaxs[0], 0, res-1 );
-            int yi = (int)map( points[i][1], pMins[1], pMaxs[1], 0, res-1 );
-            cells[xi + yi*res]++;
+            int xi = (int)map( points[i][0], pMins[0], pMaxs[0], 0, resolution-1 );
+            int yi = (int)map( points[i][1], pMins[1], pMaxs[1], 0, resolution-1 );
+            cells[xi + yi*resolution]++;
         }
         
         for ( int i = 0, l = points.length; i < cells.length; i++ )
         {
             values[i] = cells[i] / (float)l;
-            
             if ( valueMax < values[i] )
             {
-                valueMaxX = i % res;
-                valueMaxY = i / res;
+                valueMaxX = i % resolution;
+                valueMaxY = i / resolution;
                 valueMax = values[i];
             }
-            
-            java.util.Collections.sort(colors);
         }
-        
         
         originalValuesTotal = points.length;
     }
     
     void draw ( int xx, int yy, int ww, int hh )
     {
-        if (colors.size() == 0) {
-            for ( int i = 0; i < values.length; i++ )
-            {
-                if (colors.indexOf(values[i]) == -1) colors.add(values[i]);
-            }
-            java.util.Collections.sort(colors);
-        }
+        drawHeatMap( values, valueMax, resolution, xx, yy, ww, hh );
         
-        float cellWidth  = ww / (float)res;
-        float cellHeight = hh / (float)res;
-        float val;
-        
-        for ( int ix = 0; ix < res; ix++ )
-        {
-            for ( int iy = 0; iy < res; iy++ )
-            {
-                val = values[ix + iy*res];
-                
-                /*
-                fill( 255 - ((val / valueMax) * 255) );
-                if ( val == 0 )
-                    stroke( 0 );
-                else
-                    stroke( 0, 150, 255 );
-                if ( ix == valueMaxX && iy == valueMaxY )
-                    stroke( 255, 0, 0 );
-                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
-                */
-                
-                float c = colors.indexOf(val);
-                noStroke();
-                fill( 240 - ((c / colors.size()) * 240) );
-                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
-            }
-        }
-        
-        
-        filter(BLUR, 10);
-        filter(POSTERIZE, 10);
-        
-        fill( 0, 15 );
-        rect(xx,yy,ww,hh);
-        
-        //fill( 0 );
-        //text( title, xx+2, yy+hh+14 );
+//        float cellWidth  = ww / (float)resolution;
+//        float cellHeight = hh / (float)resolution;
+//        float val;
+//        
+//        noStroke();
+//        
+//        for ( int ix = 0; ix < resolution; ix++ )
+//        {
+//            for ( int iy = 0; iy < resolution; iy++ )
+//            {
+//                val = values[ix + iy*resolution];
+//                
+//                fill( 255 - ((val / valueMax) * 255) );
+//                
+////                if ( val == 0 )
+////                    stroke( 0 );
+////                else
+////                    stroke( 0, 150, 255 );
+////                if ( ix == valueMaxX && iy == valueMaxY )
+////                    stroke( 255, 0, 0 );
+//                    
+//                rect( xx + ix*cellWidth, yy + iy*cellHeight, cellWidth, cellHeight );
+//            }
+//        }
+//        
+//        filter( BLUR, 15 );
+//        filter( POSTERIZE, 10 );
+//        
+//        fill( 0 );
+//        text( scene.getTitle(), xx+2, yy+hh+14 );
     }
 }
