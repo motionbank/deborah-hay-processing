@@ -53,6 +53,23 @@ void draw ()
     {
         if ( groups[currentGroup] != null )
         {
+            String name = null;
+            
+            if ( exportAll ) 
+            {
+                String t = groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle();
+                t = t.replaceAll("[^-a-zA-Z0-9]+", "-");
+                
+                String recording = "";
+                if ( !showAll || showGrouped )
+                {
+                    recording = groups[currentGroup].video.getTitle().split("_")[0];
+                }
+                name = "output/" + (showAll && !showGrouped ? (performer == null ? "all" : performer) : recording) + (showGrouped ? "" : "_" + t);
+                
+                //beginRecord( PDF, name + ".pdf" );
+            }
+            
             if ( showAll ) 
             {
                 // across one scene in all groups
@@ -124,16 +141,8 @@ void draw ()
             
             if ( exportAll ) 
             {
-                String t = groups[currentGroup].heatMaps[currentHeatMap].scene.getTitle();
-                t = t.replaceAll("[^-a-zA-Z0-9]+", "-");
-                
-                String recording = "";
-                if ( !showAll || showGrouped )
-                {
-                    recording = groups[currentGroup].video.getTitle().split("_")[0];
-                }
-                String name = "output/" + (showAll && !showGrouped ? (performer == null ? "all" : performer) : recording) + (showGrouped ? "" : "_" + t) + ".png";
-                saveFrame( name );
+                //endRecord();
+                saveFrame( name + ".png" );
                 nextHeatMap();
             }
         }
