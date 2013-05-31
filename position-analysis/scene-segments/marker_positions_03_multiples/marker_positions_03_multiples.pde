@@ -66,7 +66,7 @@ static {
 }
 HashMap<String,PImage> moBaBacks;
 
-String selPerformer = "roswarby"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
+String selPerformer = "juliettemapp"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
 Date selTimeFrom, selTimeTo;
 
 void setup () 
@@ -180,7 +180,7 @@ void draw ()
             }
         }
         
-        if ( currCluster != null )
+        if ( currCluster != null && withHighlight )
             currCluster.drawFromTo( sceneFrom, sceneTo, s );
         
         if ( savePDF )
