@@ -24,6 +24,7 @@ class ThreeDPositionTrack
         //println( fps );
         file = getEventData( "file", e.description );
         file = file.replace( ".txt", "_com.txt" );
+        file = file.replace( "_BackgroundSubstracted_", "_withBackgroundAdjustment_" );
         //println( file );
         
         String[] lines = loadStrings( POS_3D_ROOT + file );

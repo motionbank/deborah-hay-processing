@@ -1,0 +1,25 @@
+{ "colors": {
+        "background": "0xFFEDEDED",
+        "stage": "0xFFDEDEDE",
+        "jeaninedurning": {
+            "normal": "0xFFE04646",
+            "dark": "0xFF803B3B"
+        },
+        "juliettemapp": {
+            "normal": "0xFF349C00",
+            "dark": "0xFF2B6100"
+        },
+        "roswarby": {
+            "normal": "0xFF1E8ED4",
+            "dark": "0xFF254966"
+        }
+    },
+    "sizes": {
+        "sketch": {
+            "width": 1000,
+            "height": 700
+        }
+    },
+    "fonts": {},
+    "lines": {} 
+}

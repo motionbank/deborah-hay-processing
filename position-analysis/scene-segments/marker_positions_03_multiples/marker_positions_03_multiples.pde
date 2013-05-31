@@ -43,29 +43,30 @@ boolean withHighlight = true;
 
 float leftOffset = 0, padding = 2, leftOffsetMax;
 
+//static {
+//    loadSettings( "/Users/fjenett/Documents/Processing/motionbank/_github/deborah_hay" );
+//}
+
 static HashMap<String,Integer> moBaColors, moBaColorsHigh, moBaColorsLow; 
 static {
-    moBaColors = new HashMap();
-    moBaColorsHigh = new HashMap();
-    moBaColorsLow = new HashMap();
+    moBaColors     = new HashMap();
+    moBaColorsLow  = new HashMap();
     
-    moBaColors.put(     "roswarby", 0xFFD9BF41 );       // color( 222, 163, 62 ) yellow, ros
-    moBaColorsHigh.put( "roswarby", 0xFFFBFF00 );
-    moBaColorsLow.put(  "roswarby", 0xFF807026 );
+    moBaColors.put(     "roswarby", 0xFF1E8ED4 );       // blue, ros
+    moBaColorsLow.put(  "roswarby", 0xFF254966 );
     
-    moBaColors.put(     "jeaninedurning", 0xFFE06767 ); // color( 224, 103, 103 ) red, jeanine 
-    moBaColorsHigh.put( "jeaninedurning", 0xFFFFB8FF );
+    moBaColors.put(     "jeaninedurning", 0xFFE04646 ); // red, jeanine 
     moBaColorsLow.put(  "jeaninedurning", 0xFF803B3B );
     
-    moBaColors.put(     "juliettemapp", 0xFF4F9CDB );   // color( 79, 156, 219 ) blue, juliette
-    moBaColorsHigh.put( "juliettemapp", 0xFF00FFFF );
-    moBaColorsLow.put(  "juliettemapp", 0xFF254966 );
+    moBaColors.put(     "juliettemapp", 0xFF349C00 );   // green, juliette
+    moBaColorsLow.put(  "juliettemapp", 0xFF2B6100 );
     
-    moBaColors.put( null, 0xFF2D2D2D );             // color( 45 ) gray, all
+    moBaColors.put( null, 0xFFDEDEDE );             // gray, all
+    moBaColors.put( "background", 0xFFEDEDED );     
 }
 HashMap<String,PImage> moBaBacks;
 
-String selPerformer = null; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
+String selPerformer = "roswarby"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
 Date selTimeFrom, selTimeTo;
 
 void setup () 
@@ -158,7 +159,11 @@ void draw ()
         fill( perfColor );
         float rWidth = (12*s);
         float backWidth = rWidth * 3;
-        image( moBaBacks.get(selPerformer), (padding*s)-rWidth, height-(padding*s)-rWidth - rWidth, backWidth, backWidth );
+        
+        image( 
+            //moBaBacks.get(selPerformer), 
+            moBaBacks.get("gray"), 
+            (padding*s)-rWidth, height-(padding*s)-rWidth - rWidth, backWidth, backWidth );
         
         if ( !exporting )
         {
@@ -234,27 +239,15 @@ void draw ()
                 }
                 else
                 {
-                    if ( !showAll || (showAll && withHighlight && currCluster == c ) )
-                    {
-                        stroke( 255 );
-                    }
-                    else
-                    {
-                        if ( withHighlight && selPerformer != null ) 
-                            stroke( 0 );
-                        else if ( selPerformer == null )
-                            stroke( moBaColorsLow.get( evFrom.performers[0] ) );
-                        else
-                            stroke( 0 );
-                    }
-                    
-                    if ( (withHighlight && showAll && currCluster == c) || !showAll || selPerformer == null )
+                    if ( (!showAll && withHighlight) || (showAll && withHighlight && currCluster == c ) )
                     {
                         strokeWeight( 5 );
+                        stroke( moBaColorsLow.get( evFrom.performers[0] ) );
                     }
                     else
                     {
                         strokeWeight( 2.5 );
+                        stroke( moBaColors.get( evFrom.performers[0] ) );
                     }
                     
                     noFill();
@@ -282,7 +275,6 @@ void draw ()
                     textSize( 11 );
                     text( performer, s+(12*s)/2, height-(s/2)+14 );
                 }
-            
             }
         }
         

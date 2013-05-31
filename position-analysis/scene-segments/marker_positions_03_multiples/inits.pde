@@ -5,7 +5,7 @@ void initBacks ()
     
     String backBase = "/Users/fjenett/Documents/Processing/motionbank/_github/deborah_hay";
     
-    for ( String p : new String[]{"roswarby","jeaninedurning","juliettemapp",null} ) {
+    for ( String p : new String[]{"roswarby","jeaninedurning","juliettemapp","gray",null} ) {
         moBaBacks.put( p, loadImage( backBase + "/material/backgrounds/" + (p == null ? "all" : p) + ".png" ) );
     }
 }
