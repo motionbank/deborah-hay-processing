@@ -85,8 +85,8 @@ void draw ()
             {
                 recording = groups[currentGroup].video.getTitle().split("_")[0];
                 int sub = int( recording.substring(2,3) );
-                if ( sub < 2 ) currentPerformer = "Ros";
-                else if ( sub < 4 ) currentPerformer = "Juliette";
+                if ( sub <= 2 ) currentPerformer = "Ros";
+                else if ( sub <= 4 ) currentPerformer = "Juliette";
                 else currentPerformer = "Janine";
             }
             name = "output/" + (showAll && !showGrouped ? (performer == null ? "all" : performer) : recording) + (showGrouped ? "" : "_" + t);
