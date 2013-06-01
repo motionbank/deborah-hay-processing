@@ -24,39 +24,36 @@ void __draw () {
 
         float absMax = 0;
 
-        for (int i=0; i<vids.length(); i++) {
-
-
+        for (int i=0; i<vids.length(); i++) 
+        {
             int vidIdx = i;
 
             float off = ( (mainH - 6*distY) /float(vids.length())) * (i+1) + i*distY;
 
             VideoObject vid = vids.get(vidIdx);
 
-
             SpeedData speeds = vid.data.speeds;
-
-
 
             int currentWidth = floor(mainW*(vid.data.speeds.length()/maxW));
 
 
             float[] speeds2 = new float[currentWidth];
 
-
             float sx = currentWidth / (float)speeds.length();
             float sy = mainH / (maxSpeed - minSpeed);
+            
             for ( int x = 0; x < speeds.length(); x++ )
             {
                 float ll = (speeds.get(x) - minSpeed)*sy;
                 speeds2[(int)(x*sx)] += ll;
             }
 
-
             for ( int x = 0; x < speeds2.length; x++ )
             {
                 speeds2[x] = (speeds2[x]/speeds.length()) * 10;
             }
+            
+            for ( int t = 0; t < 5; t++ ) speeds2 = convolve1D( speeds2, gaussKernel );
 
             //###################################################### graph bg
 
@@ -64,45 +61,82 @@ void __draw () {
             fill(colorStage);
 
             rect(0, off, graphWidth, -(mainH-6*distY)/7);
+            
+            //###################################################### base line
+            
+            strokeWeight( strokeWeight );
+            stroke( 0 );
+            line( 0, off + strokeWeight/2, graphWidth, off + strokeWeight/2 );
+
+            //###################################################### middle
+            
+            float[] speeds3 = new float[speeds2.length];
+            arrayCopy(speeds2, speeds3);
+
+            speeds3 = sort(speeds3);
+
+            float yy = speeds3[floor(speeds3.length/2)] * scale;
+
+            stroke( colorLight, colorLightOpacity );
+            
+            if ( idx == vidIdx && performerIndex == k ) 
+            {
+                stroke( colorLight );
+            }
+            
+            line( 0, off-yy, graphWidth, off-yy );
 
 
             //###################################################### scene highlight
 
-
-            for ( int t = 0; t < 5; t++ )
-                speeds2 = convolve1D( speeds2, gaussKernel );
-
-
             VideoSegment seg = vid.segments.get(segIdx);
-
-            beginShape();
-
-            fill(colorLight, colorLightOpacity);
-            noStroke();
-
+            
+            if ( idx == vidIdx && performerIndex == k ) 
+            {
+                fill( colorDark, colorLightOpacity );
+            }
 
             int st = floor(seg.start*speeds2.length);
             int end = st + floor(seg.duration*speeds2.length);
+            
+            fill( 0, 5 );
+            if ( idx == vidIdx && performerIndex == k ) 
+            {
+                fill( 0, 10 );
+            }
+            
+            noStroke();
+            rect( 0, off, end-st, -(mainH-6*distY)/7 );
 
-            vertex(0, off);
+            fill( colorLight, colorLightOpacity );
+            noStroke();
+
+            beginShape();
+            
+            vertex( 0, off );
 
             for ( int x = 0; x < end-st; x++ )
             {
                 vertex( x, off - speeds2[x+st]* scale);
             }
-            vertex(end-st, off);
+            
+            vertex( end-st, off );
+            
             endShape(CLOSE);
 
 
             //###################################################### main graph
+            
             beginShape();
 
-            stroke(colorLight, colorLightOpacity);
-            strokeWeight(1);
+            stroke( colorLight ); // colorLightOpacity
+            strokeWeight( strokeWeight );
             noFill();
 
-            if (idx == vidIdx && performerIndex == k) {
+            if (idx == vidIdx && performerIndex == k) 
+            {
                 stroke(colorDark);
+                strokeWeight( strokeWeight * 2 );
             }
 
             for ( int x = 0; x < end-st; x++ )
@@ -112,34 +146,27 @@ void __draw () {
 
             endShape();
 
-
-            //###################################################### base line
-            strokeWeight(1);
-            stroke(0);
-            line(0, off, graphWidth, off);
-
-            //###################################################### middle
-            float[] speeds3 = new float[speeds2.length];
-            arrayCopy(speeds2, speeds3);
-
-            speeds3 = sort(speeds3);
-
-            float yy = speeds3[floor(speeds3.length/2)] * scale;
-
-            stroke(colorLight, colorLightOpacity);
-            line(0, off-yy, graphWidth, off-yy);
-
+            // keep for max line below
 
             float tMax = max(speeds2);
             absMax = max(tMax, absMax);
         }
 
         //###################################################### max lines
-        for (int i=0; i<vids.length(); i++) {
+        
+        for ( int i=0; i < vids.length(); i++ ) {
 
             float off = ( (mainH - 6*distY) /float(vids.length())) * (i+1) + i*distY;
-            stroke(colorLight, 64);
-            line(0, off-absMax*scale, graphWidth, off-absMax*scale);
+            
+            strokeWeight( strokeWeight );
+            stroke(colorLight, colorLightOpacity);
+            
+            if ( idx == i && performerIndex == k ) 
+            {
+                stroke( colorLight );
+            }
+            
+            line( 0, off-absMax*scale, graphWidth, off-absMax*scale );
         }
 
         popMatrix();

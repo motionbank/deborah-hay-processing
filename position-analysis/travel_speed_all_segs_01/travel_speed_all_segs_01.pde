@@ -74,7 +74,12 @@ String SPEED_DATA_FILE = "_withBackgroundAdjustment_Corrected/TravelDistances3D_
 String POSITION_DATA_DIR = "";
 String POSITION_DATA_FILE = "_withBackgroundAdjustment_Corrected/Tracked3DPosition_com.txt";
 
+/* + + + + + + + + + + + + + + + + + +
+ +  SAVING
+ L + + + + + + + + + + + + + + + + + */
+
 String SAVE_PATH = "output/0/";
+boolean saveAllFrames = true;
 
 
 ////////////////////////////////////
@@ -101,10 +106,9 @@ color colorBg = 0xFFEDEDED;
 color colorStage = 0xFFDEDEDE;
 
 float colorLightOpacity = 64;
+float strokeWeight = 1.5;
 
 ////////////////////////////////////
-
-
 
 String TITLE = "";
 
@@ -117,8 +121,6 @@ Piece piece;
 VideoObjectList videos = new VideoObjectList();
 PerformerVideosList performers = new PerformerVideosList();
 
-
-
 // index of the video to load
 // 0-6
 int idx = 0;
@@ -126,9 +128,6 @@ int idx = 0;
 int segIdx = 0;
 // 0-2
 int performerIndex = 0;
-
-// cycle through all videos and save frames
-boolean saveAllFrames = true;
 
 boolean loading = true;
 String loadingMessage = "Loading pieces ...";
@@ -181,7 +180,7 @@ static {
 
 void setup ()
 {
-    size( 640, 420 );
+    size( 1000, 657 );
     //API_URL = "http://192.168.0.10:3000/";
     //noSmooth();
     smooth();
