@@ -72,7 +72,7 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
     
     for ( org.piecemaker.models.Event e : events )
     {
-        if ( e.getEventType().equals("scene") ) 
+        if ( e.getEventType().equals("scene") || e.getEventType().equals("scenefaux") ) 
         {
             cluster.addEvent( e );
         }
@@ -101,7 +101,7 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
             
             for ( org.piecemaker.models.Event e : c.events )
             {
-                if ( e.title.equals( "link to portal" ) )
+                if ( e.title.equals( "fred + ginger" ) ) // fred + ginger
                 {
                     originEvent = e;
                 }
@@ -129,7 +129,7 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
             
             for ( org.piecemaker.models.Event e : c.events )
             {
-                if ( !e.getEventType().equals("scene") ) continue;
+                if ( !( e.getEventType().equals("scene") || e.getEventType().equals("scenefaux") ) ) continue;
                 
                 String et = e.title;
     //            int i = 2;
@@ -183,9 +183,13 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
         for ( EventTitleCluster tc : titleClusters )
         {
             println( tc );
+            tc.calcSegments( minTime, maxTime, 10, height-20 );
+            tc.calcNormalizedSegments( 10, height-20 );
         }
+        
         println( "Total number of video clusters: " + clusters.size() );
         println( "Total number of columns: " + displayColumn );
+        
         loading = false;
     }
 }

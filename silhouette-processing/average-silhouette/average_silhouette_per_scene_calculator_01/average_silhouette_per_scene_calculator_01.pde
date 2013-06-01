@@ -117,14 +117,14 @@ void draw ()
 
 void nextEvent ()
 {
-//    if ( currentEventIndex >= currentCluster.getEvents().length || currentEvent.title.equals("end") )
-//    {
+    if ( currentEventIndex >= currentCluster.getEvents().length || currentEvent.title.equals("end") )
+    {
 //        saveFrame( "output/" + currentSession + "_" + cameraAngle + "/" +
 //                   currentEventIndex + "-" + lastEvent.title.replace(" ","-") + 
 //                   "_averageSilhouette.png" );
-//        nextCluster();
-//        return;
-//    }
+        nextCluster();
+        return;
+    }
     
     org.piecemaker.models.Event nextEvent = currentCluster.getEvents()[currentEventIndex];
     

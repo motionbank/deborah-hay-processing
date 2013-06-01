@@ -11,6 +11,8 @@ class EventTitleCluster
     
     int minTime, maxTime, avgTime;
     
+    float[][] segments, segmentsNormalized;
+    
     EventTitleCluster ( String t )
     {
         title = t;
@@ -41,34 +43,62 @@ class EventTitleCluster
         avgTime /= times.size();
     }
     
-    void draw ( int tf, int tt, int y, int h )
+    void calcSegments ( int tf, int tt, int y, int h )
     {
-        noFill();
-        stroke(0);
+        segments = new float[0][0];
         
         float total = float(tt-tf);
-        float xx = 0, yy = 0, c = -1 ;
+        float xx = 0, yy = 0, c = -1;
         
-        beginShape();
+        float[] segm = null;
+        
         for ( int i = 0; i < times.size(); i++ )
         {
             int cc = columns.get(i);
             xx = 10 + ( cc / float(clusters.size()-1)) * (width-100.0);
             yy = y + ((times.get(i)-tf) / total) * h;
             
-            if ( c != cc-1 )
+            if ( i > 0 )
             {
-                endShape();
-                beginShape();
+                if ( c == cc-1 )
+                {
+                    segm[2] = xx;
+                    segm[3] = yy;
+                    segments = (float[][])append( segments, segm );
+                }
+                else
+                {
+                    while ( c <= cc-1 )
+                    {
+                        segments = (float[][])append( segments, null );
+                        c++;
+                    }
+                }
             }
-            c = cc;
             
-            vertex( xx, yy );
+            segm = new float[]{ xx, yy, 0, 0 };
+            
+            c = cc;
         }
-        endShape();
+    }
+    
+    void draw ()
+    {
+        noFill();
+        stroke( 0 );
+        
+        for ( int i = 0; i < segments.length; i++ )
+        {
+            if ( segments[i] == null ) continue;
+            
+            beginShape();
+                vertex(segments[i][0],segments[i][1]);
+                vertex(segments[i][2],segments[i][3]);
+            endShape();
+        }
         
         fill( 0 );
-        text( title , width-80, yy );
+        text( title , width-80, segments[segments.length-1][3] );
     }
     
     void drawBlob ( int tf, int tt, float x, float y, float w, float h )
@@ -115,34 +145,60 @@ class EventTitleCluster
         line( x, yMedian, x+w-1, yMedian );
     }
     
-    void drawNormalized ( int y, int h )
+    void calcNormalizedSegments ( int y, int h )
     {
-        noFill();
-        stroke(0);
+        segmentsNormalized = new float[0][0];
+        float[] segm = new float[0];
         
         float xx = 0, yy = 0, c = -1;
         
-        beginShape();
         for ( int i = 0; i < timesNormalized.size(); i++ )
         {
             int cc = columns.get(i);
             xx = 10 + ( cc/ float(clusters.size()-1)) * (width-100.0);
-            
             yy = y + ((timesNormalized.get(i)-minTimeNormalized) / (1000.0 - minTimeNormalized)) * h;
             
-            if ( c != cc-1 )
+            if ( i > 0 )
             {
-                endShape();
-                beginShape();
+                if ( c == cc-1 )
+                {
+                    segm[2] = xx;
+                    segm[3] = yy;
+                    segmentsNormalized = (float[][])append( segmentsNormalized, segm );
+                }
+                else
+                {
+                    while ( c <= cc-1 )
+                    {
+                        segmentsNormalized = (float[][])append( segmentsNormalized, null );
+                        c++;
+                    }
+                }
             }
-            c = cc;
             
-            vertex( xx, yy );
+            segm = new float[]{ xx, yy, 0, 0 };
+            
+            c = cc;
         }
-        endShape();
+    }
+    
+    void drawNormalized ()
+    {
+        noFill();
+        stroke(0);
+        
+        for ( int i = 0; i < segmentsNormalized.length; i++ )
+        {
+            if ( segmentsNormalized[i] == null ) continue;
+            
+            beginShape();
+                vertex( segmentsNormalized[i][0], segmentsNormalized[i][1] );
+                vertex( segmentsNormalized[i][2], segmentsNormalized[i][3] );
+            endShape();
+        }
         
         fill( 0 );
-        text( title , width-80, yy );
+        text( title , width-80, segmentsNormalized[segmentsNormalized.length-1][3] );
     }
     
     void drawBlobNormalized ( float x, float y, float w, float h )

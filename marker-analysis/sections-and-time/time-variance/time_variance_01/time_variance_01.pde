@@ -22,6 +22,24 @@ import processing.pdf.*;
 final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker";
 final int PIECE_ID = 3;
 
+static HashMap<String,Integer> moBaColors, moBaColorsHigh, moBaColorsLow; 
+static {
+    moBaColorsHigh = new HashMap();
+    moBaColorsLow = new HashMap();
+    
+    moBaColorsHigh.put( "Ros", 0xFF1E8ED4 );
+    moBaColorsLow.put(  "Ros", 0xFF254966 );
+    
+    moBaColorsHigh.put( "Janine", 0xFFE04646 );
+    moBaColorsLow.put(  "Janine", 0xFF803B3B );
+    
+    moBaColorsHigh.put( "Juliette", 0xFF349C00 );
+    moBaColorsLow.put(  "Juliette", 0xFF2B6100 );
+}
+
+float moBaOpacity = 64;
+float strokeWeight = 1.5;
+
 //MySQL db;
 SimpleDateFormat mysqlDateFormat;
 Piece piece;
@@ -39,7 +57,7 @@ ArrayList<VideoTimeCluster> clusters;
  String loadingMessage = "Loading";
  boolean loading = true;
 
-int viewMode = 3;
+int viewMode = 1;
 boolean savePDF;
 int clustersExpected = 0;
 int displayColumn = 0;
@@ -95,6 +113,7 @@ void draw ()
                     pushMatrix();
                         
                         stroke( 240 );
+                        
                         if ( performer == null )
                             performer = c.performer;
                         else if ( !c.performer.equals(performer) )
@@ -102,6 +121,7 @@ void draw ()
                             performer = c.performer;
                             stroke( 220 );
                         }
+                        
                         line( 0, 10, 0, height-10 );
                         
                         translate( 10, height-14 );
@@ -116,15 +136,59 @@ void draw ()
                 i++;
             }
             
+            for ( int tc = 0; tc < titleClusters.size()-1; tc++ )
+            {
+                EventTitleCluster tc1 = titleClusters.get(tc);
+                EventTitleCluster tc2 = titleClusters.get(tc+1);
+                
+                switch ( viewMode )
+                {
+                    case 0:
+                        for ( int si = 0; si < tc1.segments.length && si < tc2.segments.length; si++ )
+                        {
+                            float[] seg1 = tc1.segments[si];
+                            float[] seg2 = tc2.segments[si];
+                            if ( seg1 != null && seg2 != null )
+                            {
+                                fill( 0, 15 );
+                                beginShape();
+                                vertex(seg1[0],seg1[1]);
+                                vertex(seg1[2],seg1[3]);
+                                vertex(seg2[2],seg2[3]);
+                                vertex(seg2[0],seg2[1]);
+                                endShape();
+                            }
+                        }
+                        break;
+                    case 1:
+                        for ( int si = 0; si < tc1.segmentsNormalized.length && si < tc2.segmentsNormalized.length; si++ )
+                        {
+                            float[] seg1 = tc1.segmentsNormalized[si];
+                            float[] seg2 = tc2.segmentsNormalized[si];
+                            if ( seg1 != null && seg2 != null )
+                            {
+                                fill( 0, 15 );
+                                beginShape();
+                                vertex(seg1[0],seg1[1]);
+                                vertex(seg1[2],seg1[3]);
+                                vertex(seg2[2],seg2[3]);
+                                vertex(seg2[0],seg2[1]);
+                                endShape();
+                            }
+                        }
+                        break;
+                }
+            }
+            
             for ( EventTitleCluster tc : titleClusters )
             {
                 switch ( viewMode )
                 {
                     case 0:
-                        tc.draw( minTime, maxTime, 10, height-20 );
+                        tc.draw();
                         break;
                     case 1:
-                        tc.drawNormalized( 10, height-20 );
+                        tc.drawNormalized();
                         break;
                 }
             }
