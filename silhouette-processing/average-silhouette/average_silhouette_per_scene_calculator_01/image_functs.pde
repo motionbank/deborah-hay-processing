@@ -4,16 +4,28 @@
 void addSilhouetteToMean ( PImage s )
 {
     s.loadPixels();
+    
+    int sc = 1;
+    
     if ( silMean == null ) 
     {
-        silMean = new int[s.pixels.length];
-        silMeanWidth = s.width;
-        silMeanHeight = s.height;
+        silMeanWidth = s.width * sc;
+        silMeanHeight = s.height * sc;
+        silMean = new int[silMeanWidth * silMeanHeight];
+        
+        for ( int i = 0; i < silMean.length; i++ )
+        {
+            silMean[i] = 0;
+        }
     }
     
-    for ( int i = 0; i < s.pixels.length; i++ )
+    for ( int i = 0, n = s.width/sc + silMeanWidth*(s.height/sc); 
+          i < s.pixels.length; i++ )
     {
-        silMean[i] += s.pixels[i] & 0xFF;
+        if ( sc == 1 )
+            silMean[ i ] += 255 - (s.pixels[i] & 0xFF);
+        else
+        silMean[ n + ((i/s.width)*s.width) + i ] += 255 - (s.pixels[i] & 0xFF);
     }
     silCount++;
 }
@@ -25,10 +37,18 @@ PImage meanToPImage ()
 {
     PImage img = new PImage( silMeanWidth, silMeanHeight, RGB );
     
-    for ( int i = 0, c = 0; i < silMean.length; i++ )
+    int col1 = 0, col2 = 0;
+    if ( currentPerformer != null )
     {
-        c = silMean[i] / silCount;
-        img.pixels[i] = (c << 16) + (c << 8) + c;
+        col1 = moBaColorsHigh.get(currentPerformer);
+        col2 = moBaColorsLow.get(currentPerformer);
+    } 
+    
+    float c = 0;
+    for ( int i = 0; i < silMean.length; i++ )
+    {
+        c = (silMean[i] / silCount) / 255.0;
+        img.pixels[i] = lerpColor( 0xFFDEDEDE, col2, c ); // 0xFFEDEDED , 0xFFDEDEDE
     }
     
     return img;
@@ -100,13 +120,11 @@ PImage centerAndResize ( PImage img, int[] centerOfMass, int[] boundingBox )
     int cx = centerOfMass[0];
     int cy = centerOfMass[1];
 
-    int imgSize = 128;
+    int imgSize = 512;
     int imgSizeHalf = imgSize / 2;
-    int hashSize = 32;
-    int hashSizeHalf = hashSize / 2;
 
     int wh = w > h ? w : h;
-    float s = (float)imgSize / wh;
+    float s = (0.75 * imgSize) / wh;
 
     PGraphics pg = createGraphics( imgSize, imgSize );
     pg.beginDraw();

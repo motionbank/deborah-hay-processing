@@ -18,6 +18,24 @@ import org.piecemaker.api.*;
 import org.piecemaker.models.*;
 import org.piecemaker.collections.*;
 
+//
+// ---------------------------
+
+static HashMap<String,Integer> moBaColors, moBaColorsHigh, moBaColorsLow; 
+static {
+    moBaColorsHigh = new HashMap();
+    moBaColorsLow = new HashMap();
+    
+    moBaColorsHigh.put( "Ros", 0xFF1E8ED4 );
+    moBaColorsLow.put(  "Ros", 0xFF254966 );
+    
+    moBaColorsHigh.put( "Janine", 0xFFE04646 );
+    moBaColorsLow.put(  "Janine", 0xFF803B3B );
+    
+    moBaColorsHigh.put( "Juliette", 0xFF349C00 );
+    moBaColorsLow.put(  "Juliette", 0xFF2B6100 );
+}
+
 // Settings, variables and constants
 // ----------------------------
 
@@ -33,7 +51,7 @@ String silhouetteFolder;
 String[] pngs;
 
 String cameraAngle = "CamCenter";
-String currentSession = null;
+String currentSession = null, currentPerformer = null;
 
 PieceMakerApi api;
 ArrayList<EventTimeCluster> clusters;
@@ -52,9 +70,9 @@ int clustersExpected = 0;
 
 void setup ()
 {
-    size( 512, 256 );
+    size( 512*2, 256*2 );
     
-    api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://sdcp-nttf-node13.herokuapp.com/" );
+    api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" );
     api.loadPieces( api.createCallback( "piecesLoaded" ) );
 }
 
@@ -82,6 +100,13 @@ void draw ()
         
         if ( silNum >= silNumTo )
         {
+            String currentTake = currentSession.split("_")[1];
+            String saveName = sketchPath( "output/" + 
+                           currentSession + "_" + cameraAngle + "/" +
+                              currentTake + "_" + lastEvent.title.trim().toLowerCase().replaceAll("[^-a-zA-Z]+","-").replaceAll("-[-]+","-") + ".png" );
+
+            mean.save( saveName );
+            
             nextEvent();
         }
     }
@@ -92,13 +117,14 @@ void draw ()
 
 void nextEvent ()
 {
-    if ( currentEventIndex >= currentCluster.getEvents().length || currentEvent.title.equals("end") )
-    {
-        saveFrame( "output/" + currentSession + "_" + cameraAngle + "/" +
-                   currentEventIndex + "-" + lastEvent.title.replace(" ","-") + "_averageSilhouette.png" );
-        nextCluster();
-        return;
-    }
+//    if ( currentEventIndex >= currentCluster.getEvents().length || currentEvent.title.equals("end") )
+//    {
+//        saveFrame( "output/" + currentSession + "_" + cameraAngle + "/" +
+//                   currentEventIndex + "-" + lastEvent.title.replace(" ","-") + 
+//                   "_averageSilhouette.png" );
+//        nextCluster();
+//        return;
+//    }
     
     org.piecemaker.models.Event nextEvent = currentCluster.getEvents()[currentEventIndex];
     
@@ -133,6 +159,7 @@ void nextCluster ()
         {
             currentVideo = v;
             String[] parts = v.title.split("_");
+            currentPerformer = parts[1];
             currentSession = parts[1] + '_' + parts[0];
             initPngs();
             break;

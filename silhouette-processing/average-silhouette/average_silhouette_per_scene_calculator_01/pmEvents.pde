@@ -13,8 +13,17 @@ void videosLoaded ( Videos vids, int piece_id )
 {
     loadingMessage = "Loading events ...";
     
+    Videos vidsSelected = new Videos();
+    for ( Video v : vids.videos )
+    {
+        if ( v.getTitle().indexOf("_sync") != -1 )
+        {
+            vidsSelected.add(v);
+        }
+    }
+    
     clusters = new ArrayList();
-    EventTimeCluster[] clustersTmp = EventTimeClusters.clusterEvents( vids.videos );
+    EventTimeCluster[] clustersTmp = EventTimeClusters.clusterEvents( vidsSelected.videos );
     if ( clustersTmp != null && clustersTmp.length > 0 )
     {
         for ( EventTimeCluster c : clustersTmp )
@@ -44,8 +53,10 @@ void eventsLoaded ( Events evts, EventTimeCluster c )
     
     for ( org.piecemaker.models.Event e : evts.events )
     {
-        if ( e.getEventType().equals("scene") )
-            c.addEvent( e );
+        if ( e.getEventType().equals("scene") ) 
+        {
+            c.add( e );
+        }
     }
     clusters.add( c );
      
