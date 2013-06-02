@@ -113,7 +113,7 @@ void draw ()
             if ( !f.exists() )
             {
                 mean.save( saveName );
-                println( saveName );
+                println( ">>>> " + saveName );
             }
             
             nextEvent();
@@ -122,6 +122,7 @@ void draw ()
             
             while( f.exists() )
             {
+                println( "---- " + saveName );
                 nextEvent();
                 saveName = getFilePath();
                 f = new File(saveName);

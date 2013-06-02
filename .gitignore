@@ -15,3 +15,4 @@ application.linux32
 *.sqlite
 
 saves
+node_modules

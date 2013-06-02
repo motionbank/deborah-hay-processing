@@ -1,0 +1,85 @@
+body 
+{
+	background-color: white; 
+	color: black;
+	font-family: Lucida Grande, Lucida Sans, Arial, Helvetica Neue, Verdana, Geneva, sans-serif;
+	font-size: 11px; 
+	font-weight: normal; 
+	text-decoration: none;
+	line-height: 1.5em;
+	margin: 0px;
+	padding: 0px;
+}
+
+a img 
+{ 
+	border: 0px solid transparent;
+}
+
+a, a:link, a:visited, a:active, a:hover 
+{ 
+	color: #cdcdcd; 
+	text-decoration: underline;
+}
+
+.bigfatwarning
+{
+	color: red;
+	font-weight: bold;
+	font-size: 20px;
+	padding: 1em;
+	border: 2px solid red;
+	text-align:center;
+	background-color: pink;
+}
+
+canvas 
+{ 
+	display: block; 
+	outline: 0px; 
+	margin-bottom: 1.5em;
+}
+
+#content 
+{
+	width: 970px;
+	margin: 20px auto;
+	margin-bottom: 100px;
+	overflow: auto;
+}
+
+#content section
+{
+	width: 100%;
+}
+
+#video-cluster-selection
+{
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+}
+#video-cluster-selection li
+{
+	display: block;
+	padding: 0px;
+	margin: 0px;
+	border-bottom: 1px solid #eee;
+}
+#video-cluster-selection li:hover
+{
+	background-color: #eee;
+	border-bottom: 1px solid #ddd;
+}
+#video-cluster-selection li.last
+{
+	border-bottom: 0px solid transparent;
+}
+#video-cluster-selection li.selected
+{
+	background-color: #ddffdd;
+	border-bottom: 1px solid #99aa99;
+}
+
