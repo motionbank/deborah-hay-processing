@@ -86,15 +86,16 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
         Collections.sort( clusters, new Comparator<VideoTimeCluster>(){
             public int compare ( VideoTimeCluster a, VideoTimeCluster b ) 
             {
-                if ( a.performer.equals( b.performer ) )
+                //if ( a.performer.equals( b.performer ) )
                     return a.from.compareTo( b.from );
-                else
-                    return a.performer.compareTo( b.performer );
+                //else return a.performer.compareTo( b.performer );
             }
         });
         
         for ( VideoTimeCluster c : clusters )
         {
+            allTakes.add( c.take );
+            
             ArrayList<String> eventTitles = new ArrayList();
             
             org.piecemaker.models.Event originEvent = null, endEvent = null;
@@ -158,7 +159,7 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
                 int time = (int)( e.getHappenedAt().getTime() - o );
                 int timeNorm = int((time / s) * 1000);
                 
-                etc.addEvent( time, timeNorm, e, displayColumn );
+                etc.addEvent( time, timeNorm, e, displayColumn, c );
                 times.add( time );
                 timesNormalized.add( timeNorm );
                 
@@ -183,8 +184,8 @@ void eventsLoaded ( Events evts, VideoTimeCluster cluster )
         for ( EventTitleCluster tc : titleClusters )
         {
             println( tc );
-            tc.calcSegments( minTime, maxTime, 10, height-20 );
-            tc.calcNormalizedSegments( 10, height-20 );
+            tc.calcSegments( minTime, maxTime, PADDING, height-2*PADDING );
+            tc.calcNormalizedSegments( PADDING, height-2*PADDING );
         }
         
         println( "Total number of video clusters: " + clusters.size() );

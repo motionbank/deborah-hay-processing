@@ -3,6 +3,7 @@ class EventTitleCluster
     String title;
     
     ArrayList<Integer> columns;
+    ArrayList<VideoTimeCluster> clusters;
     
     ArrayList<Integer> times;
     ArrayList<Integer> timesNormalized;
@@ -18,17 +19,19 @@ class EventTitleCluster
         title = t;
         
         columns = new ArrayList();
+        clusters = new ArrayList();
         times = new ArrayList();
         timesNormalized = new ArrayList();
         events = new ArrayList();
     }
     
-    void addEvent ( int time, int timeNormalized, org.piecemaker.models.Event e, int column )
+    void addEvent ( int time, int timeNormalized, org.piecemaker.models.Event e, int column, VideoTimeCluster cluster )
     {
         times.add( time );
         timesNormalized.add( timeNormalized );
         events.add( e );
         columns.add( column );
+        clusters.add( cluster );
         
         minTime = Integer.MAX_VALUE;
         maxTime = Integer.MIN_VALUE;
@@ -50,29 +53,78 @@ class EventTitleCluster
         float total = float(tt-tf);
         float xx = 0, yy = 0, c = -1;
         
+        float colWidth = (width - ((clusters.size()-1) * COL_PADDING) - (2.0 * PADDING)) / (clusters.size()-1);
+        
         float[] segm = null;
         
         for ( int i = 0; i < times.size(); i++ )
         {
             int cc = columns.get(i);
-            xx = 10 + ( cc / float(clusters.size()-1)) * (width-100.0);
+            xx = PADDING + cc * COL_PADDING + cc * colWidth;
             yy = y + ((times.get(i)-tf) / total) * h;
             
             if ( i > 0 )
             {
-                if ( c == cc-1 )
+                org.piecemaker.models.Event ev1 = events.get(i-1);
+                org.piecemaker.models.Event ev2 = events.get(i);
+                
+                if ( c == cc-1 && ev1.performers[0].equals(ev2.performers[0]) )
                 {
-                    segm[2] = xx;
+                    segm[2] = xx-COL_PADDING;
                     segm[3] = yy;
                     segments = (float[][])append( segments, segm );
                 }
                 else
                 {
-                    while ( c <= cc-1 )
+                    while ( c < cc-1 )
                     {
                         segments = (float[][])append( segments, null );
                         c++;
                     }
+                    segments = (float[][])append( segments, null );
+                }
+            }
+            
+            segm = new float[]{ xx, yy, 0, 0 };
+            
+            c = cc;
+        }
+    }
+    
+    void calcNormalizedSegments ( int y, int h )
+    {
+        segmentsNormalized = new float[0][0];
+        float[] segm = new float[0];
+        
+        float xx = 0, yy = 0, c = -1;
+        
+        float colWidth = (width - ((clusters.size()-1) * COL_PADDING) - (2.0 * PADDING)) / (clusters.size()-1);
+        
+        for ( int i = 0; i < timesNormalized.size(); i++ )
+        {
+            int cc = columns.get(i);
+            xx = PADDING + cc * COL_PADDING + cc * colWidth;
+            yy = y + ((timesNormalized.get(i)-minTimeNormalized) / (1000.0 - minTimeNormalized)) * h;
+            
+            if ( i > 0 )
+            {
+                org.piecemaker.models.Event ev1 = events.get(i-1);
+                org.piecemaker.models.Event ev2 = events.get(i);
+                
+                if ( c == cc-1 && ev1.performers[0].equals(ev2.performers[0]) )
+                {
+                    segm[2] = xx;
+                    segm[3] = yy;
+                    segmentsNormalized = (float[][])append( segmentsNormalized, segm );
+                }
+                else
+                {
+                    while ( c < cc-1 )
+                    {
+                        segmentsNormalized = (float[][])append( segmentsNormalized, null );
+                        c++;
+                    }
+                    segmentsNormalized = (float[][])append( segmentsNormalized, null );
                 }
             }
             
@@ -85,21 +137,47 @@ class EventTitleCluster
     void draw ()
     {
         noFill();
-        stroke( 0 );
         
         for ( int i = 0; i < segments.length; i++ )
         {
             if ( segments[i] == null ) continue;
             
+            VideoTimeCluster cluster = clusters.get(i);
+            stroke( moBaColors.get( cluster.performer ) );
+            strokeWeight( strokeWeight );
+            
             beginShape();
-                vertex(segments[i][0],segments[i][1]);
-                vertex(segments[i][2],segments[i][3]);
+                vertex( segments[i][1], segments[i][0] );
+                vertex( segments[i][3], segments[i][2] );
             endShape();
         }
         
-        fill( 0 );
-        text( title , width-80, segments[segments.length-1][3] );
+//        fill( 0 );
+//        text( title , width-80, segments[segments.length-1][3] );
     }
+    
+    void drawNormalized ()
+    {
+        noFill();
+        
+        for ( int i = 0; i < segmentsNormalized.length; i++ )
+        {
+            if ( segmentsNormalized[i] == null ) continue;
+            
+            VideoTimeCluster cluster = clusters.get(i);
+            stroke( moBaColors.get( cluster.performer ) );
+            strokeWeight( strokeWeight );
+            
+            beginShape();
+                vertex( segmentsNormalized[i][1], segmentsNormalized[i][0] );
+                vertex( segmentsNormalized[i][3], segmentsNormalized[i][2] );
+            endShape();
+        }
+        
+//        fill( 0 );
+//        text( title , width-80, segmentsNormalized[segmentsNormalized.length-1][3] );
+    }
+    
     
     void drawBlob ( int tf, int tt, float x, float y, float w, float h )
     {
@@ -143,62 +221,6 @@ class EventTitleCluster
         Collections.sort( timesSorted );
         float yMedian = y + ((timesSorted.get(timesSorted.size()/2)-tf) / total) * h;
         line( x, yMedian, x+w-1, yMedian );
-    }
-    
-    void calcNormalizedSegments ( int y, int h )
-    {
-        segmentsNormalized = new float[0][0];
-        float[] segm = new float[0];
-        
-        float xx = 0, yy = 0, c = -1;
-        
-        for ( int i = 0; i < timesNormalized.size(); i++ )
-        {
-            int cc = columns.get(i);
-            xx = 10 + ( cc/ float(clusters.size()-1)) * (width-100.0);
-            yy = y + ((timesNormalized.get(i)-minTimeNormalized) / (1000.0 - minTimeNormalized)) * h;
-            
-            if ( i > 0 )
-            {
-                if ( c == cc-1 )
-                {
-                    segm[2] = xx;
-                    segm[3] = yy;
-                    segmentsNormalized = (float[][])append( segmentsNormalized, segm );
-                }
-                else
-                {
-                    while ( c <= cc-1 )
-                    {
-                        segmentsNormalized = (float[][])append( segmentsNormalized, null );
-                        c++;
-                    }
-                }
-            }
-            
-            segm = new float[]{ xx, yy, 0, 0 };
-            
-            c = cc;
-        }
-    }
-    
-    void drawNormalized ()
-    {
-        noFill();
-        stroke(0);
-        
-        for ( int i = 0; i < segmentsNormalized.length; i++ )
-        {
-            if ( segmentsNormalized[i] == null ) continue;
-            
-            beginShape();
-                vertex( segmentsNormalized[i][0], segmentsNormalized[i][1] );
-                vertex( segmentsNormalized[i][2], segmentsNormalized[i][3] );
-            endShape();
-        }
-        
-        fill( 0 );
-        text( title , width-80, segmentsNormalized[segmentsNormalized.length-1][3] );
     }
     
     void drawBlobNormalized ( float x, float y, float w, float h )
@@ -266,6 +288,7 @@ extends TimeCluster
     ArrayList<Integer> times;
     ArrayList<Integer> timesNormalized;
     
+    String take = null;
     String performer = null;
     
     VideoTimeCluster ( Video v ) 
@@ -286,6 +309,10 @@ extends TimeCluster
         
         update( v.getRecordedAt() );
         update( v.getFinishedAt() );
+        
+        String[] pieces = v.getTitle().split("_");
+        take = pieces[0];
+        performer = pieces[1];
         
         videos.add( v );
     }

@@ -78,38 +78,70 @@ void setup ()
 
 void draw ()
 {
-    background( 255 );
-    
     if ( loading )
     {
+        background( 255 );
         fill( 0 );
         text( loadingMessage, width/2, height/2 );
     }
     else
     {
         sil = loadAndPrepSilhouette( silNum );
-        image( sil, 0, 0, width/2, height );
+        //image( sil, 0, 0, width/2, height );
         removeCache( sil );
         
         addSilhouetteToMean( sil );
-        PImage mean = meanToPImage();
-        image( mean, width/2, 0, width/2, height );
-        removeCache( mean );
+        //PImage mean = meanToPImage();
+        //image( mean, width/2, 0, width/2, height );
+        //removeCache( mean );
         
         silNum++;
         
         if ( silNum >= silNumTo )
         {
-            String currentTake = currentSession.split("_")[1];
-            String saveName = sketchPath( "output/" + 
-                           currentSession + "_" + cameraAngle + "/" +
-                              currentTake + "_" + lastEvent.title.trim().toLowerCase().replaceAll("[^-a-zA-Z]+","-").replaceAll("-[-]+","-") + ".png" );
-
-            mean.save( saveName );
+            background( 255 );
+            
+            image( sil, 0, 0, width/2, height );
+            
+            PImage mean = meanToPImage();
+            image( mean, width/2, 0, width/2, height );
+            removeCache( mean );
+            
+            String saveName = getFilePath();
+            File f = new File(saveName);
+            
+            if ( !f.exists() )
+            {
+                mean.save( saveName );
+                println( saveName );
+            }
             
             nextEvent();
+            saveName = getFilePath();
+            f = new File(saveName);
+            
+            while( f.exists() )
+            {
+                nextEvent();
+                saveName = getFilePath();
+                f = new File(saveName);
+            }
         }
     }
+}
+
+String getFilePath ()
+{
+    String currentTake = currentSession.split("_")[1];
+    String sceneName = lastEvent.title.trim().toLowerCase();
+    sceneName = sceneName.replaceAll("[^-a-zA-Z0-9]+","-");
+    sceneName = sceneName.replaceAll("-[-]+","-");
+    sceneName = sceneName.replaceAll("^[-]+|[-]+$","");
+    String savePath = sketchPath( "output/" + 
+                   currentSession + "_" + cameraAngle + "/" +
+                      currentTake + "_" + sceneName + ".png" );
+
+    return savePath;
 }
 
 // Stepping ahead to next image or directory

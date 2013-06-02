@@ -14,6 +14,12 @@ void keyPressed ()
         case '4':
             viewMode = 3;
             break;
+        case 's':
+            savePngs = true;
+            currentTitle = 0;
+            currentTake = "D01T01";
+            viewMode = 0;
+            break;
         case 'p':
             savePDF = true;
             break;
