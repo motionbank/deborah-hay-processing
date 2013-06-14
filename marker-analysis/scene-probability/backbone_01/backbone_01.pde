@@ -34,7 +34,7 @@ float moBaOpacity = 64;
 
 void setup ()
 {
-    size( 970, 600, P2D );
+    size( 900, 200, P2D );
     
     moBaColors = new HashMap();
     moBaColorsLow = new HashMap();
@@ -97,7 +97,7 @@ void draw ()
                 if ( tc.title == "end" ) continue;
                 
                 if ( !currentTitleCluster || currentTitleCluster != tc )
-                    tc.drawNormalizedKDE( PADDING + 10, height/2, width-(2*PADDING + 2*10), 100 );
+                    tc.drawNormalizedKDE( PADDING + 10, PADDING, width-(2*PADDING + 2*10), height-2*PADDING );
                 
 //                if ( playhead >= 0 && 
 //                     playhead < tc.normalizedKDE.length && 
@@ -112,7 +112,7 @@ void draw ()
             
             if ( currentTitleCluster ) 
             {
-                currentTitleCluster.drawNormalizedKDE( PADDING + 10, height/2, width-(2*PADDING + 2*10), 100, true );
+                currentTitleCluster.drawNormalizedKDE( PADDING + 10, PADDING, width-(2*PADDING + 2*10), height-2*PADDING, true );
             }
             
     //        for ( int i = 0, k = valuesAtPlayhead.length; i < k; i++ )
@@ -282,6 +282,7 @@ void buildTitleClusters ()
 {
     titleClusters = new HashMap();
     normalizedMin = 0;
+    normalizedKDEMax = -10000;
     
     dateFrom = new Date();
     dateTo = new Date(-3600000); // classic 1970's

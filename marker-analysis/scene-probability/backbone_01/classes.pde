@@ -129,7 +129,6 @@ class TitleCluster
         float pisq = 1.0 / sqrt(TWO_PI);
         float zero = bandWidth1 * ( pisq * exp( 0 ) );
         
-        normalizedKDEMax = -10000;
         normalizedYMax = -10000;
         normalizedXMax = 0;
     
@@ -154,14 +153,16 @@ class TitleCluster
             {
                 normalizedYMax = yi;
                 normalizedXMax = i;
-                
-                if ( yi > normalizedKDEMax ) normalizedKDEMax = yi;
             }
+            
+            if ( yi > normalizedKDEMax ) normalizedKDEMax = yi;
         }
     }
     
     void drawNormalizedKDE ( float xx, float yy, float ww, float hh, boolean isCurrent )
     {
+        float hh2 = hh - 7.5;
+        
         strokeWeight( moBaStrokeWeight );
         fill( 0, 7 );
         int c = moBaColors.get( currentPerformer );
@@ -179,27 +180,34 @@ class TitleCluster
         float xl = 0, yl = 0, thresh = 0.01;
         
         beginShape();
+        float yFirst = 0, yi = 0;
         for ( int kxi = 0; kxi < ww; kxi++ )
         {
-            float yi = map( normalizedKDE[kxi], 0, normalizedKDEMax, 0, 1 );
+            yi = map( normalizedKDE[kxi], 0, normalizedKDEMax, 0, 1 );
+            
+            if ( isFirst )
+            {
+                yFirst = yi;
+            }
             if ( yi > thresh )
             {
                 if ( isFirst ) {
-                    vertex( xx + kxi, yy + hh - (thresh * hh) );
+                    vertex( xx + kxi, yy + hh - (thresh * hh2) );
                     isFirst = false;
                 }
                 xl = xx + kxi;
-                yl = yy + hh - (yi * hh);
+                yl = yy + hh - (yi * hh2);
                 vertex( xl, yl );
             }
         }
-        vertex( xl, yy + hh );
+        if ( yFirst < yi ) vertex( xl, yy + hh - (yFirst * hh2) );
         endShape();
         
         pushMatrix();
         
         yi = map( normalizedYMax, 0, normalizedKDEMax, 0, 1 );
-        translate( xx + normalizedXMax, yy + hh - (yi * hh) );
+
+        translate( xx + normalizedXMax, yy + hh - (yi * hh2) );
         
         strokeWeight( moBaStrokeWeight );
         line( 0, -7.5, 0, 7.5 );
