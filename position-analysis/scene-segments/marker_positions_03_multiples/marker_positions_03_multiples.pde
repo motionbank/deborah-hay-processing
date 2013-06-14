@@ -41,7 +41,7 @@ ArrayList<String> sceneNames;
 boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
 boolean withHighlight = true;
 
-float leftOffset = 0, PADDING = 2, leftOffsetMax;
+float leftOffset = 0, PADDING = 1, leftOffsetMax;
 
 //static {
 //    loadSettings( "/Users/fjenett/Documents/Processing/motionbank/_github/deborah_hay" );
@@ -66,12 +66,12 @@ static {
 }
 HashMap<String,PImage> moBaBacks;
 
-String selPerformer = "juliettemapp"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
+String selPerformer = null; // "jeaninedurning"; // null for all or "roswarby", "jeaninedurning", "juliettemapp"
 Date selTimeFrom, selTimeTo;
 
 void setup () 
 {
-    size( 1000, 700 );
+    size( 700, 700 );
     
     Interactive.make(this);
     
@@ -164,7 +164,7 @@ void draw ()
             moBaBacks.get("gray"), 
             (PADDING*s)-rWidth, height-(PADDING*s)-rWidth - rWidth, backWidth, backWidth );
         
-        if ( !exporting )
+        if ( !exporting && !savePDF )
         {
             fill( 210 );
             textAlign( CENTER );
@@ -180,8 +180,11 @@ void draw ()
             }
         }
         
-        if ( currCluster != null && withHighlight )
-            currCluster.drawFromTo( sceneFrom, sceneTo, s );
+        if ( currCluster != null )
+        {
+            if ( !showAll || (showAll && withHighlight ) )
+                currCluster.drawFromTo( sceneFrom, sceneTo, s );
+        }
         
         if ( savePDF )
         {
@@ -215,68 +218,6 @@ void draw ()
         textSize( 22 );
         textAlign( CENTER );
         text( "Loading ("+clustersToLoad+")", width/2, height/2 );
-    }
-}
-
-void keyPressed ()
-{
-    if ( loading ) return;
-    
-    if ( key == CODED )
-    {
-        int ito, ifrom;
-        switch ( keyCode )
-        {
-            case RIGHT:
-                nextPerformance();
-                break;
-            case LEFT:
-                currClusterIndex--;
-                if ( currClusterIndex < 0 ) currClusterIndex = clusters.size()-1;
-                break;
-            case UP:
-                ifrom = sceneNames.indexOf( sceneFrom );
-                if ( ifrom > 0 ) ifrom--;
-                ito = sceneNames.indexOf( sceneTo );
-                if ( ito > ifrom+1 ) ito--;
-                sceneFrom = sceneNames.get( ifrom );
-                list1.select( sceneFrom );
-                sceneTo = sceneNames.get( ito );
-                list2.select( sceneTo );
-                break;
-            case DOWN:
-                nextScene();
-                break;
-        }
-        
-        currCluster = clusters.get(currClusterIndex);
-    }
-    else
-    {
-        switch ( key )
-        {
-            case 's':
-                showAll = !showAll;
-                break;
-            case 'p':
-                savePDF = true;
-                break;
-            case 'e':
-                exportAll();
-                break;
-            case 'h':
-                withHighlight = !withHighlight;
-                break;
-            case 'c':
-                asConvexHull = !asConvexHull;
-                break;
-            case ' ':
-                showInterface = !showInterface;
-                if ( !showInterface ) {
-                    Interactive.setActive(false);
-                }
-                break;
-        }
     }
 }
 

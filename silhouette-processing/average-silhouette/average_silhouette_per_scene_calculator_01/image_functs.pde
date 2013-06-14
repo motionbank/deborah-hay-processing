@@ -48,7 +48,7 @@ PImage meanToPImage ()
     for ( int i = 0; i < silMean.length; i++ )
     {
         c = (silMean[i] / silCount) / 255.0;
-        img.pixels[i] = lerpColor( 0xFFDEDEDE, col2, c ); // 0xFFEDEDED , 0xFFDEDEDE
+        img.pixels[i] = lerpColor( 0xFFEDEDED, col2, c ); // 0xFFEDEDED , 0xFFDEDEDE
     }
     
     return img;

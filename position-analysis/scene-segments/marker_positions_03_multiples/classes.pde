@@ -209,7 +209,7 @@ class VideoTimeCluster
         
         if ( fromTo != null )
         {
-            if ( (!showAll && withHighlight) || (showAll && withHighlight && currCluster == this ) )
+            if ( withHighlight && currCluster == this )
             {
                 strokeWeight( 5 );
                 stroke( moBaColorsLow.get( performers.get(0) ) );

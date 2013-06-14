@@ -25,7 +25,9 @@
  {
      for ( Video v : videos.videos )
      {
-         if ( v.getTitle().toLowerCase().indexOf("_center") != -1 || v.getTitle().toLowerCase().indexOf("_aja_1") != -1 )
+         println( v.title );
+         if ( v.getTitle().toLowerCase().indexOf("2013") != -1 || 
+              v.getTitle().indexOf("NTTF_") != -1 )
          {
              api.loadEventsByTypeForVideo( v.id, "scene", api.createCallback("eventsLoaded", v) );
              delay( 700 );
@@ -48,7 +50,7 @@
          
          String secsStr = "00:"+nf(int(mins),2)+":"+nf(int(secs),2);
          
-         println( secsStr + " " + e.getTitle() );
+         //println( secsStr + " " + e.getTitle() );
          
          lines[i] = v.getTitle() + "," + v.id + "," + secsStr + "," + e.getTitle() + ",";
          
