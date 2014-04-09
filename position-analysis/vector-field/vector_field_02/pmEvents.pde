@@ -89,6 +89,8 @@ void eventsLoaded ( Events evts, VideoTimeCluster c )
                 if ( trackFiles == null ) trackFiles = new ArrayList();
                 String tf = obj.getString("file");
                 
+                tf = tf.replace("Janine_D06T03_BackgroundSubstracted_Corrected", "Janine_D06T03_withBackgroundAdjustment_Corrected");
+                
 //                trackFiles.add( tf );
 //                if ( tracks == null ) tracks = new ArrayList();
 //                tracks.add( new ClusterTrack( c, tf ) );

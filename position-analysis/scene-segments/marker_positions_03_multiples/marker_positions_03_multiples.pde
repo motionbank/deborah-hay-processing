@@ -11,7 +11,7 @@ import org.piecemaker.collections.*;
 
 import java.util.*;
 
-final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker";
+final static String PM_ROOT = "/Users/fjenett/Repos/piecemaker-dh";
 final int PIECE_ID = 3;
 final String POS_3D_ROOT = "/Library/WebServer/Documents/motionbank.org/lab/dhay/data/";
 
@@ -38,7 +38,7 @@ String sceneFrom = "fred + ginger", sceneTo = "the beginning";
 String outputBase = "";
 ArrayList<String> sceneNames;
 
-boolean showInterface = false, loading = true, exporting = false, asConvexHull = false;
+boolean showInterface = false, loading = true, exporting = false, asConvexHull = true;
 boolean withHighlight = true;
 
 float leftOffset = 0, PADDING = 1, leftOffsetMax;
@@ -97,7 +97,7 @@ void setup ()
         }.start();
     } else {
         api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", 
-                                 true ? "http://localhost:3000/" : "http://notimetofly.herokuapp.com/" );
+                                 false ? "http://localhost:3000/" : "http://notimetofly.herokuapp.com/" );
         api.loadVideosForPiece( 3, api.createCallback( "videosLoaded" ) );
     }
     
@@ -126,7 +126,7 @@ void draw ()
                       //"_" + 
                       //nf(sceneNames.indexOf(sceneTo),2) + "-" + sceneTo.replaceAll("[^-A-Za-z0-9]+","-");
             
-            //beginRecord( PDF, pdfName+".pdf" );
+            beginRecord( PDF, pdfName+".pdf" );
         }
         
         //background( moBaColors.get(selPerformer) );
@@ -189,7 +189,7 @@ void draw ()
         if ( savePDF )
         {
             savePDF = false;
-            //endRecord();
+            endRecord();
             saveFrame( pdfName+".png" );
         }
         

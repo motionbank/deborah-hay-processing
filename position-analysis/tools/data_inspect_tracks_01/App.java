@@ -19,7 +19,7 @@ public class App
     {
         papplet = sketch;
 
-        api = new PieceMakerApi( sketch, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://localhost:3000" );
+        api = new PieceMakerApi( sketch, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com" );
         api.loadPieces( api.createCallback( this, "piecesLoaded" ) );
     }
 

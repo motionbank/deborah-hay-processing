@@ -46,7 +46,7 @@ int fieldWidth, fieldHeight;
 float fieldMax = 0, fieldMean = 0, fieldMin = Float.MAX_VALUE;
 float fieldCountsMax = 0, fieldCountsMin = Float.MAX_VALUE;
 
-boolean loading = true;
+boolean loading = true, recordFrames = false;
 String loadingMessage = "Loading pieces ...";
 
 boolean showBackground = false, showField = true;
@@ -61,7 +61,8 @@ final static int PATHS = 3;
 final static int INFORMATION = 4;
 int drawMode = MOVERS;
 boolean safePDF = false;
-String saveName = "";
+String saveName = "", saveDir = "";
+int saveNum = 0;
 
 // SETUP & DRAW
 // ===========================
@@ -83,7 +84,7 @@ void setup ()
     
     setFromTo();
     
-    api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://localhost:3000/" ); //http://notimetofly.herokuapp.com/
+    api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com/" ); //http://notimetofly.herokuapp.com/
     api.loadPieces( api.createCallback( "piecesLoaded" ) );
 }
 
@@ -230,6 +231,11 @@ void draw ()
                     }
                 }
                 break;
+        }
+        
+        if ( recordFrames )
+        {
+            saveFrame( "output/recordings/"+saveDir+"/"+nf((++saveNum),8)+".png" );
         }
         
         if ( safePDF )

@@ -12,6 +12,13 @@ void keyPressed ()
     if ( key == 'v' ) addMoverGrid();
     
     if ( key == 'p' ) safePDF = true;
+    
+    if ( key == 'r' ) 
+    {
+        recordFrames = !recordFrames;
+        updateSaveName();
+        saveDir = new String( saveName );
+    }
  }
 
 void mousePressed ()

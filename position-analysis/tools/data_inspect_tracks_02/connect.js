@@ -20,66 +20,58 @@ var App = (function () {
                       window.location.href.match(/^http:\/\/localhost.*/)    ||
                       window.location.href.match(/^http:\/\/[^/]+\.local.*/);
         pm = new PieceMakerApi({
-            api_key: "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe",
-            baseUrl: ( onLocalhost && false ? 'http://localhost:3000' : 'http://notimetofly.herokuapp.com' )
+            api_key: "4d2452b3f3d2810eca691cf77a8fececd919323a",
+            host: ( onLocalhost && false ? 'http://localhost:9292' : 'http://deborah-hay-pm2.herokuapp.com' )
         });
         
-        pm.loadPieces(app.piecesLoaded);
+        pm.getGroup( 24, app.pieceLoaded );
     }
     App.prototype = {
-        piecesLoaded : function ( data ) {
-            if ( data.total == 1 ) {
-                piece = data.pieces[0];
-                pm.loadVideosForPiece( piece.id, app.videosLoaded );
-            }
+        pieceLoaded : function ( p ) {
+            piece = p;
+            pm.listEventsOfType( piece.id, 'video', app.videosLoaded );
         },
-//        pieceLoaded : function ( p ) {
-//            if ( p ) {
-//                piece = p;
-//                pm.loadVideosForPiece( piece.id, app.videosLoaded );
-//            }
-//        },
-        videosLoaded : function ( data ) {
-            if ( data && data.total && data.total > 0 ) {
-                videos = data.videos;
+        videosLoaded : function ( videos ) {
+            if ( videos && videos.length > 0 ) {
                 var sel = document.createElement('select');
                 for ( var i = 0, k = videos.length; i < k; i++ ) {
                     var opt = document.createElement('option');
                     opt.setAttribute('value',videos[i].id);
-                    opt.innerHTML = videos[i].title;
+                    opt.innerHTML = videos[i].fields.title;
                     sel.appendChild( opt );
                 }
                 jQuery(sel).change(function(){
                     var videoId = jQuery(this).val();
-                    pm.loadVideo( videoId, app.videoLoaded );
+                    pm.getEvent( piece.id, videoId, app.videoLoaded );
                 });
                 var selBlock = jQuery( '#video-selection' ).get(0);
                 selBlock.appendChild( sel );
             }
-            pm.loadVideo( 80, app.videoLoaded );
+            
+            pm.getEvent( piece.id, 69322, app.videoLoaded );
         },
         videoLoaded : function ( v ) {
             video = v;
-            pm.loadEventsForVideo( video.id, app.eventsLoaded );
+            pm.listEventsBetween( piece.id, 
+                                  video.utc_timestamp, 
+                                  new Date( video.utc_timestamp + (video.duration * 1000.0) ), 
+                                  app.eventsLoaded );
         },
-        eventsLoaded : function ( data ) {
-            if ( data.total > 0 ) {
-                var eventsRaw = data.events;
+        eventsLoaded : function ( eventsRaw ) {
+            if ( eventsRaw.length > 0 ) {
                 var dataEvent = null;
                 for ( var i = 0, k = eventsRaw.length; i < k; i++ ) {
-                    if ( eventsRaw[i].event_type == 'data' ) {
+                    if ( eventsRaw[i].type == 'data' ) {
                         dataEvent = eventsRaw[i];
                         break;
                     }
                 }
                 if ( dataEvent ) {
-                    dataEvent.happened_at = new Date( dataEvent.happened_at_float );
-                    dataEvent.data = eval( '(' + dataEvent.description + ')' );
 //                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_25fps.txt' ) );
 //                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_alt.txt' ) );
 //                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_left_wrist.txt' ) );
-                    app.loadDataEvent( dataEvent, dataEvent.data.file );
-                    app.loadDataEvent( dataEvent, dataEvent.data.file.replace( '.txt', '_com.txt' ) );
+                    app.loadDataEvent( dataEvent, dataEvent.fields['data-file'] );
+                    //app.loadDataEvent( dataEvent, dataEvent.fields['data-file'].replace( '.txt', '_com.txt' ) );
                 }
             }
         },

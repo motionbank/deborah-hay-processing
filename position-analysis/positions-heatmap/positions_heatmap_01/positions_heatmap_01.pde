@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 final int PIECE_ID = 3;
 final boolean isLocal = true;
 final String TRACK_3D_ROOT = ( isLocal ? "http://moba-lab.local/" : "http://lab.motionbank.org/" ) + "dhay/data";
-final String performer = null; // "Ros" or null for all
+final String performer = "Janine"; // "Ros" or null for all
 
 PieceMakerApi api;
 boolean loaded = false, doAverage = true, exportAll = false, showAll = true, showGrouped = false;
@@ -52,8 +52,8 @@ Date timeMin, timeMax;
 
 void setup () 
 {
-    size( 1000, 700 );
-    heatMapSize = (int)((height / 14.0) * 12);
+    size( 700, 700 );
+    heatMapSize = (int)((height / 13.0) * 12);
     
     groups = new VideoEventGroup[0];
 
