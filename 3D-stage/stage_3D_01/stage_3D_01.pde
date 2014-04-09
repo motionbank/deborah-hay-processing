@@ -4,14 +4,15 @@
  *    Old sketch testing a 3D stage to perform on ..
  *
  *    Processing 2.0
- *    created: fjenett, 2011??
+ *    created: fjenett, 2011, 2014
  */
 
 import de.bezier.guido.*;
 import processing.opengl.*;
 import javax.media.opengl.*;
+
 // http://code.google.com/p/proscene/
-//import peasy.*; // http://mrfeinberg.com/peasycam/
+import peasy.*; // http://mrfeinberg.com/peasycam/
 
 String posLoc = "/Volumes/Elements/2011_FIGD_April_Results/";
 String posBase = posLoc + "Ros_D01T03_withBackgroundAdjustment_Corrected/";
@@ -20,11 +21,11 @@ float[][] ps3D;
 float[][] ps2DC;
 float[][] bx2DC;
 
-//PeasyCam cam;
+PeasyCam cam;
 Slider slider;
 
-PGraphicsOpenGL pgl;
-PGL gl;
+PJOGL pgl;
+GL2 gl;
 
 PImage silh;
 PImage tex = null;
@@ -41,9 +42,9 @@ void setup()
     floorTex = loadImage("wood5.png");
     stageTex = loadImage("warm.png");
     
-//    cam = new PeasyCam(this, 500);
-//    cam.setMinimumDistance(50);
-//    cam.setMaximumDistance(5000);
+    cam = new PeasyCam(this, 500);
+    cam.setMinimumDistance(50);
+    cam.setMaximumDistance(5000);
     
     String[] lns = loadStrings( posBase + "/" + "Tracked3DPosition.txt" );
     int i = 0;
@@ -95,7 +96,7 @@ void setup()
 
 void mouseMoved ()
 {
-//    cam.setActive( mouseY > 50 );
+    cam.setActive( mouseY > 50 );
 }
 
 void draw() 
@@ -174,19 +175,23 @@ void draw()
     pushMatrix();
     
     int h = tailLength, ii = 0, k = 0;
-    noStroke();
-    fill( 0,10 );
-    beginShape(TRIANGLE_STRIP);
-        ii = i > h ? i-h : 0;
-        k = i+h < ps3D[0].length ? i+h : ps3D[0].length;
-        for ( ; ii < k; ii++ )
-        {
-            vertex( ps3D[0][ii], ps3D[2][ii], ps3D[1][ii] );
-            vertex( ps3D[0][ii], 0, ps3D[1][ii] );
-        }
-    endShape();
+    
+    if ( false ) {
+        noStroke();
+        fill( 0,10 );
+        beginShape(TRIANGLE_STRIP);
+            ii = i > h ? i-h : 0;
+            k = i+h < ps3D[0].length ? i+h : ps3D[0].length;
+            for ( ; ii < k; ii++ )
+            {
+                vertex( ps3D[0][ii], ps3D[2][ii], ps3D[1][ii] );
+                vertex( ps3D[0][ii], 0, ps3D[1][ii] );
+            }
+        endShape();
+    }
     
     noFill();
+    strokeWeight(0.01);
     beginShape();
         ii = i > h ? i-h : 0;
         k = i+h < ps3D[0].length ? i+h : ps3D[0].length;
@@ -208,7 +213,7 @@ void draw()
     translate( ps3D[0][i], ps3D[2][i], ps3D[1][i] );
     
     noStroke();
-    fill( 255, 0,0 );
+    fill( 255, 0, 0 );
     box(0.025);
     
     rotateX( PI );
@@ -225,19 +230,21 @@ void draw()
     fill(0,0);
     noStroke();
     
-    PGraphicsOpenGL pogl = (PGraphicsOpenGL) g;
-    gl = pogl.pgl;
+    pgl = (PJOGL)beginPGL();
+    gl = pgl.gl.getGL2();  
 
-    gl.gl.glDisable(GL.GL_DEPTH_TEST);
-    gl.gl.glEnable(GL.GL_BLEND);
+    gl.glDisable(GL.GL_DEPTH_TEST);
+    gl.glEnable(GL.GL_BLEND);
     
     pushMatrix();
     rotateX( HALF_PI );
     translate( 0, -sh/8, -sh+0.01 );
     fill( 90 );
-    //gl.gl2x.glBlendColor( 1f,0f,0f,0.5f );
-    //gl.glBlendEquation(GL.GL_FUNC_REVERSE_SUBTRACT);
-    gl.gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA  );
+    
+    ////gl.gl2x.glBlendColor( 1f,0f,0f,0.5f );
+    ////gl.glBlendEquation( GL.GL_FUNC_REVERSE_SUBTRACT );
+    
+    gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA  );
     
     beginShape();
         texture( tex );
@@ -248,8 +255,8 @@ void draw()
     endShape(CLOSE);
     popMatrix();
     
-    gl.gl.glBlendEquation(GL.GL_FUNC_ADD);
-    gl.gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
+    gl.glBlendEquation( GL.GL_FUNC_ADD );
+    gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
     
     beginShape();
         texture( tex );
@@ -259,7 +266,7 @@ void draw()
         vertex(sx,sy+sh,    tx, ty+silh.height);
     endShape(CLOSE);
 
-    //pgl.endGL();
+    endPGL();
     
     popMatrix();
     
@@ -272,13 +279,13 @@ void draw()
     
     popMatrix();
     
-//    cam.beginHUD();
-//    //image( silh, 100, 0, 50, 50 );
-//    textAlign( LEFT );
-//    text( currentFrame + " @ " + frameRate , 10, height-10 );
-//    
-//    //for ( GuiItem item : gui ) item.draw( true );
-//    slider.drawSlider();
-//    
-//    cam.endHUD();
+    cam.beginHUD();
+    //image( silh, 100, 0, 50, 50 );
+    textAlign( LEFT );
+    text( currentFrame + " @ " + frameRate , 10, height-10 );
+    
+    //for ( GuiItem item : gui ) item.draw( true );
+    slider.drawSlider();
+    
+    cam.endHUD();
 }
