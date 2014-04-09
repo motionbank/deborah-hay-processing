@@ -53,7 +53,7 @@ void setup ()
     File f = new File( videoDir );
     if ( !f.exists() )
     {
-        videoDir = "/Users/fjenett/Repos/piecemaker/public/video/full";
+        videoDir = "/Users/fjenett/Repos/piecemaker-dh/public/video/full";
     }
     
     df = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT );
@@ -66,7 +66,7 @@ void setup ()
     cal.set(2011,3,19,0,0,0);
     recordingsTo = cal.getTimeInMillis();
     
-    api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://localhost:3000" );
+    api = new PieceMakerApi( this, "a79c66c0bb4864c06bc44c0233ebd2d2b1100fbe", "http://notimetofly.herokuapp.com" );
     api.loadPieces( api.createCallback( "piecesLoaded" ) );
     
     initScene();
@@ -103,7 +103,13 @@ void drawMarkers ()
     
     int iy = height-10-30-10-10;
     
-    VideoTimeCluster currentCluster = clusters.get(0); // TODO: add interface for selecting this
+    VideoTimeCluster currentCluster = clusters.get(1); // TODO: add interface for selecting this
+    
+//    if ( movie == null )
+//    {
+//        selectedVideo = currentCluster.videos.get(0);
+//        loadMovie();
+//    }
     
     ArrayList<org.piecemaker.models.Event> videoEvents = currentCluster.events;
     
