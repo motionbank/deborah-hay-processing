@@ -39,6 +39,7 @@ void dataEventsLoaded ( Events events, VideoEventGroup group )
     
     // using the 25 fps version
     track3DFile = track3DFile.replace( ".txt", "_com.txt" );
+    track3DFile = track3DFile.replace( "_BackgroundSubstracted_Corrected", "_withBackgroundAdjustment_Corrected" );
     
     String[] lines = new String[0];
     
