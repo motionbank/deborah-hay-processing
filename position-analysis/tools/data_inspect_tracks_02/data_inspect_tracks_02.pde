@@ -13,6 +13,9 @@
 
  import de.bezier.guido.*;
  
+ import org.piecemaker2.api.*;
+ import org.piecemaker2.models.*;
+ 
  MultiSlider mSlider;
  
  Track3D[] tracks;
@@ -159,7 +162,7 @@
          
          scene3D.pushMatrix();
          scene3D.stroke( 0 );
-         scene3D.strokeWeight( 1 );
+         scene3D.strokeWeight( 0.02 );
          scene3D.translate( vx, vy, vz );
          scene3D.beginShape();
          scene3D.vertex( 0, 0, 0 );
@@ -177,7 +180,7 @@
          
          scene3D.noFill();
          scene3D.stroke( 190 );
-         scene3D.strokeWeight( 1 );
+         scene3D.strokeWeight( 0.02 );
          scene3D.rect( -6, -6, 12, 12 );
          scene3D.rect( -6.05, 5.95, 0.1, 0.1 );
     
@@ -203,7 +206,7 @@
                      scene3D.vertex( vx, vy, vz );
                      scene3D.endShape();
                      scene3D.stroke( isOutlier ? warnColor : t.trackColor );
-                     scene3D.strokeWeight( isOutlier ? 2 : 1 );
+                     scene3D.strokeWeight( isOutlier ? 0.03 : 0.02 );
                      scene3D.beginShape();
                      wasOutlier = isOutlier;
                  }

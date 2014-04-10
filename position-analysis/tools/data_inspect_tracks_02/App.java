@@ -3,11 +3,10 @@
  */
 
 import processing.core.*;
+import java.util.Calendar;
 
 import org.piecemaker2.api.*;
 import org.piecemaker2.models.*;
-
-import java.util.Calendar;
 
 public class App
 {
@@ -22,7 +21,7 @@ public class App
 
         api = new PieceMakerApi( sketch, 
                                  "http://deborah-hay-pm2.herokuapp.com", 
-                                 "4d2452b3f3d2810eca691cf77a8fececd919323a" );
+                                 "0310X9kgAiTWuMIt" );
         
         api.getGroup( 24, api.createCallback( this, "groupLoaded" ) );
     }
@@ -46,9 +45,10 @@ public class App
         cal.setTime(video.utc_timestamp);
         cal.add(Calendar.MILLISECOND,(int)(video.duration*1000.0));
         
-        api.listEventsBetween( groupId, 
+        api.listEventsForTimespan( groupId, 
                                video.utc_timestamp, 
                                cal.getTime(),
+                               api.CONTAINED,
                                api.createCallback( this, "eventsLoaded" ) );
     }
 
